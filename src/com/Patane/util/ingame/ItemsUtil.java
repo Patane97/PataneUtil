@@ -12,6 +12,7 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import com.Patane.util.general.Chat;
+import com.Patane.util.general.Check;
 
 public class ItemsUtil {
 	/*
@@ -76,6 +77,8 @@ public class ItemsUtil {
 		return item;
 	}
 	public static ItemStack createItem(Material material, int amount, short data, String name, String...lore){
+		Check.nulled(material, "Failed to create item. Material component is missing.");
+		Check.nulled(amount, "Failed to create item. Amount component is missing.");
 		ItemStack item = new ItemStack(material, amount, data);
 		ItemMeta itemMeta = item.getItemMeta();
 		if(name != null)
