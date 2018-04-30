@@ -12,10 +12,9 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 
 import com.Patane.util.general.Check;
-import com.Patane.util.general.ErrorHandler;
-import com.Patane.util.general.ErrorHandler.Importance;
 import com.Patane.util.general.ErrorHandler.LoadException;
 import com.Patane.util.general.ErrorHandler.YMLException;
+import com.Patane.util.general.GeneralUtil;
 import com.Patane.util.general.Messenger;
 import com.Patane.util.general.Messenger.Msg;
 import com.Patane.util.general.StringsUtil;
@@ -269,59 +268,6 @@ public abstract class BasicYML {
 		return integer;
 	}
 	/**
-	 * Extremely useful method to extract data from the YML and inject it into a new Class instance via reflection.
-	 * @param clazz Class to create an instance from
-	 * @param name String of class being searched for (for error handling) 
-	 * @param superName String of what this method is being used for (for error handling) 
-	 * @param optional Check to see if this value is optional (for error handling)
-	 * @param path Where the classes information is stored within the YML file
-	 * @return A new instance of the given class or Null if there is any sort of error and optional is true.
-	 * @throws LoadException If there is any sort of error and optional is false
-	 */
-	
-	public <T extends YMLParsable> T getByClass(Importance importance, Class<? extends T> clazz, String name, String superName, ConfigurationSection section, String... ignoreFields) throws LoadException{
-		if(section == null || !isSection(section.getCurrentPath()))
-			return ErrorHandler.optionalLoadError(Msg.WARNING, Importance.DEBUG, "Failed to find '"+name+"': Path not present.");
-		if(header != section)
-			setHeader(section);
-		if(clazz  == null)
-			return ErrorHandler.optionalLoadError(Msg.WARNING, importance, "Failed to load "+superName+": Error loading class "+name+".");
-		
-		//Getting class Fields as Strings
-		List<String> fieldNames = new ArrayList<String>();
-		for(Field field : clazz.getFields())
-			fieldNames.add(field.getName());
-		Map<String, String> entries = new HashMap<String, String>();
-		//Defining fields that will need to be removed from YML file (to keep clean)
-		List<String> fieldsToRemove = new ArrayList<String>();
-		//Loops through YML keys, determining if they are to be used or removed later
-		for(String key : header.getKeys(false)){
-			if(fieldNames.contains(key)){
-				entries.put(key, header.getString(key));
-			} else if(!Arrays.asList(ignoreFields).contains(key)){
-				fieldsToRemove.add(key);
-			}
-		}
-		//Building the object with unique field/values from the 'entries' HashMap
-		T object;
-		try { 
-			object = clazz.getConstructor(Map.class).newInstance(entries);
-		} catch (NoSuchMethodException e) {
-			try {object = clazz.getConstructor().newInstance();}
-			catch (Exception e1) {
-				return ErrorHandler.optionalLoadError(Msg.WARNING, importance, "Failed to load "+superName+": Constructor Error - "+e.getCause().getMessage());
-			}
-		} catch (InvocationTargetException e) {
-			return ErrorHandler.optionalLoadError(Msg.WARNING, importance, "Failed to load "+superName+": Constructor Error - "+e.getCause().getMessage());
-		} catch (Exception e){
-			Messenger.warning("Failed to load "+superName+": Constructor Error - "+e.getCause().getMessage());
-			e.printStackTrace();
-			return null;
-		}
-//		Messenger.debug(Msg.INFO, "     + "+name+"["+StringsUtil.stringJoiner(entries.values(), ", ")+"]");
-		return object;
-	}
-	/**
 	 * Uses Java Reflection to Construct a simple class from a YML file.
 	 * @param section Section to grab information from in YML.
 	 * @param defaultSection A default section to grab information from in the case that information is missing from the Section.
@@ -394,8 +340,14 @@ public abstract class BasicYML {
 					object = clazz.getConstructor().newInstance();
 				}
 			}
+			// If the object has an exception in its initilizer, then this triggers.
+			catch (InvocationTargetException e){
+				Messenger.warning("Failed to create '"+GeneralUtil.getClassName(clazz)+"' due to an initilization error:");
+				// Prints the stack trace from the constructor
+				e.getCause().printStackTrace();
+			}
 			// All possible exceptions simply printing the stack trace.
-			catch (InstantiationException | IllegalAccessException | IllegalArgumentException	| InvocationTargetException | SecurityException | NoSuchMethodException e) {
+			catch (Exception e) {
 				e.printStackTrace();
 			}
 			return object;
@@ -411,7 +363,7 @@ public abstract class BasicYML {
 	public static <T extends Enum<T>> T getEnumFromString(String string, Class<T> clazz) throws ClassNotFoundException, NullPointerException{
 		// Throws ClassNotFoundException if clazz is null.
 		if(clazz == null)
-			throw new ClassNotFoundException("Class required for StringToEnum is missing.");
+			throw new ClassNotFoundException("Class required for getEnumFromString is missing.");
 		
 		// Throws NullPointerException if the string is null.
 		if(string == null)

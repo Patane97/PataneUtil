@@ -3,6 +3,7 @@ package com.Patane.util.general;
 import org.bukkit.entity.Entity;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import com.Patane.util.YML.Namer;
 import com.Patane.util.main.PataneUtil;
 
 public class GeneralUtil {
@@ -17,5 +18,12 @@ public class GeneralUtil {
 	}
 	public static double random(double min, double max){
 		return min + Math.random() * (max - min);
+	}
+	public static String getClassName(Class<?> clazz){
+		try{
+			return clazz.getAnnotation(Namer.class).name();
+		} catch(Exception e){
+			return clazz.getSimpleName();
+		}
 	}
 }

@@ -16,6 +16,7 @@ import com.Patane.util.general.Messenger;
  *
  */
 
+// CHECK OUT https://bukkit.org/threads/tut-custom-yaml-configurations-with-comments.142592/
 public class Config extends YamlConfiguration{
  
     private Plugin plugin;
@@ -41,7 +42,6 @@ public class Config extends YamlConfiguration{
             }else{
             	Messenger.info("Loading " + fileName + "...");
                 load(file);
-                save(file);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -50,7 +50,8 @@ public class Config extends YamlConfiguration{
  
     public void save(){
         try {
-            save(new File(plugin.getDataFolder(), fileName));
+            plugin.saveResource(fileName, false);
+//            save(new File(plugin.getDataFolder(), fileName));
         } catch (Exception e) {
             e.printStackTrace();
         }
