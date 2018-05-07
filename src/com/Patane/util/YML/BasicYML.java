@@ -11,10 +11,9 @@ import java.util.Map;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 
+import com.Patane.handlers.ErrorHandler.LoadException;
+import com.Patane.handlers.ErrorHandler.YMLException;
 import com.Patane.util.general.Check;
-import com.Patane.util.general.ErrorHandler.LoadException;
-import com.Patane.util.general.ErrorHandler.YMLException;
-import com.Patane.util.general.GeneralUtil;
 import com.Patane.util.general.Messenger;
 import com.Patane.util.general.Messenger.Msg;
 import com.Patane.util.general.StringsUtil;
@@ -25,13 +24,14 @@ public abstract class BasicYML {
 	protected String root;
 	protected ConfigurationSection header;
 	
-	public BasicYML(Plugin plugin, String config, String root){
+	public BasicYML(Plugin plugin, String config, String root, String header){
 		this.plugin = plugin;
-		this.config = new Config(plugin, config);
+		this.config = new Config(plugin, config, header);
 		this.root = root;
-		if(!isRootSection())
+		if(!hasRootSection()){
 			createRootSection();
-		this.config.save();
+			this.config.save();
+		}
 		this.header = getRootSection();
 	}
 	
@@ -93,7 +93,7 @@ public abstract class BasicYML {
 	 * Checks if the root is currently present in the file.
 	 * @return A boolean of whether the root is present in the file.
 	 */
-	public boolean isRootSection() {
+	public boolean hasRootSection() {
 		return config.isConfigurationSection(root);
 	}
 	/**
@@ -132,10 +132,27 @@ public abstract class BasicYML {
 	 * @return The ConfigurationSection and path combined into a new ConfigurationSection.
 	 */
 	public static ConfigurationSection getSection(ConfigurationSection section, String...strings) {
-		if(section == null || strings.length == 0)
+		if(section == null || strings.length == 0){
 			return section;
+		}
 		String path = (strings.length > 1 ? StringsUtil.stringJoiner(strings, ".") : strings[0]);
 		return section.getConfigurationSection(path);
+	}
+	/**
+	 * Gets a section of any file using a ConfigurationSection as a root. This can go accross files as it is static.
+	 * @param section The ConfigurationSection to branch off.
+	 * @param strings The path to continue from the section.
+	 * @return The ConfigurationSection and path combined into a new ConfigurationSection.
+	 */
+	public static ConfigurationSection getSectionAndWarn(ConfigurationSection section, String...strings) {
+		if(section == null || strings.length == 0){
+			return section;
+		}
+		String path = (strings.length > 1 ? StringsUtil.stringJoiner(strings, ".") : strings[0]);
+		ConfigurationSection returned = section.getConfigurationSection(path);
+		if(returned == null)
+			Messenger.warning("YML Path '"+section.getCurrentPath()+"."+path+"' could not be found. Possible YMLException error incoming...");
+		return returned;
 	}
 	/**
 	 * Checks if a section does not have any values set in it, or any paths continuing from it.
@@ -276,8 +293,9 @@ public abstract class BasicYML {
 	 * @return A new Object of the given Class constructed via Java Reflection.
 	 * @throws YMLException If the section given is null.
 	 * @throws ClassNotFoundException If the Class given is null.
+	 * @throws InvocationTargetException 
 	 */
-	public static <T extends YMLParsable> T getSimpleClassDefault(ConfigurationSection section, ConfigurationSection defaultSection, Class<? extends T> clazz, String... ignoreFieldsArray) throws YMLException, ClassNotFoundException{
+	public static <T extends YMLParsable> T getSimpleClassDefault(ConfigurationSection section, ConfigurationSection defaultSection, Class<? extends T> clazz, String... ignoreFieldsArray) throws YMLException, ClassNotFoundException, InvocationTargetException{
 			// Throws YMLException if section is null or not a section.
 			Check.nulled(section);
 			
@@ -342,9 +360,9 @@ public abstract class BasicYML {
 			}
 			// If the object has an exception in its initilizer, then this triggers.
 			catch (InvocationTargetException e){
-				Messenger.warning("Failed to create '"+GeneralUtil.getClassName(clazz)+"' due to an initilization error:");
-				// Prints the stack trace from the constructor
-				e.getCause().printStackTrace();
+				InvocationTargetException el = new InvocationTargetException(null, e.getCause().getMessage());
+				el.setStackTrace(e.getCause().getStackTrace());
+				throw el;
 			}
 			// All possible exceptions simply printing the stack trace.
 			catch (Exception e) {

@@ -1,5 +1,6 @@
-package com.Patane.util.general;
+package com.Patane.handlers;
 
+import com.Patane.util.general.Messenger;
 import com.Patane.util.general.Messenger.Msg;
 
 public class ErrorHandler {

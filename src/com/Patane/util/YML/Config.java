@@ -21,10 +21,12 @@ public class Config extends YamlConfiguration{
  
     private Plugin plugin;
     private String fileName;
+    private String header;
  
-    public Config(Plugin plugin, String fileName){
+    public Config(Plugin plugin, String fileName, String header){
         this.plugin = plugin;
         this.fileName = fileName + (fileName.endsWith(".yml") ? "" : ".yml");
+        this.header = header;
  
         createFile();
     }
@@ -36,13 +38,16 @@ public class Config extends YamlConfiguration{
                 if (plugin.getResource(fileName) != null){
                 	Messenger.info("Creating " + fileName + "...");
                     plugin.saveResource(fileName, false);
-                }else{
-                    save(file);
                 }
-            }else{
+            } else{
             	Messenger.info("Loading " + fileName + "...");
                 load(file);
             }
+            if(header != null){
+	            options().header(header);
+	            buildHeader();
+            }
+            save(new File(plugin.getDataFolder(), fileName));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -50,8 +55,8 @@ public class Config extends YamlConfiguration{
  
     public void save(){
         try {
-            plugin.saveResource(fileName, false);
-//            save(new File(plugin.getDataFolder(), fileName));
+        	Messenger.info("Saving " + fileName + "...");
+            save(new File(plugin.getDataFolder(), fileName));
         } catch (Exception e) {
             e.printStackTrace();
         }

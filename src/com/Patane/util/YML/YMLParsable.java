@@ -2,13 +2,33 @@ package com.Patane.util.YML;
 
 import java.util.Map;
 
-import com.Patane.util.general.ErrorHandler.LoadException;
+import com.Patane.handlers.ErrorHandler.LoadException;
+import com.Patane.util.general.Check;
 
 public abstract class YMLParsable extends Nameable{
 	
 	protected YMLParsable(){};
 	public YMLParsable(Map<String, String> fields) throws LoadException{}
 
+	protected String getString(Map<String, String> fields, String name, String defaultValue){
+		try{
+			return getString(fields, name);
+		} catch(IllegalArgumentException e){
+			return defaultValue;
+		}
+	}
+	protected String getString(Map<String, String> fields, String name){
+		String value = fields.get(name);
+		String result;
+		try{
+			result = Check.nulled(value);
+		} catch (NullPointerException e){
+			throw new IllegalArgumentException("'"+name()+"' is missing the '"+name+"' field");
+		} catch (NumberFormatException e){
+			throw new IllegalArgumentException("'"+name()+"' has invalid value in '"+name+"' field (Value must be numerical)");
+		}
+		return result;
+	}
 	protected double getInt(Map<String, String> fields, String name, int defaultValue){
 		try{
 			return getInt(fields, name);

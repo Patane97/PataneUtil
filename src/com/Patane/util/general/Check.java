@@ -2,7 +2,7 @@ package com.Patane.util.general;
 
 import org.bukkit.configuration.ConfigurationSection;
 
-import com.Patane.util.general.ErrorHandler.YMLException;
+import com.Patane.handlers.ErrorHandler.YMLException;
 
 public class Check {
 	/**
@@ -33,6 +33,48 @@ public class Check {
 	 */
 	public static void nulled(ConfigurationSection section) throws YMLException{
 		if(section == null)
-			throw new YMLException("Required path is missing.");
+			throw new YMLException("A required YML path is missing.");
+	}
+	
+	public static float greaterThan(float a, float b, String message){
+		if(a <= b)
+			throw new IllegalArgumentException(message);
+		return a;
+	}
+	public static float lessThan(float a, float b, String message){
+		if(a >= b)
+			throw new IllegalArgumentException(message);
+		return a;
+	}
+
+	public static double greaterThan(double a, double b, String message){
+		if(a <= b)
+			throw new IllegalArgumentException(message);
+		return a;
+	}
+	public static double lessThan(double a, double b, String message){
+		if(a >= b)
+			throw new IllegalArgumentException(message);
+		return a;
+	}
+	public static double greaterThanEqual(double a, double b, String message) {
+		if(a < b)
+			throw new IllegalArgumentException(message);
+		return a;
+	}
+	public static double lessThanEqual(double a, double b, String message) {
+		if(a > b)
+			throw new IllegalArgumentException(message);
+		return a;
+	}
+	public static float greaterThanEqual(float a, float b, String message) {
+		if(a < b)
+			throw new IllegalArgumentException(message);
+		return a;
+	}
+	public static float lessThanEqual(float a, float b, String message) {
+		if(a > b)
+			throw new IllegalArgumentException(message);
+		return a;
 	}
 }
