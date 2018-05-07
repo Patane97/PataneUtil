@@ -1,7 +1,6 @@
 package com.Patane.util.ingame;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Location;
@@ -9,7 +8,6 @@ import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 
 public class LocationsUtil {
@@ -20,16 +18,17 @@ public class LocationsUtil {
 	 * @param hitableEntities
 	 * @return A list of all Living Entities within location/radius and which are present in the hitableEntities array (All Living Entities if hitableEntities is empty)
 	 */
-	public static List<LivingEntity> getEntities(Location location, double radius, EntityType[] hitableEntities, boolean ignore){
+	public static List<LivingEntity> getEntities(Location location, double radius){
 //	    int chunkRadius = radius < 16 ? 1 : (radius - (radius % 16)) / 16;
-		ArrayList<EntityType> entityTypes = (hitableEntities == null ? new ArrayList<EntityType>() : new ArrayList<EntityType>(Arrays.asList(hitableEntities)));
+		// RADIUS CURRENTLY IS A 'SQUARE RADIUS'. UPDATE LATER.
 		location.getWorld().spawnParticle(Particle.CRIT, location, 100, 0,0,0, 0.1);
 		
 	    ArrayList<LivingEntity> radiusEntities = new ArrayList<LivingEntity>();
-	    for(Entity entity : location.getWorld().getNearbyEntities(location, radius, radius, radius)){
-	    	if(entity instanceof LivingEntity && (entityTypes.isEmpty() || (!ignore && entityTypes.contains(entity.getType()) || (ignore && !entityTypes.contains(entity.getType())))))
+	    for(Entity entity : location.getWorld().getNearbyEntities(location, radius, radius, radius))
+	    	if(entity instanceof LivingEntity)
 	    		radiusEntities.add((LivingEntity) entity);
-	    }
+	    
+	    // CODE RELATED TO CIRCULAR RADIUS. WORK ON LATER.
 //	    for (int chX = 0 - chunkRadius; chX <= chunkRadius; chX++) {
 //	        for (int chZ = 0 - chunkRadius; chZ <= chunkRadius; chZ++) {
 //	            int x = (int) l.getX(), y = (int) l.getY(), z = (int) l.getZ();

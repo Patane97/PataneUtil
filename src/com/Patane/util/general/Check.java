@@ -1,8 +1,7 @@
 package com.Patane.util.general;
 
 import org.bukkit.configuration.ConfigurationSection;
-
-import com.Patane.handlers.ErrorHandler.YMLException;
+import org.yaml.snakeyaml.error.YAMLException;
 
 public class Check {
 	/**
@@ -29,11 +28,11 @@ public class Check {
 	/**
 	 * Checks if section is null or isnt present at all.
 	 * @param section The ConfurationSection to be checked.
-	 * @throws YMLException If section is null or not present.
+	 * @throws YAMLException If section is null or not present.
 	 */
-	public static void nulled(ConfigurationSection section) throws YMLException{
+	public static void nulled(ConfigurationSection section) throws YAMLException{
 		if(section == null)
-			throw new YMLException("A required YML path is missing.");
+			throw new YAMLException("A required YML path is missing.");
 	}
 	
 	public static float greaterThan(float a, float b, String message){

@@ -26,13 +26,6 @@ public class ErrorHandler {
 			super(message);
 		}
 	}
-	public static class YMLException extends Exception{
-		private static final long serialVersionUID = -2955721517942223019L;
-
-		public YMLException(String message){
-			super(message);
-		}
-	}
 	public static enum Importance {
 		NONE{}, DEBUG{}, MINOR{}, REQUIRED{};
 	}

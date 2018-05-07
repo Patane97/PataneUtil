@@ -10,9 +10,9 @@ import java.util.Map;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
+import org.yaml.snakeyaml.error.YAMLException;
 
 import com.Patane.handlers.ErrorHandler.LoadException;
-import com.Patane.handlers.ErrorHandler.YMLException;
 import com.Patane.util.general.Check;
 import com.Patane.util.general.Messenger;
 import com.Patane.util.general.Messenger.Msg;
@@ -151,7 +151,7 @@ public abstract class BasicYML {
 		String path = (strings.length > 1 ? StringsUtil.stringJoiner(strings, ".") : strings[0]);
 		ConfigurationSection returned = section.getConfigurationSection(path);
 		if(returned == null)
-			Messenger.warning("YML Path '"+section.getCurrentPath()+"."+path+"' could not be found. Possible YMLException error incoming...");
+			Messenger.warning("YML Path '"+section.getCurrentPath()+"."+path+"' could not be found. Possible YAMLException error incoming...");
 		return returned;
 	}
 	/**
@@ -291,12 +291,12 @@ public abstract class BasicYML {
 	 * @param clazz Simple Class to assemble. This calss should extend YMLParsable and must not have any complicated public fields (such as another class).
 	 * @param ignoreFieldsArray Any fields in the Class to specifically ignore.
 	 * @return A new Object of the given Class constructed via Java Reflection.
-	 * @throws YMLException If the section given is null.
+	 * @throws YAMLException If the section given is null.
 	 * @throws ClassNotFoundException If the Class given is null.
 	 * @throws InvocationTargetException 
 	 */
-	public static <T extends YMLParsable> T getSimpleClassDefault(ConfigurationSection section, ConfigurationSection defaultSection, Class<? extends T> clazz, String... ignoreFieldsArray) throws YMLException, ClassNotFoundException, InvocationTargetException{
-			// Throws YMLException if section is null or not a section.
+	public static <T extends YMLParsable> T getSimpleClassDefault(ConfigurationSection section, ConfigurationSection defaultSection, Class<? extends T> clazz, String... ignoreFieldsArray) throws YAMLException, ClassNotFoundException, InvocationTargetException{
+			// Throws YAMLException if section is null or not a section.
 			Check.nulled(section);
 			
 			// Sets header to section.
