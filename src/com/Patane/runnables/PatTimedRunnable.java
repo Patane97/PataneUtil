@@ -6,9 +6,9 @@ public abstract class PatTimedRunnable extends PatRunnable{
 	private float ticksLeft;
 	
 	public PatTimedRunnable(float delay, float rate, float duration) {
-		super(delay*20, rate*20);
-		this.duration = duration*20;
-		this.rate = rate*20;
+		super(delay*20f, rate*20f);
+		this.duration = duration*20f;
+		this.rate = rate*20f;
 		this.ticksLeft = this.duration;
 	}
 
@@ -16,19 +16,26 @@ public abstract class PatTimedRunnable extends PatRunnable{
 		ticksLeft = duration;
 	}
 	public void add(float time){
-		ticksLeft += time*20;
+		ticksLeft += time*20f;
 	}
-	
+
+	public float duration(){
+		return duration;
+	}
+	public float ticksLeft(){
+		return ticksLeft;
+	}
 	public abstract void task();
 	public abstract void complete();
 	
 	@Override
 	public void run() {
-		task();
-		ticksLeft -= rate;
-		if(ticksLeft <= 0){
+		if(ticksLeft < 0f){
 			complete();
 			this.cancel();
+			return;
 		}
+		task();
+		ticksLeft -= rate;
 	}
 }

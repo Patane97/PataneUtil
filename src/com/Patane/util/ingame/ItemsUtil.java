@@ -15,49 +15,7 @@ import com.Patane.util.general.Chat;
 import com.Patane.util.general.Check;
 
 public class ItemsUtil {
-	/*
-    Returns an encoded string that appears invisible to the
-    client.
-	*/
-	public static String encodeItemData(String str){
-	    try {
-	        String hiddenData = "";
-	        for(char c : str.toCharArray()){
-	            hiddenData += "§" + c;
-	        }
-	        return hiddenData;
-	    }catch (Exception e){
-	        e.printStackTrace();
-	        return null;
-	    }
-	}
 	
-	/*
-	    Decodes an encoded string
-	*/
-	public static String decodeItemData(String str){
-	    try {
-	        String[] hiddenData = str.split("(?:\\w{2,}|\\d[0-9A-Fa-f])+");
-	        String returnData = "";
-	        if(hiddenData == null){
-	            hiddenData = str.split("§");
-	            for(int i = 0; i < hiddenData.length; i++){
-	                returnData += hiddenData[i];
-	            }
-	            return returnData;
-	        }else{
-	            String[] d = hiddenData[hiddenData.length-1].split("§");
-	            for(int i = 1; i < d.length; i++){
-	                returnData += d[i];
-	            }
-	            return returnData;
-	        }
-	
-	    }catch (Exception e){
-	        e.printStackTrace();
-	        return null;
-	    }
-	}
 	public static ItemStack hideFlags(ItemStack item) {
 		ItemMeta meta = item.getItemMeta();
 		meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
@@ -109,14 +67,18 @@ public class ItemsUtil {
 		item.setItemMeta(itemMeta);
 		return item;
 	}
-
-	public static ItemStack addBrTag(ItemStack item, String id) {
+	public static String getDisplayName(ItemStack item) {
+		if(item == null || !item.hasItemMeta()) {
+			return null;
+		}
 		ItemMeta itemMeta = item.getItemMeta();
-		itemMeta.setDisplayName(itemMeta.getDisplayName() + ItemsUtil.encodeItemData(getTag(id)));
-		item.setItemMeta(itemMeta);
-		return item;
+		return itemMeta.getDisplayName();
 	}
-	public static String getTag(String id){
-		return " <Br-" + id + ">";
+	public static boolean hasDisplayName(ItemStack item) {
+		if(item == null || !item.hasItemMeta()) {
+			return false;
+		}
+		ItemMeta itemMeta = item.getItemMeta();
+		return itemMeta.hasDisplayName();
 	}
 }

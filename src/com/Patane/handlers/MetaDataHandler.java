@@ -9,6 +9,8 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 
 import com.Patane.runnables.TimedMetaDataTask;
+import com.Patane.util.general.Messenger;
+import com.Patane.util.general.Messenger.Msg;
 import com.Patane.util.general.StringsUtil;
 import com.Patane.util.main.PataneUtil;
 
@@ -37,7 +39,7 @@ public class MetaDataHandler {
 				return true;
 
 			// Debug code to print each metadata addition
-//			Messenger.debug(Msg.INFO, "+<"+metaName+","+(entity.getName())+">");
+			Messenger.debug(Msg.INFO, "+<"+metaName+","+(entity.getName())+">");
 			// Adds the entity to the metaName's List.
 			return collection.get(metaName).add(entity);
 		}
@@ -45,7 +47,7 @@ public class MetaDataHandler {
 		else {
 			collection.put(metaName, new ArrayList<LivingEntity>());
 			// Debug code to print each metadata addition
-//			Messenger.debug(Msg.INFO, "+<"+metaName+","+(entity.getName())+">");
+			Messenger.debug(Msg.INFO, "+<"+metaName+","+(entity.getName())+">");
 			return collection.get(metaName).add(entity);
 		}
 	}
@@ -97,7 +99,7 @@ public class MetaDataHandler {
 			boolean result = collection.get(metaName).remove(entity);
 			
 			// Debug code to print each metadata removal
-//			Messenger.debug(Msg.INFO, "-<"+metaName+","+(entity.getName())+">");
+			Messenger.debug(Msg.INFO, "-<"+metaName+","+(entity.getName())+">");
 			
 			// If the list is empty after the entity is removed, then the entry is removed from the collection.
 			if(collection.get(metaName).isEmpty()){

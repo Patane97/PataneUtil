@@ -12,13 +12,12 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 import org.yaml.snakeyaml.error.YAMLException;
 
-import com.Patane.handlers.ErrorHandler.LoadException;
 import com.Patane.util.general.Check;
 import com.Patane.util.general.Messenger;
 import com.Patane.util.general.Messenger.Msg;
 import com.Patane.util.general.StringsUtil;
 
-public abstract class BasicYML {
+public abstract class BasicYML extends YAMLParser{
 	protected Plugin plugin;
 	protected Config config;
 	protected String root;
@@ -232,57 +231,207 @@ public abstract class BasicYML {
 		}
 		return null;
 	}
-	/**
-	 *  Made to replace the Spigot config 'getString(str)' as it doesnt allow the object to be null.
-	 * @param str String to search for
-	 * @param a ConfigurationSection of section.
-	 * @return Either the value from a or null.
+	/*
+	 ************************* Value Getters *************************
 	 */
-	public static String getString(String str, ConfigurationSection a){
+	/**
+	 * Gets a string for a specific String within a specific ConfigurationSection.
+	 * Equivalent to 'a.getString(string)' but properly handles nulls.
+	 * @param string String to use for searching
+	 * @param a ConfigurationSection of first section.
+	 * @return Either the value using a or null.
+	 */
+	public static String getString(String string, ConfigurationSection a){
 		String value = null;
-		if(a != null)
-			value = a.getString(str);
+		if(string != null && a != null)
+			value = a.getString(string);
 		return value;
 	}
 	/**
-	 * Made to replace the Spigot config 'getString(str, default)' as it doesnt allow default to be nulled.
-	 * @param str String to search for
+	 * Gets a string for a specific String within a specific ConfigurationSection.
+	 * Allows a default configurationSection to be set.
+	 * Equivalent to 'a.getString(string, default)' but properly handles nulls.
+	 * @param string String to use for searching
 	 * @param a ConfigurationSection of first section.
 	 * @param b ConfigurationSection of default section.
-	 * @return Either the value from a, the value from b or null.
+	 * @return Either the value using a, using b or null.
 	 */
-	public static String getStringDefault(String str, ConfigurationSection a, ConfigurationSection b){
-		String value = getString(str, a);
-		if(value == null && b != null)
-			value = b.getString(str);
+	public static String getString(String string, ConfigurationSection a, ConfigurationSection b){
+		String value = getString(string, a);
+		if(value == null)
+			value = getString(string, b);
 		return value;
 	}
-	////////////////////////////////////// GETTERS //////////////////////////////////////
-	public static Integer getIntFromString(String string){
-		if(string == null){
-			Messenger.send(Msg.WARNING, "String to convert to Integer is Null.");
-			return null;
-		}
-		Integer integer = null;
-		try{
-			integer = Math.round(Float.parseFloat(string));
-		}catch (NumberFormatException e){
-			Messenger.send(Msg.WARNING, "'"+string+"' is not a valid format for an Integer.");
-			throw e;
-		}
-		return integer;
+	/**
+	 * Gets an integer value from a specific String within a specific ConfigurationSection.
+	 * @param string What the value is set with.
+	 * @param a ConfigurationSection directing to the string.
+	 * @return The Integer intepreted from the string, or null.
+	 * @throws NumberFormatException If the string cannot be intepreted into a number.
+	 */
+	public static Integer getInteger(String string, ConfigurationSection a) throws NumberFormatException{
+		Integer value = null;
+		string = getString(string, a);
+		if(string != null && a != null)
+			value = parseInt(string);
+		return value;
 	}
-	public static Float getFloatFromString(String string) throws LoadException{
-		if(string == null)
-			throw new NullPointerException("String to convert to Float is Null.");
-		Float integer = null;
-		try{
-			integer = Float.parseFloat(string);
-		}catch (NumberFormatException e){
-			Messenger.debug(Msg.WARNING, "'"+string+"' is not a valid format for a Float.");
-			throw e;
+	/**
+	 * Gets an integer value from a specific String within a specific ConfigurationSection.
+	 * Allows a default configurationSection to be set.
+	 * @param string What the value is set with.
+	 * @param a ConfigurationSection directing to the string.
+	 * @param b Default ConfigurationSection to fall back on.
+	 * @return The Integer intepreted from the string, or null.
+	 * @throws NumberFormatException If the string cannot be intepreted into a number.
+	 */
+	public static Integer getInteger(String string, ConfigurationSection a, ConfigurationSection b) throws NumberFormatException{
+		Integer value = getInteger(string, a);
+		if(value == null)
+			value = getInteger(string, b);
+		return value;
+	}
+	/**
+	 * Gets a float value from a specific String within a specific ConfigurationSection.
+	 * @param string What the value is set with.
+	 * @param a ConfigurationSection directing to the string.
+	 * @return The Float intepreted from the string, or null.
+	 * @throws NumberFormatException If the string cannot be intepreted into a number.
+	 */
+	public static Float getFloat(String string, ConfigurationSection a) throws NumberFormatException{
+		Float value = null;
+		string = getString(string, a);
+		if(string != null && a != null)
+			value = parseFloat(string);
+		return value;
+	}
+	/**
+	 * Gets a float value from a specific String within a specific ConfigurationSection.
+	 * Allows a default configurationSection to be set.
+	 * @param string What the value is set with.
+	 * @param a ConfigurationSection directing to the string.
+	 * @param b Default ConfigurationSection to fall back on.
+	 * @return The Float intepreted from the string, or null.
+	 * @throws NumberFormatException If the string cannot be intepreted into a number.
+	 */
+	public static Float getFloat(String string, ConfigurationSection a, ConfigurationSection b) throws NumberFormatException{
+		Float value = getFloat(string, a);
+		if(value == null)
+			value = getFloat(string, b);
+		return value;
+	}
+	/**
+	 * Gets a boolean value from a specific String within a specific ConfigurationSection.
+	 * @param string What the value is set with.
+	 * @param a ConfigurationSection directing to the string.
+	 * @return The Boolean intepreted from the string, or null.
+	 * @throws IllegalArgumentException If the string cannot be intepreted into a boolean value.
+	 */
+	public static Boolean getBoolean(String string, ConfigurationSection a) throws IllegalArgumentException{
+		Boolean value = null;
+		string = getString(string, a);
+		if(string != null && a != null)
+			value = parseBoolean(string);
+		return value;
+	}
+	/**
+	 * Gets a boolean value from a specific String within a specific ConfigurationSection.
+	 * Allows a default configurationSection to be set.
+	 * @param string What the value is set with.
+	 * @param a ConfigurationSection directing to the string.
+	 * @param b Default ConfigurationSection to fall back on.
+	 * @return The Boolean intepreted from the string, or null.
+	 * @throws IllegalArgumentException If the string cannot be intepreted into a boolean value.
+	 */
+	public static Boolean getBoolean(String string, ConfigurationSection a, ConfigurationSection b) throws IllegalArgumentException{
+		Boolean value = getBoolean(string, a);
+		if(value == null)
+			value = getBoolean(string, b);
+		return value;
+	}
+	/**
+	 * Gets an int for a specific Integer value within a configurationSection.
+	 * Equivalent to 'a.getInt(string)' but properly handles nulls.
+	 * @param string String to use for searching
+	 * @param a ConfigurationSection of first section.
+	 * @return An int value by using string and a.
+	 * @throws NullPointerException If the string extracted from a configurationSection is null.
+	 * @throws YAMLException If the configurationSection is null.
+	 * @throws IllegalArgumentException If the given string is null. 
+	 * @throws NumberFormatException If the string cannot be intepreted into a number.
+	 * @deprecated Does the same as {@link parseInt()} only more complicated. Use that instead.
+	 */
+	@Deprecated
+	public static int getInt(String string, ConfigurationSection a) throws NullPointerException, YAMLException, IllegalArgumentException, NumberFormatException{
+		Check.nulled(a, "Section to retrieve int is missing.");
+		String value = Check.nulled(a.getString(string), "'"+string+"' int value could not be found within section '"+a.getCurrentPath()+"'.");
+		return parseInt(value);
+	}
+	/**
+	 * Gets an int for a specific Integer value within a configurationSection or a default configurationSection.
+	 * Allows a default configurationSection to be set.
+	 * Equivalent to 'a.getInt(string, default)' but properly handles nulls.
+	 * @param string String to use for searching
+	 * @param a ConfigurationSection of first section.
+	 * @param b ConfigurationSection of default section.
+	 * @return An int value by using string and a or b.
+	 * @throws NullPointerException If the string extracted from a configurationSection is null.
+	 * @throws YAMLException If the configurationSection is null.
+	 * @throws IllegalArgumentException If the given string is null. 
+	 * @throws NumberFormatException If the string cannot be intepreted into a number.
+	 * @deprecated Does the same as {@link parseInt()} only more complicated. Use that instead.
+	 */
+	@Deprecated
+	public static int getInt(String string, ConfigurationSection a, ConfigurationSection b) throws NullPointerException, YAMLException, IllegalArgumentException, NumberFormatException{
+		int value;
+		try {
+			value = getInt(string, a);
+		} catch (Exception e) {
+			value = getInt(string, b);
 		}
-		return integer;
+		return value;
+	}
+	/**
+	 * Gets a primitive boolean for a specific Boolean value within a configurationSection.
+	 * Equivalent to 'a.getBoolean(string)' but properly handles nulls.
+	 * @param string String to use for searching
+	 * @param a ConfigurationSection of first section.
+	 * @return A boolean value by using string and a.
+	 * @throws NullPointerException If the string extracted from a configurationSection is null.
+	 * @throws YAMLException If the configurationSection is null.
+	 * @throws IllegalArgumentException If the given string is null. 
+	 * @throws IllegalArgumentException If the string cannot be intepreted into a boolean value.
+	 * @deprecated Does the same as {@link parseBoolean()} only more complicated. Use that instead.
+	 */
+	@Deprecated
+	public static boolean getBool(String string, ConfigurationSection a) throws NullPointerException, YAMLException, IllegalArgumentException{
+		Check.nulled(a, "Section to retrieve boolean is missing.");
+		String value = Check.nulled(a.getString(string), "'"+string+"' boolean value could not be found within section '"+a.getCurrentPath()+"'.");
+		return parseBoolean(value);
+	}
+	/**
+	 * Gets a boolean for a specific Boolean value within a configurationSection or a default configurationSection.
+	 * Allows a default configurationSection to be set.
+	 * Equivalent to 'a.getInt(string, default)' but properly handles nulls.
+	 * @param string String to use for searching
+	 * @param a ConfigurationSection of first section.
+	 * @param b ConfigurationSection of default section.
+	 * @return A boolean value by using string and a or b.
+	 * @throws NullPointerException If the string extracted from a configurationSection is null.
+	 * @throws YAMLException If the configurationSection is null.
+	 * @throws IllegalArgumentException If the given string is null. 
+	 * @throws IllegalArgumentException If the string cannot be intepreted into a boolean value.
+	 * @deprecated Does the same as {@link parseBoolean()} only more complicated. Use that instead.
+	 */
+	@Deprecated
+	public static boolean getBool(String string, ConfigurationSection a, ConfigurationSection b) throws NullPointerException, YAMLException, IllegalArgumentException{
+		boolean value;
+		try {
+			value = getBoolean(string, a);
+		} catch (Exception e) {
+			value = getBoolean(string, b);
+		}
+		return value;
 	}
 	/**
 	 * Uses Java Reflection to Construct a simple class from a YML file.
@@ -295,7 +444,7 @@ public abstract class BasicYML {
 	 * @throws ClassNotFoundException If the Class given is null.
 	 * @throws InvocationTargetException 
 	 */
-	public static <T extends YMLParsable> T getSimpleClassDefault(ConfigurationSection section, ConfigurationSection defaultSection, Class<? extends T> clazz, String... ignoreFieldsArray) throws YAMLException, ClassNotFoundException, InvocationTargetException{
+	public static <T extends MapParsable> T getSimpleClassDefault(ConfigurationSection section, ConfigurationSection defaultSection, Class<? extends T> clazz, String... ignoreFieldsArray) throws YAMLException, ClassNotFoundException, InvocationTargetException{
 			// Throws YAMLException if section is null or not a section.
 			Check.nulled(section);
 			
@@ -332,7 +481,7 @@ public abstract class BasicYML {
 					Messenger.debug(Msg.INFO, "    +---["+field+": "+getString(field, currentHeader)+" | "+getString(field, defaultSection)+"]");
 					
 					// The value is obtained from the header section. If this is null, it is obtained from the defaultSection.
-					String value = getStringDefault(field, currentHeader, defaultSection);
+					String value = getString(field, currentHeader, defaultSection);
 					
 					// If the value is not present on either sections, then it is an invalidField.
 					if(value == null)

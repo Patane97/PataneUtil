@@ -1,6 +1,10 @@
 package com.Patane.util.general;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import com.Patane.util.YML.Namer;
@@ -25,5 +29,12 @@ public class GeneralUtil {
 		} catch(Exception e){
 			return clazz.getSimpleName();
 		}
+	}
+	public static List<LivingEntity> getLiving(List<Entity> entities){
+		List<LivingEntity> living = new ArrayList<LivingEntity>();
+		for(Entity entity : entities)
+			if(entity instanceof LivingEntity)
+				living.add((LivingEntity) entity);
+		return living;
 	}
 }

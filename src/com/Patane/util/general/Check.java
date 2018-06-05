@@ -26,6 +26,17 @@ public class Check {
 		return object;
 	}
 	/**
+	 * Checks if section is null or isnt present at all with message.
+	 * @param section The ConfurationSection to be checked.
+	 * @param message The message to print with the YAMLException.
+	 * @throws YAMLException If section is null or not present.
+	 */
+	public static void nulled(ConfigurationSection section, String message) throws YAMLException{
+		if(section == null)
+			throw new YAMLException(message);
+	}
+
+	/**
 	 * Checks if section is null or isnt present at all.
 	 * @param section The ConfurationSection to be checked.
 	 * @throws YAMLException If section is null or not present.
@@ -34,7 +45,6 @@ public class Check {
 		if(section == null)
 			throw new YAMLException("A required YML path is missing.");
 	}
-	
 	public static float greaterThan(float a, float b, String message){
 		if(a <= b)
 			throw new IllegalArgumentException(message);
