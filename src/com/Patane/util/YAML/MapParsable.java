@@ -1,4 +1,4 @@
-package com.Patane.util.YML;
+package com.Patane.util.YAML;
 
 import java.util.Map;
 
@@ -20,7 +20,7 @@ public abstract class MapParsable extends Nameable{
 		String value = fields.get(name);
 		String result;
 		try{
-			result = Check.nulled(value);
+			result = Check.notNull(value);
 		} catch (NullPointerException e){
 			throw new IllegalArgumentException("'"+name()+"' is missing the '"+name+"' field");
 		} catch (NumberFormatException e){

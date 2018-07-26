@@ -9,7 +9,7 @@ public class Check {
 	 * @param object Object to be checked.
 	 * @throws NullPointerException if Object is null.
 	 */
-	public static <T> T nulled(T object) throws NullPointerException{
+	public static <T> T notNull(T object) throws NullPointerException{
 		if(object == null)
 			throw new NullPointerException();
 		return object;
@@ -20,20 +20,10 @@ public class Check {
 	 * @param message The message to print with the NullPointerException.
 	 * @throws NullPointerException if Object is null.
 	 */
-	public static <T> T nulled(T object, String message) throws NullPointerException{
+	public static <T> T notNull(T object, String message) throws NullPointerException{
 		if(object == null)
 			throw new NullPointerException(message);
 		return object;
-	}
-	/**
-	 * Checks if section is null or isnt present at all with message.
-	 * @param section The ConfurationSection to be checked.
-	 * @param message The message to print with the YAMLException.
-	 * @throws YAMLException If section is null or not present.
-	 */
-	public static void nulled(ConfigurationSection section, String message) throws YAMLException{
-		if(section == null)
-			throw new YAMLException(message);
 	}
 
 	/**
@@ -41,10 +31,26 @@ public class Check {
 	 * @param section The ConfurationSection to be checked.
 	 * @throws YAMLException If section is null or not present.
 	 */
-	public static void nulled(ConfigurationSection section) throws YAMLException{
+	public static void notNull(ConfigurationSection section) throws YAMLException{
 		if(section == null)
 			throw new YAMLException("A required YML path is missing.");
 	}
+	/**
+	 * Checks if section is null or isnt present at all with message.
+	 * @param section The ConfurationSection to be checked.
+	 * @param message The message to print with the YAMLException.
+	 * @throws YAMLException If section is null or not present.
+	 */
+	public static void notNull(ConfigurationSection section, String message) throws YAMLException{
+		if(section == null)
+			throw new YAMLException(message);
+	}
+	public static <T> T isTrue(T object, boolean statement, String message){
+		if(!statement)
+			throw new IllegalArgumentException(message);
+		return object;
+	}
+	
 	public static float greaterThan(float a, float b, String message){
 		if(a <= b)
 			throw new IllegalArgumentException(message);

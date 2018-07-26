@@ -15,7 +15,7 @@ public class InventoriesUtil {
 	 * @throws NullPointerException if no item can be found.
 	 */
 	public static int findSlot(Inventory inventory, String itemName) {
-		Check.nulled(inventory);
+		Check.notNull(inventory);
 		ItemStack tempItem;
 		for(int i=0 ; i < inventory.getContents().length ; i++) {
 			tempItem = inventory.getItem(i);
@@ -31,7 +31,7 @@ public class InventoriesUtil {
 	 * @throws NullPointerException if no item can be found.
 	 */
 	public static int findSlotWithTag(Inventory inventory, String tag) {
-		Check.nulled(inventory);
+		Check.notNull(inventory);
 		ItemStack tempItem;
 		for(int i=0 ; i < inventory.getSize() ; i++) {
 			tempItem = inventory.getItem(i);
@@ -50,8 +50,8 @@ public class InventoriesUtil {
 	 * @throws NullPointerException if no item can be found.
 	 */
 	public static int findSlot(Inventory inventory, ItemStack item) {
-		Check.nulled(inventory);
-		Check.nulled(item);
+		Check.notNull(inventory);
+		Check.notNull(item);
 		ItemStack tempItem;
 		for(int i=0 ; i < inventory.getContents().length ; i++) {
 			tempItem = inventory.getItem(i);

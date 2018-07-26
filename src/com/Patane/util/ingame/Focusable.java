@@ -1,6 +1,6 @@
 package com.Patane.util.ingame;
 
-import com.Patane.util.YML.MapParsable;
+import com.Patane.util.YAML.MapParsable;
 
 public class Focusable extends MapParsable{
 	protected Focus focus;

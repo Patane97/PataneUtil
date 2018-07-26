@@ -35,8 +35,8 @@ public class ItemsUtil {
 		return item;
 	}
 	public static ItemStack createItem(Material material, int amount, short data, String name, String...lore){
-		Check.nulled(material, "Failed to create item. Material component is missing.");
-		Check.nulled(amount, "Failed to create item. Amount component is missing.");
+		Check.notNull(material, "Failed to create item. Material component is missing.");
+		Check.notNull(amount, "Failed to create item. Amount component is missing.");
 		ItemStack item = new ItemStack(material, amount, data);
 		ItemMeta itemMeta = item.getItemMeta();
 		if(name != null)

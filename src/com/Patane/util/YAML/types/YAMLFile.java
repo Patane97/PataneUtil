@@ -1,4 +1,4 @@
-package com.Patane.util.YML;
+package com.Patane.util.YAML.types;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -9,91 +9,86 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.plugin.Plugin;
 import org.yaml.snakeyaml.error.YAMLException;
 
+import com.Patane.util.YAML.Config;
+import com.Patane.util.YAML.MapParsable;
 import com.Patane.util.general.Check;
 import com.Patane.util.general.Messenger;
 import com.Patane.util.general.Messenger.Msg;
 import com.Patane.util.general.StringsUtil;
+import com.Patane.util.main.PataneUtil;
 
-public abstract class BasicYML extends YAMLParser{
-	protected Plugin plugin;
+public abstract class YAMLFile extends YAMLParser{
 	protected Config config;
-	protected String root;
-	protected ConfigurationSection header;
 	
-	public BasicYML(Plugin plugin, String config, String root, String header){
-		this.plugin = plugin;
-		this.config = new Config(plugin, config, header);
-		this.root = root;
-		if(!hasRootSection()){
-			createRootSection();
-			this.config.save();
-		}
-		this.header = getRootSection();
+	private String prefix = null;
+	private ConfigurationSection selection;
+	
+	public YAMLFile(String filePath, String name, String header) {
+		this.config = new Config(PataneUtil.getInstance(), filePath, name, header);
 	}
 	
-	public abstract void save();
-	public abstract void load();
-	
-	/**
-	 * Creates the root for this YML.
-	 * @return The ConfigurationSection of the root.
+	private String genPath(String[] strings) {
+		String path = joinPathString(strings);
+		if(prefix != null)
+			path = (path.startsWith(prefix + ".") ? path : prefix + "." + path);
+		return path;
+	}
+	private static String joinPathString(String[] strings) {
+		return (strings.length > 1 ? StringsUtil.stringJoiner(strings, ".") : strings[0]);
+	}
+	/*
+	 * ==============================================================================
+	 * 								Prefix Methods
+	 * ==============================================================================
 	 */
-	protected ConfigurationSection createRootSection() {
-		return config.createSection(root);
+	
+	protected void setPrefix(String...strings) {
+		this.prefix = genPath(strings);
 	}
+	
+	public void createPrefix() {
+		if(prefix != null && getPrefix() == null){
+			config.createSection(prefix);
+			config.save();
+		}
+	}
+	public ConfigurationSection getPrefix() {
+		return config.getConfigurationSection(prefix);
+	}
+	
+	public void clearPrefix(){
+		for(String paths : getPrefix().getKeys(true)){
+			getPrefix().set(paths, null);
+		}
+	}
+	
+	/*
+	 * ==============================================================================
+	 * 							   Selection Methods
+	 * ==============================================================================
+	 */
+	public void setSelect(String...strings) {
+		selection = createSection(strings);
+	}
+	public void setSelect(ConfigurationSection section) {
+		selection = section;
+	}
+	public ConfigurationSection getSelect(){
+		return selection;
+	}
+
 	/**
 	 * Creates a new section in the YML.
 	 * @param strings New path to the section, including the section itself.
 	 * @return The ConfigurationSection of the new section.
 	 */
 	public ConfigurationSection createSection(String...strings) {
-		String path = (strings.length > 1 ? StringsUtil.stringJoiner(strings, ".") : strings[0]);
-		path = (path.startsWith(root + ".") ? path : root + "." + path);
+		String path = genPath(strings);
 		if(isSection(path))
 			return getSection(path);
 		return config.createSection(path);
-	}
-	/**
-	 * Clears and creates a new section in the YML.
-	 * @param strings Path to the section to clear and create, including the section itself.
-	 * @return The ConfigurationSection of the new section.
-	 */
-	public ConfigurationSection clearCreateSection(String...strings) {
-		String path = (strings.length > 1 ? StringsUtil.stringJoiner(strings, ".") : strings[0]);
-		path = (path.startsWith(root + ".") ? path : root + "." + path);
-		clearSection(path);
-		return config.createSection(path);
-	}
-	/**
-	 * Sets the files header.
-	 * @param strings Path to the header, including the header itself.
-	 */
-	public void setHeader(String...strings) {
-		header = createSection(strings);
-	}
-	/**
-	 * Sets the files header.
-	 * @param section The ConfiguartionSection of the header.
-	 */
-	public void setHeader(ConfigurationSection section) {
-		header = section;
-	}
-	/**
-	 * Gets the current header of the file.
-	 * @return The current header of the file.
-	 */
-	public ConfigurationSection getHeader(){
-		return header;
-	}
-	/**
-	 * Checks if the root is currently present in the file.
-	 * @return A boolean of whether the root is present in the file.
-	 */
-	public boolean hasRootSection() {
-		return config.isConfigurationSection(root);
 	}
 	/**
 	 * Checks if a section is currently present in the file.
@@ -101,18 +96,10 @@ public abstract class BasicYML extends YAMLParser{
 	 * @return A boolean of whether the section is present in the file.
 	 */
 	public boolean isSection(String...strings){
-		String path = (strings.length > 1 ? StringsUtil.stringJoiner(strings, ".") : strings[0]);
-		path = (path.startsWith(root + ".") ? path : root + "." + path);
+		String path = genPath(strings);
 		boolean section = config.isConfigurationSection(path);
 		// If it isnt a configuration section, return whether it has a value set.
 		return (!section ? config.isSet(path) : section);
-	}
-	/**
-	 * Gets the root of the file.
-	 * @return The ConfigurationSection of the root.
-	 */
-	public ConfigurationSection getRootSection() {
-		return config.getConfigurationSection(root);
 	}
 	/**
 	 * Gets a section of the file.
@@ -120,8 +107,7 @@ public abstract class BasicYML extends YAMLParser{
 	 * @return The ConfigurationSection of the section.
 	 */
 	public ConfigurationSection getSection(String...strings) {
-		String path = (strings.length > 1 ? StringsUtil.stringJoiner(strings, ".") : strings[0]);
-		path = (path.startsWith(root + ".") ? path : root + "." + path);
+		String path = genPath(strings);
 		return config.getConfigurationSection(path);
 	}
 	/**
@@ -134,7 +120,7 @@ public abstract class BasicYML extends YAMLParser{
 		if(section == null || strings.length == 0){
 			return section;
 		}
-		String path = (strings.length > 1 ? StringsUtil.stringJoiner(strings, ".") : strings[0]);
+		String path = joinPathString(strings);
 		return section.getConfigurationSection(path);
 	}
 	/**
@@ -147,7 +133,7 @@ public abstract class BasicYML extends YAMLParser{
 		if(section == null || strings.length == 0){
 			return section;
 		}
-		String path = (strings.length > 1 ? StringsUtil.stringJoiner(strings, ".") : strings[0]);
+		String path = joinPathString(strings);
 		ConfigurationSection returned = section.getConfigurationSection(path);
 		if(returned == null)
 			Messenger.warning("YML Path '"+section.getCurrentPath()+"."+path+"' could not be found. Possible YAMLException error incoming...");
@@ -159,8 +145,7 @@ public abstract class BasicYML extends YAMLParser{
 	 * @return A boolean of whether the section has any values or paths continuing from it.
 	 */
 	public boolean isEmpty(String...strings) {
-		String path = (strings.length > 1 ? StringsUtil.stringJoiner(strings, ".") : strings[0]);
-		path = (path.startsWith(root + ".") ? path : root + "." + path);
+		String path = genPath(strings);
 		boolean empty;
 		try{
 			empty = getSection(path).getKeys(false).isEmpty();
@@ -176,7 +161,7 @@ public abstract class BasicYML extends YAMLParser{
 	 */
 	public void clearSection(String...strings) {
 		String path = (strings.length > 1 ? StringsUtil.stringJoiner(strings, ".") : strings[0]);
-		getRootSection().set(path, null);
+		getPrefix().set(path, null);
 		config.save();
 	}
 	/**
@@ -187,14 +172,21 @@ public abstract class BasicYML extends YAMLParser{
 		if(isEmpty(strings))
 			clearSection(strings);
 	}
-	/**
-	 * Clears all paths and values from the file. Essentially blanks the file.
-	 */
-	public void clearRoot(){
-		for(String paths : getRootSection().getKeys(true)){
-			getRootSection().set(paths, null);
-		}
-	}
+
+//	/**
+//	 * Checks if the root is currently present in the file.
+//	 * @return A boolean of whether the root is present in the file.
+//	 */
+//	public boolean hasRootSection() {
+//		return config.isConfigurationSection(root);
+//	}
+//	/**
+//	 * Gets the root of the file.
+//	 * @return The ConfigurationSection of the root.
+//	 */
+//	public ConfigurationSection getRootSection() {
+//		return config.getConfigurationSection(root);
+//	}
 	/**
 	 * Gets the last path of a ConfigurationSection.
 	 * @param section The ConfigurationSection to check.
@@ -206,6 +198,18 @@ public abstract class BasicYML extends YAMLParser{
 		String last = (split.length > 0 ? split[split.length-1] : null);
 		return last;
 	}
+	/**
+	 * Gets the path excluding the last of a ConfigurationSection.
+	 * @param section The ConfigurationSection to check.
+	 * @return The original path, without the last section item of the ConfigurationSection's path.
+	 */
+	public static String excludeLast(ConfigurationSection section){
+		String path = section.getCurrentPath();
+		String[] split = path.split("\\.");
+		String[] newPath = (split.length > 0 ? Arrays.copyOf(split, split.length-1) : null);
+		return joinPathString(newPath);
+	}
+	
 	/**
 	 * Loops through given ConfigurationSections to find the first one that is not null.
 	 * @param sections ConfigurationSections to loop through.
@@ -363,8 +367,8 @@ public abstract class BasicYML extends YAMLParser{
 	 */
 	@Deprecated
 	public static int getInt(String string, ConfigurationSection a) throws NullPointerException, YAMLException, IllegalArgumentException, NumberFormatException{
-		Check.nulled(a, "Section to retrieve int is missing.");
-		String value = Check.nulled(a.getString(string), "'"+string+"' int value could not be found within section '"+a.getCurrentPath()+"'.");
+		Check.notNull(a, "Section to retrieve int is missing.");
+		String value = Check.notNull(a.getString(string), "'"+string+"' int value could not be found within section '"+a.getCurrentPath()+"'.");
 		return parseInt(value);
 	}
 	/**
@@ -405,8 +409,8 @@ public abstract class BasicYML extends YAMLParser{
 	 */
 	@Deprecated
 	public static boolean getBool(String string, ConfigurationSection a) throws NullPointerException, YAMLException, IllegalArgumentException{
-		Check.nulled(a, "Section to retrieve boolean is missing.");
-		String value = Check.nulled(a.getString(string), "'"+string+"' boolean value could not be found within section '"+a.getCurrentPath()+"'.");
+		Check.notNull(a, "Section to retrieve boolean is missing.");
+		String value = Check.notNull(a.getString(string), "'"+string+"' boolean value could not be found within section '"+a.getCurrentPath()+"'.");
 		return parseBoolean(value);
 	}
 	/**
@@ -434,7 +438,7 @@ public abstract class BasicYML extends YAMLParser{
 		return value;
 	}
 	/**
-	 * Uses Java Reflection to Construct a simple class from a YML file.
+	 * Uses Java Reflection to Construct a MapParsable class from a YML file.
 	 * @param section Section to grab information from in YML.
 	 * @param defaultSection A default section to grab information from in the case that information is missing from the Section.
 	 * @param clazz Simple Class to assemble. This calss should extend YMLParsable and must not have any complicated public fields (such as another class).
@@ -443,10 +447,9 @@ public abstract class BasicYML extends YAMLParser{
 	 * @throws YAMLException If the section given is null.
 	 * @throws ClassNotFoundException If the Class given is null.
 	 * @throws InvocationTargetException 
-	 */
-	public static <T extends MapParsable> T getSimpleClassDefault(ConfigurationSection section, ConfigurationSection defaultSection, Class<? extends T> clazz, String... ignoreFieldsArray) throws YAMLException, ClassNotFoundException, InvocationTargetException{
+	 */public static <T extends MapParsable> T getSimpleClassDefault(ConfigurationSection section, ConfigurationSection defaultSection, Class<? extends T> clazz, String... ignoreFieldsArray) throws YAMLException, ClassNotFoundException, InvocationTargetException{
 			// Throws YAMLException if section is null or not a section.
-			Check.nulled(section);
+			Check.notNull(section);
 			
 			// Sets header to section.
 			ConfigurationSection currentHeader = section;
@@ -550,16 +553,19 @@ public abstract class BasicYML extends YAMLParser{
 
 		return object;
 	}
-	public<T> T getDefault(T defaultValue, T value){
-		if(value == null)
-			return defaultValue;
-		return value;
-	}
-	// Merges two of the same objects values into a new object of the same type.
-	// Generally used for merging default values with edited values
-	// majorObject's values override minorObject's values.
-	// EG. objectA has values x, y, z. majorObject has x=2, y=null, z=6, minorObject has x=1, y=5, z=null.
-	// majorObject will be outputted with x=2, y=5, z=6.
+	/**
+	 * Merges two of the same objects values into a new object of the same type.
+	 * Generally used for merging default values with edited values
+	 * majorObject's values override minorObject's values.
+	 * EG. objectA has values x, y, z. majorObject has x=2, y=null, z=6, minorObject has x=1, y=5, z=null.
+	 * majorObject will be outputted with x=2, y=5, z=6.
+	 * 
+	 * @param majorObject
+	 * @param minorObject
+	 * @return
+	 */
+	
+	@Deprecated
 	public<T> T mergeInto(T majorObject, T minorObject){
 		try{
 			Class<?> clazz = majorObject.getClass();

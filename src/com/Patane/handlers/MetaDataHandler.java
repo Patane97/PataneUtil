@@ -14,7 +14,7 @@ import com.Patane.util.general.Messenger.Msg;
 import com.Patane.util.general.StringsUtil;
 import com.Patane.util.main.PataneUtil;
 
-public class MetaDataHandler {
+public class MetaDataHandler implements PatHandler{
 	protected static HashMap<String, List<LivingEntity>> collection = new HashMap<String, List<LivingEntity>>();
 	
 	/**

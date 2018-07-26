@@ -1,4 +1,4 @@
-package com.Patane.util.YML;
+package com.Patane.util.YAML.types;
 
 import com.Patane.util.general.Messenger;
 import com.Patane.util.general.Messenger.Msg;

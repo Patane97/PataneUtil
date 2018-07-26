@@ -13,9 +13,8 @@ public class Messenger {
 	
 	public static boolean send(CommandSender sender, String msg) {
         // If the input sender is null or the string is empty, return.
-        if (sender == null || msg.equals("")) {
+        if (sender == null || msg.equals(""))
             return false;
-        }
 
         // Otherwise, send the message with the plugin prefix.
         sender.sendMessage(Chat.PLUGIN_PREFIX_SMALL + ChatColor.translateAlternateColorCodes('&', msg));
@@ -35,12 +34,6 @@ public class Messenger {
 	public static void severe(String msg) {
 		logger.severe(ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', msg)));
 	}
-	public static void debug(Msg type, String msg) {
-		if(PataneUtil.getDebug()){
-			msg = ">> " + msg;
-			send(type, msg);
-		}
-	}
 	public static void send(Msg type, String msg){
 		switch(type){
 		case BROADCAST:
@@ -57,7 +50,17 @@ public class Messenger {
 			break;
 		}
 	}
+	public static void debug(Msg type, String msg) {
+        if (type == null || msg.equals(""))
+            return;
+		if(PataneUtil.getDebug()){
+			msg = ">> " + msg;
+			send(type, msg);
+		}
+	}
 	public static void debug(CommandSender sender, String msg) {
+        if (sender == null || msg.equals(""))
+            return;
 		if(PataneUtil.getDebug()){
 			msg = ">> &c" + msg;
 			send(sender, msg);
