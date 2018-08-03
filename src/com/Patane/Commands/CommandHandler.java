@@ -22,14 +22,19 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class CommandHandler implements CommandExecutor{
+	private static CommandHandler instance;
+	
 	protected HashMap<String, PatCommand> commands;
 	private HashMap<String, String[]> aliases;
 	private HashMap<String,	List<String>> children;
 	
 	public CommandHandler() {
 		registerDefault();
+		CommandHandler.instance = this;
 	}
-	
+	public static CommandHandler grabInstance() {
+		return instance;
+	}
 	/**
 	 * 
 	 * @return All registered commands in Alphabetical order
@@ -44,7 +49,7 @@ public class CommandHandler implements CommandExecutor{
 	public Collection<PatCommand> allParentCommands() {
 		Collection<PatCommand> collection = new ArrayList<PatCommand>();
 		for(PatCommand command : new TreeMap<String, PatCommand>(commands).values())
-			if(PatCommand.grabInfo(command).parent() == PatCommand.class)
+			if(command.getClass().getSuperclass() == Object.class)
 				collection.add(command);
 		return collection;
 	}
@@ -116,17 +121,6 @@ public class CommandHandler implements CommandExecutor{
 			}
 		}
 	}
-	public boolean runChildCommand(PatCommand parent, CommandSender sender, String[] args) throws IllegalArgumentException{
-		for(String children :  findChildren(parent)) {
-			// Constructing the name of the subcommand to what it actually is (eg. from 'effects' to 'list effects')
-			String childArg = PatCommand.grabInfo(parent).name()+" "+args[0];
-			if(childArg.equalsIgnoreCase(children)) {
-				// Executing the subcommand with its own argument removed
-				return getCommand(children).execute(sender, Commands.grabArgs(args, 1, args.length));
-			}
-		}
-		throw new IllegalArgumentException();
-	}
 	public PatCommand getCommand(String string){
 		for(String commandName : commands.keySet()) {
 			// Checks if command name is given
@@ -136,6 +130,21 @@ public class CommandHandler implements CommandExecutor{
 			for(String commandAlias : aliases.get(commandName))
 				if(commandAlias.equalsIgnoreCase(string))
 					return commands.get(commandName);
+		}
+		return null;
+	}
+	public PatCommand getChildCommand(PatCommand parent, String childName) {
+		for(String child :  findChildren(parent)) {
+			// Constructing the name of the subcommand to what it actually is (eg. from 'effects' to 'list effects')
+			String childArg = PatCommand.grabInfo(parent).name()+" "+childName;
+			if(childArg.equalsIgnoreCase(child)) {
+				// Executing the subcommand with its own argument removed
+				return commands.get(child);
+			}
+			// Checks if any of the commands aliases were given
+			for(String commandAlias : aliases.get(child))
+				if(commandAlias.equalsIgnoreCase(childArg))
+					return commands.get(child);
 		}
 		return null;
 	}
@@ -153,13 +162,17 @@ public class CommandHandler implements CommandExecutor{
 		try {
 			commands.put(cmdInfo.name(), command.newInstance());
 			aliases.put(cmdInfo.name(), cmdInfo.aliases());
-			if(cmdInfo.parent() != PatCommand.class) {
-				CommandInfo parentCmdInfo = cmdInfo.parent().getAnnotation(CommandInfo.class);
+			// If its a parent command, then its super will be the interface PatCommand.class.
+			// However .getSuperClass() only see's object classes, not interfaces.
+			// Therefore, a parent commands super is Object.class
+			if(command.getSuperclass() != Object.class) {
+				CommandInfo parentCmdInfo = command.getSuperclass().getAnnotation(CommandInfo.class);
 				if(!children.containsKey(parentCmdInfo.name()))
 					children.put(parentCmdInfo.name(), new ArrayList<String>());
 				children.get(parentCmdInfo.name()).add(cmdInfo.name());
 			}
-		} catch (InstantiationException | IllegalAccessException e) {
+		} catch (Exception e) {
+			Messenger.severe("Failed to register "+cmdInfo.name()+" command.");
 			e.printStackTrace();
 		}
 	}

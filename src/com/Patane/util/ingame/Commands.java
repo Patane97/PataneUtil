@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.bukkit.craftbukkit.v1_13_R1.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
+import com.Patane.Commands.CommandHandler;
 import com.Patane.Commands.CommandInfo;
 import com.Patane.Commands.PatCommand;
 import com.Patane.util.general.Chat;
@@ -19,7 +20,7 @@ public class Commands {
 		+"\n&2Description: &a"+cmdInfo.description()
 		+"\n&2Aliases: &a"+grabAliases(cmdInfo)
 		+"\n&2Permissions: &a"+grabPermissions(cmdInfo)
-		+"\n\n&7Click to auto-type command");
+		+"\n\n&7Click to auto-complete command");
 	}
 	public static String hoverFormat(ItemStack itemStack) {
 	    net.minecraft.server.v1_13_R1.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(itemStack);
@@ -32,7 +33,8 @@ public class Commands {
 		return (cmdInfo.aliases().length > 0 ? StringsUtil.stringJoiner(cmdInfo.aliases(), "&2, &a") : "None");
 	}
 	public static String grabPermissions(CommandInfo cmdInfo) {
-		return (!cmdInfo.permission().isEmpty() ? cmdInfo.permission() : (cmdInfo.parent() != PatCommand.class ? grabPermissions(cmdInfo.parent().getAnnotation(CommandInfo.class)) : "None"));
+		PatCommand command = CommandHandler.grabInstance().getCommand(cmdInfo.name());
+		return (!cmdInfo.permission().isEmpty() ? cmdInfo.permission() : (command.getClass().getSuperclass() != PatCommand.class ? grabPermissions(command.getClass().getSuperclass().getAnnotation(CommandInfo.class)) : "None"));
 	}
 
 	public static String grabArg(String[] args, int at) {
@@ -48,5 +50,8 @@ public class Commands {
 		} catch (Exception e) {
 			return new String[0];
 		}
+	}
+	public static String combineArgs(String[] args) {
+		return StringsUtil.stringJoiner(Arrays.copyOfRange(args, 0, args.length), " ");
 	}
 }
