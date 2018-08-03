@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_13_R1.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -13,6 +14,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import com.Patane.util.general.Chat;
 import com.Patane.util.general.Check;
+
+import net.minecraft.server.v1_13_R1.NBTTagCompound;
 
 public class ItemsUtil {
 	
@@ -80,5 +83,13 @@ public class ItemsUtil {
 		}
 		ItemMeta itemMeta = item.getItemMeta();
 		return itemMeta.hasDisplayName();
+	}
+	public static String ItemStackToJSON(ItemStack itemStack) {
+	    // First we convert the item stack into an NMS itemstack
+	    net.minecraft.server.v1_13_R1.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(itemStack);
+	    NBTTagCompound compound = new NBTTagCompound();
+	    compound = nmsItemStack.save(compound);
+
+	    return compound.toString();
 	}
 }

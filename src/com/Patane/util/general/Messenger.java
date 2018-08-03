@@ -5,19 +5,52 @@ import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import com.Patane.util.main.PataneUtil;
+
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.BaseComponent;
 
 public class Messenger {
 	private static final Logger logger = PataneUtil.getInstance().getLogger();
 	
+	/**
+	 * Send a message to a CommandSender. Includes Plugin Prefix
+	 * @param sender
+	 * @param msg
+	 * @return
+	 */
 	public static boolean send(CommandSender sender, String msg) {
         // If the input sender is null or the string is empty, return.
-        if (sender == null || msg.equals(""))
+        if (sender == null || msg == null || msg.equals(""))
             return false;
 
         // Otherwise, send the message with the plugin prefix.
         sender.sendMessage(Chat.PLUGIN_PREFIX_SMALL + ChatColor.translateAlternateColorCodes('&', msg));
+        return true;
+    }
+	public static boolean sendRaw(CommandSender sender, String msg) {
+        // If the input sender is null or the string is empty, return.
+        if (sender == null || msg == null || msg.equals(""))
+            return false;
+
+        // Otherwise, send the message with the plugin prefix.
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
+        return true;
+    }
+	public static boolean sendRaw(CommandSender sender, BaseComponent... components) {
+        if (sender == null || components == null || components.length == 0)
+            return false;
+        
+        sender.spigot().sendMessage(components);        
+        return true;
+    }
+	public static boolean sendRaw(Player player, ChatMessageType position, BaseComponent... components) {
+        if (player == null || components == null || components.length == 0)
+            return false;
+        
+        player.spigot().sendMessage(position, components);
         return true;
     }
 	public static void broadcast(String msg){

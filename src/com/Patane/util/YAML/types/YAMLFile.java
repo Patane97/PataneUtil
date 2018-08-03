@@ -29,13 +29,15 @@ public abstract class YAMLFile extends YAMLParser{
 		this.config = new Config(PataneUtil.getInstance(), filePath, name, header);
 	}
 	
-	private String genPath(String[] strings) {
+	protected String genPath(String[] strings) {
 		String path = joinPathString(strings);
 		if(prefix != null)
 			path = (path.startsWith(prefix + ".") ? path : prefix + "." + path);
 		return path;
 	}
-	private static String joinPathString(String[] strings) {
+	protected static String joinPathString(String[] strings) {
+		if(strings.length == 0)
+			throw new IllegalArgumentException("Failure to join YAML path: No strings given.");
 		return (strings.length > 1 ? StringsUtil.stringJoiner(strings, ".") : strings[0]);
 	}
 	/*
@@ -190,9 +192,11 @@ public abstract class YAMLFile extends YAMLParser{
 	/**
 	 * Gets the last path of a ConfigurationSection.
 	 * @param section The ConfigurationSection to check.
-	 * @return The last item of the ConfigurationSection's path.
+	 * @return The last item of the ConfigurationSection's path or null.
 	 */
 	public static String extractLast(ConfigurationSection section){
+		if(section == null)
+			return null;
 		String path = section.getCurrentPath();
 		String[] split = path.split("\\.");
 		String last = (split.length > 0 ? split[split.length-1] : null);
@@ -201,12 +205,16 @@ public abstract class YAMLFile extends YAMLParser{
 	/**
 	 * Gets the path excluding the last of a ConfigurationSection.
 	 * @param section The ConfigurationSection to check.
-	 * @return The original path, without the last section item of the ConfigurationSection's path.
+	 * @return The original path, without the last section item of the ConfigurationSection's path or null.
 	 */
 	public static String excludeLast(ConfigurationSection section){
+		if(section == null)
+			return null;
 		String path = section.getCurrentPath();
 		String[] split = path.split("\\.");
-		String[] newPath = (split.length > 0 ? Arrays.copyOf(split, split.length-1) : null);
+		if(split.length == 1)
+			return path;
+		String[] newPath = (split.length > 1 ? Arrays.copyOf(split, split.length-1) : null);
 		return joinPathString(newPath);
 	}
 	
@@ -472,7 +480,7 @@ public abstract class YAMLFile extends YAMLParser{
 			
 			// HashMap of each field with its corresponding value from the YML file.
 			Map<String, String> fieldValues = new HashMap<String, String>();
-
+			
 			Messenger.debug(Msg.INFO, "    + "+clazz.getSimpleName()+" [field: given value | default value]");
 			
 			// Loops through each field within the clazz
@@ -512,6 +520,7 @@ public abstract class YAMLFile extends YAMLParser{
 			}
 			// If the object has an exception in its initilizer, then this triggers.
 			catch (InvocationTargetException e){
+				// FIND A WAY TO CONVERT CAUSE INTO AN EXCEPTION SO THINGS MAKE MORE SENSE!!!
 				InvocationTargetException el = new InvocationTargetException(null, e.getCause().getMessage());
 				el.setStackTrace(e.getCause().getStackTrace());
 				throw el;

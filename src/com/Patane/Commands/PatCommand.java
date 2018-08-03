@@ -10,4 +10,8 @@ public interface PatCommand {
 	 * @return False if the command failed to execute completely. True otherwise.
 	 */
 	public boolean execute(CommandSender sender, String[] args);
+	
+	public static CommandInfo grabInfo(PatCommand command) {
+		return command.getClass().getAnnotation(CommandInfo.class);
+	}
 }

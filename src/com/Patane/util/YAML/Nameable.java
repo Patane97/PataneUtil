@@ -7,4 +7,7 @@ public class Nameable {
 		String name = (this.getClass().getAnnotation(Namer.class) == null ? null : this.getClass().getAnnotation(Namer.class).name());
 		return (name == null ? StringsUtil.normalize(this.getClass().getSimpleName()) : name);
 	}
+	public String toString() {
+		return name();
+	}
 }

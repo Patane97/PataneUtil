@@ -13,6 +13,9 @@ public class PatCollectable {
 	public String getName(){
 		return name;
 	}
+	public String toString() {
+		return getName();
+	}
 	public String getID(){
 		return identifier;
 	}

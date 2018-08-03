@@ -7,18 +7,19 @@ public class StringsUtil {
 	public static String formaliseString(String string) {
 		string = string.toLowerCase();
 		string = string.substring(0, 1).toUpperCase() + string.substring(1);
+		string = string.replace("_", " ");
 		return string;
 	}
 	public static String stringJoiner(Collection<String> strings, String delimiter) {
 		Check.notNull(strings);
 		return stringJoiner(strings.toArray(new String[0]), delimiter);
 	}
-	public static String stringJoiner(String[] strings, String delimiter) {
-		return stringJoiner(strings, new StringJoiner(delimiter));
-	}
 	public static String stringJoiner(Collection<String> strings, String delimiter, String prefix, String suffix) {
 		Check.notNull(strings);
 		return stringJoiner(strings.toArray(new String[0]), new StringJoiner(delimiter, prefix, suffix));
+	}
+	public static String stringJoiner(String[] strings, String delimiter) {
+		return stringJoiner(strings, new StringJoiner(delimiter));
 	}
 	public static String stringJoiner(String[] strings, String delimiter, String prefix, String suffix) {
 		return stringJoiner(strings, new StringJoiner(delimiter, prefix, suffix));

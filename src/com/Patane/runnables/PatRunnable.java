@@ -22,5 +22,5 @@ public abstract class PatRunnable implements Runnable{
 	public static void cancel(int scheduleID){
 		PataneUtil.getInstance().getServer().getScheduler().cancelTask(scheduleID);
 	}
-
+	
 }

@@ -11,7 +11,6 @@ import org.bukkit.metadata.MetadataValue;
 import com.Patane.runnables.TimedMetaDataTask;
 import com.Patane.util.general.Messenger;
 import com.Patane.util.general.Messenger.Msg;
-import com.Patane.util.general.StringsUtil;
 import com.Patane.util.main.PataneUtil;
 
 public class MetaDataHandler implements PatHandler{
@@ -39,7 +38,7 @@ public class MetaDataHandler implements PatHandler{
 				return true;
 
 			// Debug code to print each metadata addition
-			Messenger.debug(Msg.INFO, "+<"+metaName+","+(entity.getName())+">");
+			Messenger.debug(Msg.INFO, "+<"+entity.getName()+", "+metaName+"="+(value == null ? "null" : value.toString())+">");
 			// Adds the entity to the metaName's List.
 			return collection.get(metaName).add(entity);
 		}
@@ -47,7 +46,7 @@ public class MetaDataHandler implements PatHandler{
 		else {
 			collection.put(metaName, new ArrayList<LivingEntity>());
 			// Debug code to print each metadata addition
-			Messenger.debug(Msg.INFO, "+<"+metaName+","+(entity.getName())+">");
+			Messenger.debug(Msg.INFO, "+<"+entity.getName()+", "+metaName+"="+(value == null ? "null" : value.toString())+">");
 			return collection.get(metaName).add(entity);
 		}
 	}
@@ -99,7 +98,7 @@ public class MetaDataHandler implements PatHandler{
 			boolean result = collection.get(metaName).remove(entity);
 			
 			// Debug code to print each metadata removal
-			Messenger.debug(Msg.INFO, "-<"+metaName+","+(entity.getName())+">");
+			Messenger.debug(Msg.INFO, "-<"+entity.getName()+", "+metaName+">");
 			
 			// If the list is empty after the entity is removed, then the entry is removed from the collection.
 			if(collection.get(metaName).isEmpty()){
@@ -153,6 +152,25 @@ public class MetaDataHandler implements PatHandler{
 		}
 		return null;
 	}
+	
+	/**
+	 * Returns whether entity has metadata attached to it.
+	 * @param entity Entity which has the metadata.
+	 * @param metaName Name portion of the metadata.
+	 * @return True of entity has metadata, False otherwise.
+	 */
+	public static boolean hasValue(LivingEntity entity, String metaName){
+		// Grabbing the list of MetadataValues attached to the metadata on that entity.
+		for(MetadataValue value : entity.getMetadata(metaName)){
+			
+			// Filtering to only get the metaData for our plugin.
+			if(value instanceof FixedMetadataValue && value.getOwningPlugin().equals(PataneUtil.getInstance()))
+				
+				// Returning true
+				return true;
+		}
+		return false;
+	}
 	/**
 	 * Checks if a metadata for the entity exists which suits the regex.
 	 * @param entity Entity to check.
@@ -180,8 +198,5 @@ public class MetaDataHandler implements PatHandler{
 			}
 		}
 		return null;
-	}
-	public static String id(String... strings){
-		return "<"+StringsUtil.normalize(StringsUtil.stringJoiner(strings, "-"))+">";
 	}
 }

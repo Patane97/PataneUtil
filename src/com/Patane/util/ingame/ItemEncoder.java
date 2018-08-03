@@ -49,31 +49,60 @@ public class ItemEncoder {
 	        return null;
 	    }
 	}
-	public static ItemStack addTag(ItemStack item, String tag) {
+	public static ItemStack addTag(ItemStack item, String name, String value) {
 		String itemName = ItemsUtil.getDisplayName(item);
 		if(itemName == null)
 			return null;
-		return ItemsUtil.setItemNameLore(item, itemName+encode(convertToTag(tag)));
+		String previousTags = copyTags(itemName);
+		if(previousTags == null)
+			return ItemsUtil.setItemNameLore(item, itemName+encode(wrapTags(formatTag(name, value))));
+		return ItemsUtil.setItemNameLore(item, itemName+encode(wrapTags(previousTags+formatTag(name, value))));
 	}
-	public static String extractTag(ItemStack item) {
+	public static ItemStack delTag(ItemStack item, String name) {
 		String itemName = ItemsUtil.getDisplayName(item);
 		if(itemName == null)
 			return null;
-		Matcher match = Pattern.compile(".*<\\["+PataneUtil.getInstance().getName()+"\\] (.+)>").matcher(decode(itemName));
+		return ItemsUtil.setItemNameLore(item, itemName.replaceAll(formatTag(name, ".*"), ""));
+	}
+	private static String copyTags(String itemName) {
+		Matcher match = Pattern.compile(".*\\["+formatTag("PLUGIN", PataneUtil.getInstance().getName())+"(.*)\\]").matcher(decode(itemName));
 		if(!match.matches())
 			return null;
 		return match.group(1);
 	}
-	public static boolean hasTag(ItemStack item, String tag) {
+	public static String extractTag(ItemStack item, String name) {
+		String itemName = ItemsUtil.getDisplayName(item);
+		if(itemName == null)
+			return null;
+		Matcher match = Pattern.compile(".*\\["+formatTag("PLUGIN", PataneUtil.getInstance().getName())+".*"+formatTag(name, "([^>]*)")+".*\\]").matcher(decode(itemName));
+		if(!match.matches())
+			return null;
+		return match.group(1);
+	}
+	@Deprecated
+	public static boolean hasTag(ItemStack item) {
 		String itemName = ItemsUtil.getDisplayName(item);
 		if(itemName == null)
 			return false;
-		Matcher match = Pattern.compile(".*<\\["+PataneUtil.getInstance().getName()+"\\] "+Pattern.quote(tag)+">").matcher(decode(itemName));
+		Matcher match = Pattern.compile("\\["+formatTag("PLUGIN", PataneUtil.getInstance().getName())+".*\\]").matcher(decode(itemName));
 		if(!match.matches())
 			return false;
 		return true;
 	}
-	private static String convertToTag(String string) {
-		return "<["+PataneUtil.getInstance().getName()+"] "+string+">";
+	public static boolean hasTag(ItemStack item, String name) {
+		String itemName = ItemsUtil.getDisplayName(item);
+		if(itemName == null)
+			return false;
+		Matcher match = Pattern.compile("\\["+formatTag("PLUGIN", PataneUtil.getInstance().getName())+".*"+formatTag(name, ".*")+".*\\]").matcher(decode(itemName));
+		if(!match.matches())
+			return false;
+		return true;
+	}
+	private static String wrapTags(String allTags) {
+		// Formatted like the following: "[<PLUGIN=plugin1><NAME1=value1><NAME2=value2>]"
+		return "["+formatTag("PLUGIN", PataneUtil.getInstance().getName())+allTags+"]";
+	}
+	private static String formatTag(String name, String value) {
+		return "<"+name+"="+value+">";
 	}
 }

@@ -22,7 +22,7 @@ public enum Chat {
     }
     
     public String toString() {
-        return ChatColor.translateAlternateColorCodes('&', value);
+        return Chat.translate(value);
     }
     public String format(String s) {
         return (s == null) ? "" : toString().replace("%", s);
