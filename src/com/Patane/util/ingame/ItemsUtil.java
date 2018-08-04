@@ -92,4 +92,18 @@ public class ItemsUtil {
 
 	    return compound.toString();
 	}
+	public static List<String> getLore(ItemStack item) {
+		if(item == null || !item.hasItemMeta()) {
+			return null;
+		}
+		ItemMeta itemMeta = item.getItemMeta();
+		return itemMeta.getLore();
+	}
+	public static boolean hasLore(ItemStack item) {
+		if(item == null || !item.hasItemMeta()) {
+			return false;
+		}
+		ItemMeta itemMeta = item.getItemMeta();
+		return itemMeta.hasLore();
+	}
 }

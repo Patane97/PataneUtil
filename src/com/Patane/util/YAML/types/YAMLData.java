@@ -1,6 +1,7 @@
 package com.Patane.util.YAML.types;
 
 import java.text.SimpleDateFormat;
+import java.util.Set;
 
 public class YAMLData extends YAMLFile{
 	
@@ -16,6 +17,12 @@ public class YAMLData extends YAMLFile{
 	public Object retrieveData(String... path) {
 		return config.get(genPath(path));
 	}
+	public <T> T retrieveData(Class<? extends T> clazz, String... path) {
+		Object object = retrieveData(path);
+		if(!(clazz.isInstance(object)))
+			return null;
+		return clazz.cast(object);
+	}
 	public void removeData(String... path) {
 		if(path == null || path.length == 0)
 			return;
@@ -27,5 +34,10 @@ public class YAMLData extends YAMLFile{
 	}
 	public boolean containsData() {
 		return !config.getKeys(true).isEmpty();
+	}
+	public Set<String> getKeys(boolean deep, String... path) {
+		if(path.length == 0)
+			return config.getKeys(deep);
+		return getSection(path).getKeys(deep);
 	}
 }

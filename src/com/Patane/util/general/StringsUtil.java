@@ -3,6 +3,10 @@ package com.Patane.util.general;
 import java.util.Collection;
 import java.util.StringJoiner;
 
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+
 public class StringsUtil {
 	public static String formaliseString(String string) {
 		string = string.toLowerCase();
@@ -36,5 +40,10 @@ public class StringsUtil {
 	}
 	public static String generateChatTitle(String title) {
 		return "&2=======[&a"+title+"&2]=======";
+	}
+	public static TextComponent simpleHoverText(String string, String hover) {
+		TextComponent text = new TextComponent(Chat.translate(string));
+		text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(Chat.translate(hover)).create()));
+		return text;
 	}
 }
