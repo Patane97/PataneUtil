@@ -31,7 +31,7 @@ public enum Chat {
         return ChatColor.translateAlternateColorCodes('&', s);
     }
     public static String deTranslate(String s){
-    	return s.replace("§", "&");
+    	return ChatColor.stripColor(s);
     }
     public static boolean hasAlpha(String s){
     	return s.matches(".*[a-zA-Z]+.*");

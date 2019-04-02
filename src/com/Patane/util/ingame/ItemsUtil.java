@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_13_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_13_R2.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -14,8 +14,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import com.Patane.util.general.Chat;
 import com.Patane.util.general.Check;
+import com.Patane.util.general.StringsUtil;
 
-import net.minecraft.server.v1_13_R1.NBTTagCompound;
+import net.minecraft.server.v1_13_R2.NBTTagCompound;
 
 public class ItemsUtil {
 	
@@ -40,6 +41,7 @@ public class ItemsUtil {
 	public static ItemStack createItem(Material material, int amount, short data, String name, String...lore){
 		Check.notNull(material, "Failed to create item. Material component is missing.");
 		Check.notNull(amount, "Failed to create item. Amount component is missing.");
+		@SuppressWarnings("deprecation")
 		ItemStack item = new ItemStack(material, amount, data);
 		ItemMeta itemMeta = item.getItemMeta();
 		if(name != null)
@@ -65,9 +67,11 @@ public class ItemsUtil {
 		ItemMeta itemMeta = item.getItemMeta();
 		if(name != null)
 			itemMeta.setDisplayName(Chat.translate(name));
+//		Messenger.debug(Msg.INFO, "NAME="+name);
 		if(lore.length > 0)
 			itemMeta.setLore(Chat.translate(Arrays.asList(lore)));
 		item.setItemMeta(itemMeta);
+//		Messenger.debug(Msg.INFO, "DISPLAYNAME="+ItemEncoder.extractTag(item, "NAME"));
 		return item;
 	}
 	public static String getDisplayName(ItemStack item) {
@@ -86,7 +90,7 @@ public class ItemsUtil {
 	}
 	public static String ItemStackToJSON(ItemStack itemStack) {
 	    // First we convert the item stack into an NMS itemstack
-	    net.minecraft.server.v1_13_R1.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(itemStack);
+	    net.minecraft.server.v1_13_R2.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(itemStack);
 	    NBTTagCompound compound = new NBTTagCompound();
 	    compound = nmsItemStack.save(compound);
 
@@ -105,5 +109,14 @@ public class ItemsUtil {
 		}
 		ItemMeta itemMeta = item.getItemMeta();
 		return itemMeta.hasLore();
+	}
+	
+	public static ItemStack addFlavourText(ItemStack item, String... flavour) {
+		List<String> lore = (hasLore(item) ? getLore(item) : new ArrayList<String>());
+		List<String> flavourList = Arrays.asList(flavour);
+		if(lore.size() > 0)
+			lore.add("");
+		lore.addAll(StringsUtil.prefixAdd("&7&o", Chat.deTranslate(flavourList)));
+		return setItemNameLore(item, null, lore.toArray(new String[0]));
 	}
 }

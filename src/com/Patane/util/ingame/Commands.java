@@ -2,7 +2,7 @@ package com.Patane.util.ingame;
 
 import java.util.Arrays;
 
-import org.bukkit.craftbukkit.v1_13_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_13_R2.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
 import com.Patane.Commands.CommandHandler;
@@ -11,7 +11,7 @@ import com.Patane.Commands.PatCommand;
 import com.Patane.util.general.Chat;
 import com.Patane.util.general.StringsUtil;
 
-import net.minecraft.server.v1_13_R1.NBTTagCompound;
+import net.minecraft.server.v1_13_R2.NBTTagCompound;
 
 public class Commands {
 
@@ -23,7 +23,7 @@ public class Commands {
 		+"\n\n&7Click to auto-complete command");
 	}
 	public static String hoverFormat(ItemStack itemStack) {
-	    net.minecraft.server.v1_13_R1.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(itemStack);
+	    net.minecraft.server.v1_13_R2.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(itemStack);
 	    NBTTagCompound compound = new NBTTagCompound();
 	    compound = nmsItemStack.save(compound);
 
