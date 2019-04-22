@@ -11,4 +11,6 @@ public @interface CommandInfo {
 	public String permission() default "";
 	public String[] aliases() default {};
 	public boolean playerOnly() default false;
+	public boolean hideCommand() default false;
+	public boolean hideSubCommands() default false;
 }

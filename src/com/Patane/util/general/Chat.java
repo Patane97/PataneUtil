@@ -6,18 +6,16 @@ import java.util.List;
 import org.bukkit.ChatColor;
 
 public enum Chat {
-	PLUGIN_PREFIX("&2[&aBrewery&2]&r "),
-	PLUGIN_PREFIX_SMALL("&2[&aBR&2]&r "),
-	STRIPPED_PLUGIN_PREFIX("[Brewery] "),
-	STRIPPED_PLUGIN_PREFIX_SMALL("[BR] ");
+	PLUGIN_PREFIX("&7"),
+	PLUGIN_PREFIX_SMALL("&7");
 	
 	private String value;
 	
-	private Chat(String value){
+	Chat(String value){
         set(value);
     }
 
-    void set(String value) {
+    public void set(String value) {
         this.value = value;
     }
     
@@ -30,7 +28,10 @@ public enum Chat {
     public static String translate(String s){
         return ChatColor.translateAlternateColorCodes('&', s);
     }
-    public static String deTranslate(String s){
+    public static String deTranslate(String s) {
+    	return s.replace("§", "&");
+    }
+    public static String strip(String s){
     	return ChatColor.stripColor(s);
     }
     public static boolean hasAlpha(String s){
@@ -47,6 +48,12 @@ public enum Chat {
 		List<String> result = new ArrayList<String>();
 		for(String s : stringList)
 			result.add(deTranslate(s));
+		return result;
+	}
+	public static List<String> strip(List<String> stringList) {
+		List<String> result = new ArrayList<String>();
+		for(String s : stringList)
+			result.add(strip(s));
 		return result;
 	}
 }

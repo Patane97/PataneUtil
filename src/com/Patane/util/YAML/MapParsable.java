@@ -12,14 +12,6 @@ public abstract class MapParsable extends Nameable{
 	public MapParsable(Map<String, String> fields){}
 	
 	//////////////////////////////// Fields Handler ////////////////////////////////
-//	/**
-//	 * Used to order a MapParsable's classes fields for proper presentation within game.
-//	 * To use, add '@Order(value=x)' above a MapParsable field, with x being the order number.
-//	 */
-//	@Retention(RetentionPolicy.RUNTIME)
-//    public @interface Order {
-//        int value();
-//    }
 	
 	public Map<String, Object> mapFields(){
 		Map<String, Object> map = new TreeMap<String, Object>();
@@ -31,6 +23,53 @@ public abstract class MapParsable extends Nameable{
 			}
 		}
 		return map;
+	}
+	
+	// This needs to be tested!!
+	@Deprecated
+	public boolean equals(MapParsable other) {
+		if(!name().equals(other.name()))
+			return false;
+		Map<String, Object> fields = mapFields();
+		Map<String, Object> otherFields = other.mapFields();
+		
+		for(String field : fields.keySet()) {
+			// If field is not contained within otherFields OR the field's values dont equal, return false
+			if(!otherFields.containsKey(field) || !fields.get(field).equals(otherFields.get(field)))
+				return false;
+				
+		}
+		return true;
+	}
+	public boolean hasDifferentFields(MapParsable other) {
+		// If the two objects dont have the same name, then their fields will always be different
+		if(!name().equals(other.name()))
+			return true;
+		Map<String, Object> fields = mapFields();
+		Map<String, Object> otherFields = other.mapFields();
+		for(String field : fields.keySet()) {
+			if(!fields.get(field).equals(otherFields.get(field)))
+				return true;
+		}
+		return false;
+	}
+	public Map<String, Object> getDifferentFields(MapParsable other){
+		
+		Map<String, Object> fields = mapFields();
+		
+		// If the two objects dont have the same name, then their fields will always be different
+		if(!name().equals(other.name()))
+			return fields;
+		
+		Map<String, Object> otherFields = other.mapFields();
+		
+		Map<String, Object> differentFields = new TreeMap<String, Object>();
+		
+		for(String field : fields.keySet()) {
+			if(!fields.get(field).equals(otherFields.get(field)))
+				differentFields.put(field, fields.get(field));
+		}
+		return differentFields;
 	}
 	///////////////////////////////////////////////////////////////////////////////
 	

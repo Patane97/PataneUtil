@@ -3,7 +3,6 @@ package com.Patane.GUI;
 import org.bukkit.entity.Player;
 
 import com.Patane.util.general.Messenger;
-import com.Patane.util.general.Messenger.Msg;
 
 public class GUIInstance {
 	
@@ -18,7 +17,7 @@ public class GUIInstance {
 		this.player = player;
 		this.listener = new GUIListener(this);
 		current.display(this);
-		Messenger.debug(Msg.INFO, "Create new GUIInstance ["+this.hashCode()+"] for "+this.player.getDisplayName());
+		Messenger.debug("Create new GUIInstance ["+this.hashCode()+"] for "+this.player.getDisplayName());
 	}
 	
 	public GUIPage getCurrent() {

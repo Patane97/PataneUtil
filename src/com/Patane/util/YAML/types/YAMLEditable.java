@@ -1,12 +1,17 @@
 package com.Patane.util.YAML.types;
 
+import com.Patane.util.YAML.ConfigHandler.SaveState;
+
 public abstract class YAMLEditable extends YAMLFile{
 	
-	public YAMLEditable(String filePath, String name, String prefix, String header){
-		super(filePath, name, header);
+	public YAMLEditable(String fileName, String prefix, String... filePath){
+		super(fileName, filePath);
 		setPrefix(prefix);
-		createPrefix();
-		setSelect(getPrefix());
+		
+		if(!hasPrefix())
+			configHandler.setState(SaveState.UNSAFE);
+//		createPrefix();
+//		setSelect(getPrefix());
 	}
 
 	public abstract void save();

@@ -8,25 +8,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 import org.bukkit.configuration.ConfigurationSection;
 import org.yaml.snakeyaml.error.YAMLException;
 
-import com.Patane.util.YAML.Config;
+import com.Patane.util.YAML.ConfigHandler;
 import com.Patane.util.YAML.MapParsable;
+import com.Patane.util.YAML.TypeParsable;
 import com.Patane.util.general.Check;
 import com.Patane.util.general.Messenger;
-import com.Patane.util.general.Messenger.Msg;
 import com.Patane.util.general.StringsUtil;
-import com.Patane.util.main.PataneUtil;
 
 public abstract class YAMLFile extends YAMLParser{
-	protected Config config;
+	protected ConfigHandler configHandler;
 	
 	private String prefix = null;
 	private ConfigurationSection selection;
 	
-	public YAMLFile(String filePath, String name, String header) {
-		this.config = new Config(PataneUtil.getInstance(), filePath, name, header);
+	public YAMLFile(String fileName, String... filePath) {
+		configHandler = new ConfigHandler(fileName, filePath);
 	}
 	
 	protected String genPath(String[] strings) {
@@ -36,10 +37,11 @@ public abstract class YAMLFile extends YAMLParser{
 		return path;
 	}
 	protected static String joinPathString(String[] strings) {
-		if(strings.length == 0)
+		if(strings.length < 1)
 			throw new IllegalArgumentException("Failure to join YAML path: No strings given.");
-		return (strings.length > 1 ? StringsUtil.stringJoiner(strings, ".") : strings[0]);
+		return StringsUtil.stringJoiner(strings, ".");
 	}
+	
 	/*
 	 * ==============================================================================
 	 * 								Prefix Methods
@@ -50,14 +52,18 @@ public abstract class YAMLFile extends YAMLParser{
 		this.prefix = genPath(strings);
 	}
 	
-	public void createPrefix() {
-		if(prefix != null && getPrefix() == null){
-			config.createSection(prefix);
-			config.save();
-		}
+	// This should be handled by saveResource() instead
+//	public void createPrefix() {
+//		if(prefix != null && getPrefix() == null){
+//			configHandler.getConfig().createSection(prefix);
+//			configHandler.saveConfigQuietly();
+//		}
+//	}
+	public boolean hasPrefix() {
+		return configHandler.getConfig().isConfigurationSection(prefix);
 	}
 	public ConfigurationSection getPrefix() {
-		return config.getConfigurationSection(prefix);
+		return configHandler.getConfig().getConfigurationSection(prefix);
 	}
 	
 	public void clearPrefix(){
@@ -90,7 +96,7 @@ public abstract class YAMLFile extends YAMLParser{
 		String path = genPath(strings);
 		if(isSection(path))
 			return getSection(path);
-		return config.createSection(path);
+		return configHandler.getConfig().createSection(path);
 	}
 	/**
 	 * Checks if a section is currently present in the file.
@@ -99,9 +105,9 @@ public abstract class YAMLFile extends YAMLParser{
 	 */
 	public boolean isSection(String...strings){
 		String path = genPath(strings);
-		boolean section = config.isConfigurationSection(path);
+		boolean section = configHandler.getConfig().isConfigurationSection(path);
 		// If it isnt a configuration section, return whether it has a value set.
-		return (!section ? config.isSet(path) : section);
+		return (!section ? configHandler.getConfig().isSet(path) : section);
 	}
 	/**
 	 * Gets a section of the file.
@@ -110,7 +116,7 @@ public abstract class YAMLFile extends YAMLParser{
 	 */
 	public ConfigurationSection getSection(String...strings) {
 		String path = genPath(strings);
-		return config.getConfigurationSection(path);
+		return configHandler.getConfig().getConfigurationSection(path);
 	}
 	/**
 	 * Gets a section of any file using a ConfigurationSection as a root. This can go accross files as it is static.
@@ -126,7 +132,8 @@ public abstract class YAMLFile extends YAMLParser{
 		return section.getConfigurationSection(path);
 	}
 	/**
-	 * Gets a section of any file using a ConfigurationSection as a root. This can go accross files as it is static.
+	 * Gets a section of any file using a ConfigurationSection as a root. This can go accross files as it is static. 
+	 * Additionally, it will warn that the path could not be found if it is being returned as null.
 	 * @param section The ConfigurationSection to branch off.
 	 * @param strings The path to continue from the section.
 	 * @return The ConfigurationSection and path combined into a new ConfigurationSection.
@@ -142,6 +149,20 @@ public abstract class YAMLFile extends YAMLParser{
 		return returned;
 	}
 	/**
+	 * Using a given prefix, finds the next available iteration for given path.
+	 *   eg. There is section_1, section_2 and section_4 at a given path. 
+	 *   With a prefix of 'section_', this will loop through and return section_3 as its the next available iteration.
+	 * @param section Section to look through.
+	 * @param prefix Prefix to attach to iterator.
+	 * @return
+	 */
+	public String getNextIteration(String prefix, String... strings ) {
+		int num = 1;
+		while(isSection(joinPathString(strings), prefix+num))
+			num++;
+		return prefix+num;
+	}
+	/**
 	 * Checks if a section does not have any values set in it, or any paths continuing from it.
 	 * @param strings The path to the section, including the section itself.
 	 * @return A boolean of whether the section has any values or paths continuing from it.
@@ -155,16 +176,17 @@ public abstract class YAMLFile extends YAMLParser{
 			empty = true;
 		}
 		// If it is empty (or holds a value instead of keys), return whether it has a value in its path.
-		return (empty ? !config.isSet(path) : empty);
+		return (empty ? !configHandler.getConfig().isSet(path) : empty);
 	}
 	/**
 	 * Clears a section in the file of any values or paths.
+	 * Saves file after clearing.
 	 * @param strings The path to the section, including the section itself.
 	 */
 	public void clearSection(String...strings) {
 		String path = (strings.length > 1 ? StringsUtil.stringJoiner(strings, ".") : strings[0]);
 		getPrefix().set(path, null);
-		config.save();
+		configHandler.saveConfigQuietly();
 	}
 	/**
 	 * Checks if a section is empty and clears it if it is
@@ -174,21 +196,6 @@ public abstract class YAMLFile extends YAMLParser{
 		if(isEmpty(strings))
 			clearSection(strings);
 	}
-
-//	/**
-//	 * Checks if the root is currently present in the file.
-//	 * @return A boolean of whether the root is present in the file.
-//	 */
-//	public boolean hasRootSection() {
-//		return config.isConfigurationSection(root);
-//	}
-//	/**
-//	 * Gets the root of the file.
-//	 * @return The ConfigurationSection of the root.
-//	 */
-//	public ConfigurationSection getRootSection() {
-//		return config.getConfigurationSection(root);
-//	}
 	/**
 	 * Gets the last path of a ConfigurationSection.
 	 * @param section The ConfigurationSection to check.
@@ -361,90 +368,9 @@ public abstract class YAMLFile extends YAMLParser{
 			value = getBoolean(string, b);
 		return value;
 	}
-	/**
-	 * Gets an int for a specific Integer value within a configurationSection.
-	 * Equivalent to 'a.getInt(string)' but properly handles nulls.
-	 * @param string String to use for searching
-	 * @param a ConfigurationSection of first section.
-	 * @return An int value by using string and a.
-	 * @throws NullPointerException If the string extracted from a configurationSection is null.
-	 * @throws YAMLException If the configurationSection is null.
-	 * @throws IllegalArgumentException If the given string is null. 
-	 * @throws NumberFormatException If the string cannot be intepreted into a number.
-	 * @deprecated Does the same as {@link parseInt()} only more complicated. Use that instead.
+	/*
+	 ************************* Other Getters *************************
 	 */
-	@Deprecated
-	public static int getInt(String string, ConfigurationSection a) throws NullPointerException, YAMLException, IllegalArgumentException, NumberFormatException{
-		Check.notNull(a, "Section to retrieve int is missing.");
-		String value = Check.notNull(a.getString(string), "'"+string+"' int value could not be found within section '"+a.getCurrentPath()+"'.");
-		return parseInt(value);
-	}
-	/**
-	 * Gets an int for a specific Integer value within a configurationSection or a default configurationSection.
-	 * Allows a default configurationSection to be set.
-	 * Equivalent to 'a.getInt(string, default)' but properly handles nulls.
-	 * @param string String to use for searching
-	 * @param a ConfigurationSection of first section.
-	 * @param b ConfigurationSection of default section.
-	 * @return An int value by using string and a or b.
-	 * @throws NullPointerException If the string extracted from a configurationSection is null.
-	 * @throws YAMLException If the configurationSection is null.
-	 * @throws IllegalArgumentException If the given string is null. 
-	 * @throws NumberFormatException If the string cannot be intepreted into a number.
-	 * @deprecated Does the same as {@link parseInt()} only more complicated. Use that instead.
-	 */
-	@Deprecated
-	public static int getInt(String string, ConfigurationSection a, ConfigurationSection b) throws NullPointerException, YAMLException, IllegalArgumentException, NumberFormatException{
-		int value;
-		try {
-			value = getInt(string, a);
-		} catch (Exception e) {
-			value = getInt(string, b);
-		}
-		return value;
-	}
-	/**
-	 * Gets a primitive boolean for a specific Boolean value within a configurationSection.
-	 * Equivalent to 'a.getBoolean(string)' but properly handles nulls.
-	 * @param string String to use for searching
-	 * @param a ConfigurationSection of first section.
-	 * @return A boolean value by using string and a.
-	 * @throws NullPointerException If the string extracted from a configurationSection is null.
-	 * @throws YAMLException If the configurationSection is null.
-	 * @throws IllegalArgumentException If the given string is null. 
-	 * @throws IllegalArgumentException If the string cannot be intepreted into a boolean value.
-	 * @deprecated Does the same as {@link parseBoolean()} only more complicated. Use that instead.
-	 */
-	@Deprecated
-	public static boolean getBool(String string, ConfigurationSection a) throws NullPointerException, YAMLException, IllegalArgumentException{
-		Check.notNull(a, "Section to retrieve boolean is missing.");
-		String value = Check.notNull(a.getString(string), "'"+string+"' boolean value could not be found within section '"+a.getCurrentPath()+"'.");
-		return parseBoolean(value);
-	}
-	/**
-	 * Gets a boolean for a specific Boolean value within a configurationSection or a default configurationSection.
-	 * Allows a default configurationSection to be set.
-	 * Equivalent to 'a.getInt(string, default)' but properly handles nulls.
-	 * @param string String to use for searching
-	 * @param a ConfigurationSection of first section.
-	 * @param b ConfigurationSection of default section.
-	 * @return A boolean value by using string and a or b.
-	 * @throws NullPointerException If the string extracted from a configurationSection is null.
-	 * @throws YAMLException If the configurationSection is null.
-	 * @throws IllegalArgumentException If the given string is null. 
-	 * @throws IllegalArgumentException If the string cannot be intepreted into a boolean value.
-	 * @deprecated Does the same as {@link parseBoolean()} only more complicated. Use that instead.
-	 */
-	@Deprecated
-	public static boolean getBool(String string, ConfigurationSection a, ConfigurationSection b) throws NullPointerException, YAMLException, IllegalArgumentException{
-		boolean value;
-		try {
-			value = getBoolean(string, a);
-		} catch (Exception e) {
-			value = getBoolean(string, b);
-		}
-		return value;
-	}
 	/**
 	 * Uses Java Reflection to Construct a MapParsable class from a YML file.
 	 * @param section Section to grab information from in YML.
@@ -455,19 +381,15 @@ public abstract class YAMLFile extends YAMLParser{
 	 * @throws YAMLException If the section given is null.
 	 * @throws ClassNotFoundException If the Class given is null.
 	 * @throws InvocationTargetException 
-	 */public static <T extends MapParsable> T getSimpleClassDefault(ConfigurationSection section, ConfigurationSection defaultSection, Class<? extends T> clazz, String... ignoreFieldsArray) throws YAMLException, ClassNotFoundException, InvocationTargetException{
+	 */public static <T extends MapParsable> T getMapParsable(@Nonnull ConfigurationSection section, ConfigurationSection defaultSection, @Nonnull Class<? extends T> clazz, String... ignoreFieldsArray) throws YAMLException, ClassNotFoundException, InvocationTargetException{
 			// Throws YAMLException if section is null or not a section.
 			Check.notNull(section);
-			
-			// Sets header to section.
-			ConfigurationSection currentHeader = section;
 			
 			// Creates name from the last ConfigSection path item.
 			String name = extractLast(section);
 			
 			// Throws ClassNotFoundException if clazz is null.
-			if(clazz == null)
-				throw new ClassNotFoundException("Class required for '"+name+"' is missing.");
+			Check.notNull(clazz, "Class required for '"+name+"' is missing.");
 			
 			// Creating the fields, invalidFields and ignoreField ArrayLists. Used to sort keys and fields in the YML.
 			List<String> fields = new ArrayList<String>();
@@ -481,18 +403,14 @@ public abstract class YAMLFile extends YAMLParser{
 			// HashMap of each field with its corresponding value from the YML file.
 			Map<String, String> fieldValues = new HashMap<String, String>();
 			
-			Messenger.debug(Msg.INFO, "    + "+clazz.getSimpleName()+" [field: given value | default value]");
 			
 			// Loops through each field within the clazz
 			for(String field : fields){
 				// If the field is not to be ignored.
 				if(!ignoreFields.contains(field)){
-					// Shows the value and its default counterpart.
-					// (If first value is null, second value SHOULD be used).
-					Messenger.debug(Msg.INFO, "    +---["+field+": "+getString(field, currentHeader)+" | "+getString(field, defaultSection)+"]");
 					
 					// The value is obtained from the header section. If this is null, it is obtained from the defaultSection.
-					String value = getString(field, currentHeader, defaultSection);
+					String value = getString(field, section, defaultSection);
 					
 					// If the value is not present on either sections, then it is an invalidField.
 					if(value == null)
@@ -532,6 +450,51 @@ public abstract class YAMLFile extends YAMLParser{
 			return object;
 
 	}
+	 /**
+	  * Uses Java Reflection to Project a MapParsable class to a YML file.
+	  * @param section Section to place data in.
+	  * @param defaultSection Default Section to place base data in.
+	  * @param object Object to extract data from.
+	  * @param defaultObject Default Object to extract base data from
+	  * @throws YAMLException If section is null.
+	  */
+		public static void setMapParsable(@Nonnull ConfigurationSection section, ConfigurationSection defaultSection, @Nonnull MapParsable object, @Nonnull MapParsable defaultObject) throws YAMLException{
+			// Throws YAMLException if section is null or not a section.
+			Check.notNull(section);
+			if(defaultSection == null)
+				defaultSection = section;
+			
+			// If the object is a type, then we need to print that before everything else.
+			if(object instanceof TypeParsable) {
+				// This checks if the object and default are the same type.
+				// If so, we can save the type name in the default section.
+				if(object.name().equals(defaultObject.name()))
+					defaultSection.set("type", object.name());
+				// Otherwise, save it in the current section.
+				else
+					section.set("type", object.name());
+			}
+			
+			// Saves each field/value within object that is different to defaultObject.
+			Map<String, Object> fields = object.getDifferentFields(defaultObject);
+			// Saves each field/value within defaultObject that is different to object.
+			Map<String, Object> defaultFields = defaultObject.mapFields();
+			
+			// Loops through fields and sets each field/value
+			for(String field : fields.keySet())
+				// If the value is a number, add only that. Otherwise, convert it to a string first.
+				section.set(field, (fields.get(field) instanceof Number ? fields.get(field) : fields.get(field).toString()));
+			
+
+			// Loops through defaultFields and sets each field/value
+			for(String field : defaultFields.keySet())
+				// If the value is a number, add only that. Otherwise, convert it to a string first.
+				defaultSection.set(field, (defaultFields.get(field) instanceof Number ? defaultFields.get(field) : defaultFields.get(field).toString()));
+			
+			// Clears the section if it is empty
+			if(section.getKeys(false).isEmpty())
+				section.getParent().set(extractLast(section), null);
+		}
 	/**
 	 * Searches a given Enum class for a given String.
 	 * @param string String to search the Enum for.
@@ -540,22 +503,23 @@ public abstract class YAMLFile extends YAMLParser{
 	 * @throws ClassNotFoundException If the class given is null.
 	 */
 	public static <T extends Enum<T>> T getEnumFromString(String string, Class<T> clazz) throws ClassNotFoundException, NullPointerException{
-		// Throws ClassNotFoundException if clazz is null.
-		if(clazz == null)
-			throw new ClassNotFoundException("Class required for getEnumFromString is missing.");
 		
-		// Throws NullPointerException if the string is null.
-		if(string == null)
-			throw new NullPointerException("String has no value for '"+clazz.getSimpleName()+"' Enum.");
+		Check.notNull(clazz, "Class required for getEnumFromString is missing.");
+		Check.notNull(string, "String has no value for '"+clazz.getSimpleName()+"' Enum.");
 		
 		// Initilizing as null to return null in the case of an IllegalArgumentException.
 		T object = null;
 		try{
-			// Looks up 'string' as a 'clazz' enum.
-			object = T.valueOf(clazz, string);
+			// Looks up 'string' as a 'clazz' enum. First puts it in the 'UPPERCASE_FORMAT' as its the most common form for enums.
+			object = T.valueOf(clazz, StringsUtil.normalize(string));
 		} 
 		// IllegalArgumentException if 'string' is not found in the 'clazz' enum.
 		catch (IllegalArgumentException e){
+			try {
+				// If the 'UPPERCASE_FORMAT' fails, then tries just using the string as-is.
+				object = T.valueOf(clazz, string);
+				return object;
+			} catch (IllegalArgumentException f) {}
 			Messenger.warning("'"+string+"' is not a valid "+clazz.getSimpleName()+". Please check your spelling:");
 			e.printStackTrace();
 		}

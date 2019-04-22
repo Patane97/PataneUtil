@@ -9,9 +9,12 @@ public interface PatCommand {
 	 * @param args Arguments following the commands name.
 	 * @return False if the command failed to execute completely. True otherwise.
 	 */
-	public boolean execute(CommandSender sender, String[] args);
+	public boolean execute(CommandSender sender, String[] args, Object... objects);
 	
 	public static CommandInfo grabInfo(PatCommand command) {
-		return command.getClass().getAnnotation(CommandInfo.class);
+		return grabInfo(command.getClass());
+	}
+	public static CommandInfo grabInfo(Class< ? extends PatCommand> command) {
+		return command.getAnnotation(CommandInfo.class);
 	}
 }

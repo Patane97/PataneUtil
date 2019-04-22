@@ -45,10 +45,35 @@ public class Check {
 		if(section == null)
 			throw new YAMLException(message);
 	}
+	
+	public static void notNull(Class<?> clazz) throws ClassNotFoundException{
+		if(clazz == null)
+			throw new ClassNotFoundException();
+	}
+	
+	public static void notNull(Class<?> clazz, String message) throws ClassNotFoundException{
+		if(clazz == null)
+			throw new ClassNotFoundException(message);
+	}
+	
 	public static <T> T isTrue(T object, boolean statement, String message){
 		if(!statement)
 			throw new IllegalArgumentException(message);
 		return object;
+	}
+
+	/*
+	 * STRING
+	 */
+	public static String notContain(String string, String contains) {
+		if(string.contains(contains))
+			throw new IllegalArgumentException();
+		return string;
+	}
+	public static String notContain(String string, String contains, String message) {
+		if(string.contains(contains))
+			throw new IllegalArgumentException(message);
+		return string;
 	}
 	
 	/*

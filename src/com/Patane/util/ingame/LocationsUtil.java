@@ -10,9 +10,6 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
-import com.Patane.util.general.Messenger;
-import com.Patane.util.general.Messenger.Msg;
-
 public class LocationsUtil {
 	/**
 	 * 
@@ -73,7 +70,6 @@ public class LocationsUtil {
 			LivingEntity closest = getClosest(location, 0.5f);
 			if(closest != null) {
 				returned.add(closest);
-				Messenger.debug(Msg.INFO, "Closest = "+closest.getName());
 			}
 			return returned;
 		} else

@@ -7,8 +7,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.Patane.util.general.Check;
-import com.Patane.util.general.Messenger;
-import com.Patane.util.general.Messenger.Msg;
 
 public class InventoriesUtil {
 	/**
@@ -38,7 +36,6 @@ public class InventoriesUtil {
 		ItemStack tempItem;
 		for(int i=0 ; i < inventory.getSize() ; i++) {
 			tempItem = inventory.getItem(i);
-//			Messenger.debug(Msg.INFO, ">>>>>> hasTag="+ItemEncoder.hasTag(tempItem, tag));
 			if(ItemEncoder.hasTag(tempItem, tag)) {
 				
 				return i;
@@ -58,8 +55,6 @@ public class InventoriesUtil {
 		ItemStack tempItem;
 		for(int i=0 ; i < inventory.getContents().length ; i++) {
 			tempItem = inventory.getItem(i);
-			if(tempItem != null)
-				Messenger.debug(Msg.INFO, item.getItemMeta().getDisplayName()+" | "+ tempItem.getItemMeta().getDisplayName());
 			if(item.equals(tempItem))
 				return i;
 		}

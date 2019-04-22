@@ -39,6 +39,7 @@ public class Messenger {
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
         return true;
     }
+
 	public static boolean sendRaw(CommandSender sender, BaseComponent... components) {
         if (sender == null || components == null || components.length == 0)
             return false;
@@ -90,6 +91,9 @@ public class Messenger {
 			msg = ">> " + msg;
 			send(type, msg);
 		}
+	}
+	public static void debug(String msg) {
+		debug(Msg.INFO, msg);
 	}
 	public static void debug(CommandSender sender, String msg) {
         if (sender == null || msg.equals(""))

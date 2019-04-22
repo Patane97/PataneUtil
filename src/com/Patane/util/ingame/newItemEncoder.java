@@ -4,9 +4,6 @@ import java.nio.charset.Charset;
 
 import org.bukkit.ChatColor;
 
-import com.Patane.util.general.Messenger;
-import com.Patane.util.general.Messenger.Msg;
-
 public class newItemEncoder {
 
 	// String constants. TODO Change them to something unique to avoid conflict with other plugins!
@@ -76,7 +73,6 @@ public class newItemEncoder {
 			chars[i * 4 + 3] = hex[1];
 		}
 		String returned = new String(chars);
-		Messenger.debug(Msg.INFO, "returned="+returned);
 		return returned;
 	}
 	
@@ -100,7 +96,6 @@ public class newItemEncoder {
 	}
 	
 	private static int hexToUnsignedInt(char c) {
-		Messenger.debug(Msg.INFO, "char="+c);
 		if (c >= '0' && c <= '9') {
 			return c - 48;
 		} else if (c >= 'a' && c <= 'f') {

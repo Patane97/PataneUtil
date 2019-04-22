@@ -12,7 +12,6 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 
 import com.Patane.listeners.BaseListener;
 import com.Patane.util.general.Messenger;
-import com.Patane.util.general.Messenger.Msg;
 
 public class GUIListener extends BaseListener{
 	
@@ -34,7 +33,7 @@ public class GUIListener extends BaseListener{
 				e.setCancelled(true);
 			return;
 		}
-		Messenger.debug(Msg.INFO, "instance="+instance.getPlayer().getDisplayName()+"|player="+((Player) e.getWhoClicked()).getDisplayName());
+		Messenger.debug("instance="+instance.getPlayer().getDisplayName()+"|player="+((Player) e.getWhoClicked()).getDisplayName());
 		
 		e.setCancelled(true);
 		clickingSlot(e.getSlot(), GUIClick.convert(e.getClick()));
@@ -89,7 +88,6 @@ public class GUIListener extends BaseListener{
 	 */
 	private void clickingSlot(int slot, GUIClick click) {
 		try {
-			Messenger.debug(Msg.INFO, "player1="+instance.getPlayer().getDisplayName());
 			for(GUIAction action : instance.getCurrent().getIcon(slot).getActions(click))
 				action.execute();
 		} catch (NullPointerException ex) {}

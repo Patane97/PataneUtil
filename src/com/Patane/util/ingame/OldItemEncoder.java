@@ -5,10 +5,9 @@ import java.util.regex.Pattern;
 
 import org.bukkit.inventory.ItemStack;
 
-import com.Patane.util.general.Messenger;
-import com.Patane.util.general.Messenger.Msg;
 import com.Patane.util.main.PataneUtil;
 
+@Deprecated
 public class OldItemEncoder {
 	/*
     Returns an encoded string that appears invisible to the
@@ -132,7 +131,6 @@ public class OldItemEncoder {
 			return null;
 		return match.group(1);
 		} catch (NullPointerException e) {
-			Messenger.debug(Msg.WARNING, "copyTags null");
 			return null;
 		}
 	}

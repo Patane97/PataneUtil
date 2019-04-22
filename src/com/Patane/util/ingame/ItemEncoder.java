@@ -7,7 +7,6 @@ import org.bukkit.inventory.ItemStack;
 
 import com.Patane.util.NBT.NBTEditor;
 import com.Patane.util.general.Messenger;
-import com.Patane.util.general.Messenger.Msg;
 import com.Patane.util.main.PataneUtil;
 
 public class ItemEncoder {
@@ -25,14 +24,14 @@ public class ItemEncoder {
 	public static ItemStack addTag(ItemStack item, String name, String value) {
 		name = generatePrefix() + name;
 		item = NBTEditor.setItemTag(item, value, name);
-		Messenger.debug(Msg.INFO, "Adding tag '"+name+"' with value '"+value+"' to item with name '"+item.getItemMeta().getDisplayName()+"'.");
+		Messenger.debug("Adding tag '"+name+"' with value '"+value+"' to item with name '"+item.getItemMeta().getDisplayName()+"'.");
 		return item;
 	}
 	
 	public static ItemStack delTag(ItemStack item, String name) {
 		name = generatePrefix() + name;
 		item = NBTEditor.setItemTag(item, null, name);
-		Messenger.debug(Msg.INFO, "Removing tag '"+name+"' from item with name '"+item.getItemMeta().getDisplayName()+"'.");
+		Messenger.debug("Removing tag '"+name+"' from item with name '"+item.getItemMeta().getDisplayName()+"'.");
 		return item;
 	}
 	public static boolean hasTag(ItemStack item, String name) {

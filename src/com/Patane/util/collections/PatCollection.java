@@ -4,18 +4,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.Patane.util.general.Messenger;
-import com.Patane.util.general.Messenger.Msg;
 
 public class PatCollection<T extends PatCollectable> {
 	private HashMap<String, T> collection = new HashMap<String, T>();
 	
 	public T add(T newItem){
-		Messenger.debug(Msg.INFO, "Adding "+newItem.getID()+" to "+newItem.getClass().getSimpleName()+ "Collection");
+		Messenger.debug("Adding "+newItem.getID()+" to "+newItem.getClass().getSimpleName()+ "Collection");
 		return collection.put(newItem.getID(), newItem);
 	}
 	public T remove(String id){
 		T removed = collection.remove(id);
-		Messenger.debug(Msg.INFO, "Removing "+id+" from "+removed.getClass().getSimpleName()+ "Collection");
+		Messenger.debug("Removing "+id+" from "+removed.getClass().getSimpleName()+ "Collection");
 		if(removed != null){
 			// If element was removed,
 			// Do something
@@ -27,6 +26,9 @@ public class PatCollection<T extends PatCollectable> {
 	}
 	public T getItem(String id){
 		return collection.get(id.replace(" ", "_").toUpperCase());
+	}
+	public boolean hasItem(String id){
+		return (collection.get(id.replace(" ", "_").toUpperCase()) == null ? false : true);
 	}
 	public ArrayList<T> getAllItems(){
 		return new ArrayList<T>(collection.values());
