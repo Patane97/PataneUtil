@@ -71,7 +71,7 @@ public class CommandHandler implements CommandExecutor{
 			Messenger.send(sender, "&cYou must be a Player to use this command.");
 			return true;
 		}
-		handleCommand(sender, newCommand, args);
+		handleCommand(sender, newCommand, Commands.prepareArgs(args));
 		return true;
 	}
 	/**

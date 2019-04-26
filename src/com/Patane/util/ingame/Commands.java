@@ -1,6 +1,10 @@
 package com.Patane.util.ingame;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.bukkit.craftbukkit.v1_13_R2.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
@@ -36,14 +40,6 @@ public class Commands {
 		PatCommand command = CommandHandler.grabInstance().getCommandPackage(cmdInfo.name()).command();
 		return (!cmdInfo.permission().isEmpty() ? cmdInfo.permission() : (command.getClass().getSuperclass() != PatCommand.class ? generatePermission(command.getClass().getSuperclass().getAnnotation(CommandInfo.class)) : "None"));
 	}
-
-	public static String grabArg(String[] args, int at) {
-		try{ 
-			return args[at];
-		} catch (Exception e) {
-			return "";
-		}
-	}
 	public static String[] grabArgs(String[] args, int from, int to) {
 		try{ 
 			return Arrays.copyOfRange(args, from, to);
@@ -53,5 +49,30 @@ public class Commands {
 	}
 	public static String combineArgs(String[] args) {
 		return StringsUtil.stringJoiner(Arrays.copyOfRange(args, 0, args.length), " ");
+	}
+	/**
+	 * This method converts args to combine any quoted args into one.
+	 * @param args
+	 * @return
+	 */
+	public static String[] prepareArgs(String[] args) {
+		String combined = combineArgs(args);
+		
+		List<String> matchList = new ArrayList<String>();
+		Pattern regex = Pattern.compile("[^\\s\"']+|\"([^\"]*)\"|'([^']*)'");
+		Matcher regexMatcher = regex.matcher(combined);
+		while (regexMatcher.find()) {
+		    if (regexMatcher.group(1) != null) {
+		        // Add double-quoted string without the quotes
+		        matchList.add(regexMatcher.group(1));
+		    } else if (regexMatcher.group(2) != null) {
+		        // Add single-quoted string without the quotes
+		        matchList.add(regexMatcher.group(2));
+		    } else {
+		        // Add unquoted word
+		        matchList.add(regexMatcher.group());
+		    }
+		}
+		return matchList.toArray(new String[0]);
 	}
 }
