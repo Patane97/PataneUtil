@@ -458,12 +458,15 @@ public abstract class YAMLFile extends YAMLParser{
 	  * @param defaultObject Default Object to extract base data from
 	  * @throws YAMLException If section is null.
 	  */
-		public static void setMapParsable(@Nonnull ConfigurationSection section, ConfigurationSection defaultSection, @Nonnull MapParsable object, @Nonnull MapParsable defaultObject) throws YAMLException{
+		public static void setMapParsable(@Nonnull ConfigurationSection section, ConfigurationSection defaultSection, @Nonnull MapParsable object, MapParsable defaultObject) throws YAMLException{
 			// Throws YAMLException if section is null or not a section.
 			Check.notNull(section);
-			if(defaultSection == null)
-				defaultSection = section;
 			
+			if(defaultSection == null) {
+				defaultSection = section;
+			} if(defaultObject == null) {
+				defaultObject = object;
+			}
 			// If the object is a type, then we need to print that before everything else.
 			if(object instanceof TypeParsable) {
 				// This checks if the object and default are the same type.

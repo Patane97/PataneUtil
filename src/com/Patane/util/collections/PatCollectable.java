@@ -1,22 +1,16 @@
 package com.Patane.util.collections;
 
 import com.Patane.util.general.Check;
-import com.Patane.util.general.StringsUtil;
 
 public class PatCollectable {
 	final private String name;
-	final private String identifier;
 	protected PatCollectable(String name){
 		this.name = Check.notContain(Check.notNull(name, "Name is missing for Collectable Item"), ".", "Name cannot contain '.' character");
-		this.identifier = StringsUtil.normalize(name);
 	}
 	public String getName(){
 		return name;
 	}
 	public String toString() {
 		return getName();
-	}
-	public String getID(){
-		return identifier;
 	}
 }

@@ -9,34 +9,44 @@ public class PatCollection<T extends PatCollectable> {
 	private HashMap<String, T> collection = new HashMap<String, T>();
 	
 	public T add(T newItem){
-		Messenger.debug("Adding "+newItem.getID()+" to "+newItem.getClass().getSimpleName()+ "Collection");
-		return collection.put(newItem.getID(), newItem);
+		Messenger.debug("Adding "+newItem.getName()+" to "+newItem.getClass().getSimpleName()+ "Collection");
+		return collection.put(newItem.getName(), newItem);
 	}
 	public T remove(String id){
-		T removed = collection.remove(id);
-		Messenger.debug("Removing "+id+" from "+removed.getClass().getSimpleName()+ "Collection");
-		if(removed != null){
-			// If element was removed,
-			// Do something
+		for(String keyId : collection.keySet()) {
+			if(id.equalsIgnoreCase(keyId)) {
+				T removed = collection.remove(keyId);
+				Messenger.debug("Removing "+id+" from "+removed.getClass().getSimpleName()+ "Collection");
+				return removed;
+			}
 		}
-		return removed;
+		return null;
 	}
+	
 	public void removeAll(){
 		collection.clear();
 	}
 	public T getItem(String id){
-		return collection.get(id.replace(" ", "_").toUpperCase());
+		for(String keyId : collection.keySet()) {
+			if(id.equalsIgnoreCase(keyId))
+				return collection.get(keyId);
+		}
+		return null;
 	}
+	
 	public boolean hasItem(String id){
-		return (collection.get(id.replace(" ", "_").toUpperCase()) == null ? false : true);
+		for(String keyId : collection.keySet()) {
+			if(id.equalsIgnoreCase(keyId))
+				return true;
+		}
+		return false;
 	}
+	
 	public ArrayList<T> getAllItems(){
 		return new ArrayList<T>(collection.values());
 	}
+	
 	public ArrayList<String> getAllIDs(){
 		return new ArrayList<String>(collection.keySet());
-	}
-	public boolean contains(String id){
-		return collection.keySet().contains(id);
 	}
 }

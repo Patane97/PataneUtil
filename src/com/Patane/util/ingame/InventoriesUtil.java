@@ -1,8 +1,5 @@
 package com.Patane.util.ingame;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -60,34 +57,36 @@ public class InventoriesUtil {
 		}
 		throw new NullPointerException("Failed to find any instances of the specified item within an inventory");
 	}
-	/**
-	 * Creates a replica copy of an Inventory
-	 * @param old Inventory to copy
-	 * @return Cloned copy of old Inventory
-	 */
-	public static Inventory clone(Inventory old) {
-		Inventory inventory;
-		// Creating inventory based on old (Chest inv with a size, or other inv)
-		if(old.getType() == InventoryType.CHEST)
-			inventory = Bukkit.createInventory(old.getHolder(), old.getSize(), old.getTitle());
-		else
-			inventory = Bukkit.createInventory(old.getHolder(), old.getType(), old.getTitle());
-		
-		// Copying each ItemStack in oldContents into newContents, ensuring that each ItemStack is CLONED, and not just referenced
-		ItemStack[] oldContents = old.getContents();
-		ItemStack[] newContents = new ItemStack[oldContents.length];
-		for(int i = 0 ; i < newContents.length ; i++) {
-			if(oldContents[i] == null || oldContents[i].getType() == Material.AIR)
-				continue;
-			newContents[i] = oldContents[i].clone();
-		}
-		
-		// Saving Contents
-		inventory.setContents(newContents);
-		
-		// Saving MaxStackSize
-		inventory.setMaxStackSize(old.getMaxStackSize());
-		
-		return inventory;
-	}
+	
+	// ***old.getTitle() not working after 1.14
+//	/**
+//	 * Creates a replica copy of an Inventory
+//	 * @param old Inventory to copy
+//	 * @return Cloned copy of old Inventory
+//	 */
+//	public static Inventory clone(Inventory old) {
+//		Inventory inventory;
+//		// Creating inventory based on old (Chest inv with a size, or other inv)
+//		if(old.getType() == InventoryType.CHEST)
+//			inventory = Bukkit.createInventory(old.getHolder(), old.getSize(), old.getTitle());
+//		else
+//			inventory = Bukkit.createInventory(old.getHolder(), old.getType(), old.getTitle());
+//		
+//		// Copying each ItemStack in oldContents into newContents, ensuring that each ItemStack is CLONED, and not just referenced
+//		ItemStack[] oldContents = old.getContents();
+//		ItemStack[] newContents = new ItemStack[oldContents.length];
+//		for(int i = 0 ; i < newContents.length ; i++) {
+//			if(oldContents[i] == null || oldContents[i].getType() == Material.AIR)
+//				continue;
+//			newContents[i] = oldContents[i].clone();
+//		}
+//		
+//		// Saving Contents
+//		inventory.setContents(newContents);
+//		
+//		// Saving MaxStackSize
+//		inventory.setMaxStackSize(old.getMaxStackSize());
+//		
+//		return inventory;
+//	}
 }

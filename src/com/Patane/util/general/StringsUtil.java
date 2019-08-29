@@ -6,6 +6,12 @@ import java.util.List;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+import org.bukkit.Bukkit;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
+
+import com.Patane.util.collections.PatCollectable;
 import com.sun.istack.internal.NotNull;
 
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -14,6 +20,8 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class StringsUtil {
+	
+	
 	public static String stringJoiner(Collection<String> strings, String delimiter) {
 		Check.notNull(strings);
 		return stringJoiner(strings.toArray(new String[0]), delimiter);
@@ -41,6 +49,18 @@ public class StringsUtil {
 		string = string.replace("_", " ");
 		return string;
 	}
+	public static boolean isVowel(char c) {
+		return ("AEIOUaeiou".indexOf(c) >= 0 ? true : false);
+	}
+	
+	public static Boolean parseBoolean(String string) throws IllegalArgumentException{
+		if(string.equalsIgnoreCase("true"))
+			return true;
+		else if(string.equalsIgnoreCase("false"))
+			return false;
+		throw new IllegalArgumentException();
+	}
+	
 	public static String normalize(String string) {
 		return string.replace(" ", "_").toUpperCase();
 	}
@@ -67,7 +87,7 @@ public class StringsUtil {
 		ArrayList<String> returning = new ArrayList<String>();
 		ArrayList<String> current = new ArrayList<String>();
 		for(String word : string.split(" ")) {
-			if(current.size() < amount)
+			if(amount == 0 || current.size() < amount)
 				current.add(word);
 			else {
 				returning.add(stringJoiner(current, " ", prefix, ""));
@@ -83,14 +103,54 @@ public class StringsUtil {
 		return strings.stream().map(s -> prefix + s).collect(Collectors.toList());
 	}
 	
-	public static <T extends Enum<T>> String[] enumValueStrings(Class<T> clazz) {
-		T[] enums = clazz.getEnumConstants();
+	public static List<String> getOnlinePlayerNames(){
+		List<String> playerNames = new ArrayList<String>();
+		for(Player player : Bukkit.getOnlinePlayers()) {
+			playerNames.add(Chat.strip(player.getDisplayName()));
+		}
+		return playerNames;
+	}
+	
+	private static String[] potionEffectTypeStrings;
+	
+	public static String[] getPotionTypeStrings() {
+		if(potionEffectTypeStrings == null) {
+			potionEffectTypeStrings = new String[PotionEffectType.values().length];
+			for(int i=0; i<potionEffectTypeStrings.length; i++)
+				potionEffectTypeStrings[i] = PotionEffectType.values()[i].getName();
+		}
+		return potionEffectTypeStrings;
+	}
+	
+	public static List<String> getCollectableNames(List<? extends PatCollectable> list){
+		List<String> names = new ArrayList<String>();
+		for(PatCollectable collectable : list)
+			names.add(collectable.getName());
+		return names;
+	}
+
+	public static List<String> getMCEnchantmentNames(Enchantment... enchantments){
+		List<String> names = new ArrayList<String>();
+		
+		if (enchantments.length == 0)
+			enchantments = Enchantment.values();
+		
+		for(Enchantment enchantment : enchantments)
+			names.add(enchantment.getKey().getKey());
+		return names;
+	}
+	
+	public static <T extends Enum<?>> String[] enumValueStrings(T[] enums) {
 		String[] enumStrings = new String[enums.length];
 		
 		for(int i=0 ; i < enums.length ; i++)
 			enumStrings[i] = enums[i].name();
 		
 		return enumStrings;
+	}
+	
+	public static <T extends Enum<?>> String[] enumValueStrings(Class<T> clazz) {
+		return enumValueStrings(clazz.getEnumConstants());
 	}
 	public static <T extends Enum<T>> T constructEnum(@NotNull String string, @NotNull Class<T> clazz) throws IllegalArgumentException {
 		try {

@@ -12,7 +12,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.Patane.util.general.Check;
-import com.Patane.util.ingame.InventoriesUtil;
 import com.Patane.util.ingame.ItemsUtil;
 
 public class GUIPage {
@@ -49,7 +48,7 @@ public class GUIPage {
 	
 	
 	// Private cloning Constructor
-	private GUIPage(Inventory inventory, Map<Integer, GUIIcon> icons) {
+	public GUIPage(Inventory inventory, Map<Integer, GUIIcon> icons) {
 		this.inventory = inventory;
 		this.icons = icons;
 	}
@@ -116,7 +115,7 @@ public class GUIPage {
 		return icons.get(slot);
 	}
 	
-	public GUIPage clone() {
-		return new GUIPage(InventoriesUtil.clone(inventory), icons);
-	}
+//	public GUIPage clone() {
+//		return new GUIPage(InventoriesUtil.clone(inventory), icons);
+//	}
 }

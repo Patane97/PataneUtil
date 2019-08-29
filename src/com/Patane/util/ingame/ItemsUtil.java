@@ -8,7 +8,7 @@ import java.util.Set;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
-import org.bukkit.craftbukkit.v1_13_R2.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -20,7 +20,7 @@ import com.Patane.util.general.Check;
 import com.Patane.util.general.StringsUtil;
 import com.google.common.collect.Multimap;
 
-import net.minecraft.server.v1_13_R2.NBTTagCompound;
+import net.minecraft.server.v1_14_R1.NBTTagCompound;
 
 public class ItemsUtil {
 	
@@ -134,20 +134,13 @@ public class ItemsUtil {
 		ItemMeta itemMeta = item.getItemMeta();
 		itemMeta.setUnbreakable(unbreakable);
 	}
-	
-	public static ItemStack addFlags(ItemStack item) {
-		if(item == null || !item.hasItemMeta())
-			return null;
-		ItemMeta meta = item.getItemMeta();
-		meta.addItemFlags(ItemFlag.values());
-		item.setItemMeta(meta);
-		return item;
-	}
 	public static ItemStack addFlags(ItemStack item, ItemFlag...flags) {
 		if(item == null || !item.hasItemMeta())
 			return null;
 		Check.notNull(flags, "Flags are missing");
 		ItemMeta meta = item.getItemMeta();
+		if(flags.length == 0)
+			flags = ItemFlag.values();
 		meta.addItemFlags(flags);
 		item.setItemMeta(meta);
 		return item;
@@ -157,6 +150,8 @@ public class ItemsUtil {
 			return null;
 		Check.notNull(flags, "Flags are missing");
 		ItemMeta meta = item.getItemMeta();
+		if(flags.length == 0)
+			flags = ItemFlag.values();
 		meta.removeItemFlags(flags);
 		item.setItemMeta(meta);
 		return item;
@@ -183,7 +178,7 @@ public class ItemsUtil {
 		if(item == null || !item.hasItemMeta())
 			return false;
 		ItemMeta meta = item.getItemMeta();
-		if(meta.hasAttributeModifiers()) {
+		if(meta.getAttributeModifiers(attribute) != null) {
 			for(AttributeModifier modifier : meta.getAttributeModifiers(attribute)) {
 				if(modifier.getName().equals(modifierName))
 					return true;
@@ -225,7 +220,7 @@ public class ItemsUtil {
 	
 	public static String ItemStackToJSON(ItemStack itemStack) {
 	    // First we convert the item stack into an NMS itemstack
-	    net.minecraft.server.v1_13_R2.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(itemStack);
+	    net.minecraft.server.v1_14_R1.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(itemStack);
 	    NBTTagCompound compound = new NBTTagCompound();
 	    compound = nmsItemStack.save(compound);
 

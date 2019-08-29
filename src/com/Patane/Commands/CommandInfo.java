@@ -10,6 +10,7 @@ public @interface CommandInfo {
 	public String usage();
 	public String permission() default "";
 	public String[] aliases() default {};
+	public int maxArgs() default 0;
 	public boolean playerOnly() default false;
 	public boolean hideCommand() default false;
 	public boolean hideSubCommands() default false;
