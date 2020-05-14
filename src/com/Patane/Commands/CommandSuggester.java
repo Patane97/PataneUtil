@@ -19,6 +19,7 @@ import com.Patane.util.general.Messenger;
 import com.Patane.util.general.StringsUtil;
 import com.Patane.util.ingame.Commands;
 
+@Deprecated
 public class CommandSuggester implements TabCompleter{
 	
 	private static Map<CommandSender, CommandArgs> tabSaver = new HashMap<CommandSender, CommandArgs>();
@@ -52,8 +53,7 @@ public class CommandSuggester implements TabCompleter{
 		// If there is 1 argument, simply display all primary package names.
 		if(args.length == 1) {
 			tabSaver.remove(sender);
-			for(CommandPackage commandPackage : CommandHandler.grabInstance().parentPackages())
-				suggestions.add(commandPackage.info().name());
+			suggestions = Arrays.asList(CommandHandler.grabInstance().getParentCommandNames());
 		} else {
 			
 			// Grabs the CommandArgs for sender. This can be null if we only have the first argument complete (args.length == 2).
@@ -83,7 +83,6 @@ public class CommandSuggester implements TabCompleter{
 				tabSaver.put(sender, commArgs);
 			}
 			
-			// *** If this being run every time a character in chat changes, We can instead save this in CommandArgs and only update each time a word is added/removed.
 			// Grabs the suggestions from the command
 			suggestions = commArgs.commandPackage.command().tabComplete(sender, args, commArgs.commandPackage);
 			
@@ -105,6 +104,7 @@ public class CommandSuggester implements TabCompleter{
 		}
 		
 		// Checking the options and the arguments given and eliminating those which dont fit (gives the user the 'autofill' experience when typing commands)
+		// eg. Typing 'com' could tabcomplete to 'mand' instead of the full 'command'
 		List<String> regexSuggestions = new ArrayList<String>();
 		
 		// Quotes the string being checked. This stops regex from being used to create errors.

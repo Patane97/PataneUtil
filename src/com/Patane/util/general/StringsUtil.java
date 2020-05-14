@@ -7,6 +7,8 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
@@ -20,7 +22,6 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class StringsUtil {
-	
 	
 	public static String stringJoiner(Collection<String> strings, String delimiter) {
 		Check.notNull(strings);
@@ -67,6 +68,94 @@ public class StringsUtil {
 	public static String generateChatTitle(String title) {
 		return "&2=======[&a"+title+"&2]=======";
 	}
+	
+	/**
+	 * Saves the details of an attribute modifier to a single string. Specifically used for 'onHover'
+	 * @param attribute
+	 * @param modifier
+	 * @return
+	 */
+	public static String attribModToString(Attribute attribute, AttributeModifier modifier) {
+		if(attribute == null || modifier == null)
+			return "&8Nothing here!";
+		return "&2Attribute: &7"+attribute
+				+"\n&2 Modifier: &7"+modifier.getName()
+				+"\n&2  Amount: &7"+modifier.getAmount()
+				+"\n&2  Operation: &7"+modifier.getOperation()
+				+"\n&2  Slot: &7"+(modifier.getSlot() == null ? "ALL" : modifier.getSlot());
+	}
+	/**
+	 * Saves the details of an attribute modifier and its differences to another modifier to a single string.
+	 * Used to show how one modifier differs from the other
+	 * @param attribute
+	 * @param oldModifier
+	 * @param newModifier
+	 * @return
+	 */
+	public static String attribModDifferenceToString(Attribute attribute, AttributeModifier oldModifier, AttributeModifier newModifier) {
+		if(attribute == null || oldModifier == null) {
+			if(newModifier != null)
+				return attribModToString(attribute, newModifier);
+			return "&8Nothing here!";
+		}
+		
+		String oldSlot = (oldModifier.getSlot() == null ? "ALL" : oldModifier.getSlot().toString());
+		String newSlot = (newModifier.getSlot() == null ? "ALL" : newModifier.getSlot().toString());
+		return "&2Attribute: &7"+attribute
+				+"\n&2 Modifier: &7"+newModifier.getName()
+				+"\n&2  Amount: &7"+(oldModifier.getAmount() != newModifier.getAmount() 
+									? "&8"+oldModifier.getAmount()+"&r &7-> "+newModifier.getAmount() 
+									: newModifier.getAmount())
+				+"\n&2  Operation: &7"+(oldModifier.getOperation() != newModifier.getOperation() 
+									? "&8"+oldModifier.getOperation()+"&r &7-> "+newModifier.getOperation() 
+									: newModifier.getOperation())
+				+"\n&2  Slot: &7"+(oldModifier.getSlot() != newModifier.getSlot() 
+									? "&8"+oldSlot+"&r &7-> "+newSlot 
+									: newSlot);
+	}
+	
+	/**
+	 * Saves the details of an attribute modifier with red writing and strikethrough text. 
+	 * Quite specific for visuallising a modifier being removed.
+	 * @param attribute
+	 * @param modifier
+	 * @return
+	 */
+	public static String attribModRemovingToString(Attribute attribute, AttributeModifier modifier) {
+		if(attribute == null || modifier == null)
+			return "&8Nothing here!";
+		return "&2Attribute: &7"+attribute
+				+"\n&c Modifier: &8&m"+modifier.getName()
+				+"\n&c  Amount: &8&m"+modifier.getAmount()
+				+"\n&c  Operation: &8&m"+modifier.getOperation()
+				+"\n&c  Slot: &8&m"+(modifier.getSlot() == null ? "ALL" : modifier.getSlot());
+	}
+	
+	/**
+	 * Saves the details of an attributes entire modifier list into a single string.
+	 * @param attribute
+	 * @param modifiers
+	 * @return
+	 */
+	public static String attribModCollectionToString(Attribute attribute, Collection<AttributeModifier> modifiers) {
+		if(attribute == null || modifiers == null || modifiers.isEmpty())
+			return "&8Nothing here!";
+		String modifiersString = "&2Attribute: &7"+attribute;
+		for(AttributeModifier modifier : modifiers) {
+			modifiersString += "\n&e> &2Modifier: &7"+modifier.getName()
+							   +"\n&2   Amount: &7"+modifier.getAmount()
+							   +"\n&2   Operation: &7"+modifier.getOperation()
+							  +"\n&2   Slot: &7"+(modifier.getSlot() == null ? "ALL" : modifier.getSlot());
+		}
+		return modifiersString;
+	}
+	/* ================================================================================
+	 * 
+	 * ================================================================================
+	 */
+	public static TextComponent stringToComponent(String text) {
+		return new TextComponent(Chat.translate(text));
+	}
 	public static TextComponent hoverText(String text, String hover) {
 		TextComponent textComponent = new TextComponent(Chat.translate(text));
 		textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(Chat.translate(hover)).create()));
@@ -99,10 +188,23 @@ public class StringsUtil {
 			returning.add(stringJoiner(current, " ", prefix, ""));
 		return returning.toArray(new String[0]);
 	}
-	public static List<String> prefixAdd(String prefix, List<String> strings) {
+	/* ================================================================================
+	 * Adding Prefixes, Suffixes or both to a single string or list of strings
+	 * ================================================================================
+	 */
+	public static List<String> prefix(List<String> strings, String prefix) {
 		return strings.stream().map(s -> prefix + s).collect(Collectors.toList());
 	}
-	
+	public static List<String> suffix(List<String> strings, String suffix) {
+		return strings.stream().map(s -> s + suffix).collect(Collectors.toList());
+	}
+	public static List<String> encase(List<String> strings, String prefix, String suffix){
+		return strings.stream().map(s -> prefix + s + suffix).collect(Collectors.toList());
+	}
+	/* ================================================================================
+	 * 
+	 * ================================================================================
+	 */
 	public static List<String> getOnlinePlayerNames(){
 		List<String> playerNames = new ArrayList<String>();
 		for(Player player : Bukkit.getOnlinePlayers()) {
@@ -204,4 +306,6 @@ public class StringsUtil {
 
 		return object;
 	}
+	
+	
 }

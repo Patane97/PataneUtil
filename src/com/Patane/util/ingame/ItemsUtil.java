@@ -2,13 +2,14 @@ package com.Patane.util.ingame;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
-import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_15_R1.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -20,7 +21,7 @@ import com.Patane.util.general.Check;
 import com.Patane.util.general.StringsUtil;
 import com.google.common.collect.Multimap;
 
-import net.minecraft.server.v1_14_R1.NBTTagCompound;
+import net.minecraft.server.v1_15_R1.NBTTagCompound;
 
 public class ItemsUtil {
 	
@@ -51,7 +52,14 @@ public class ItemsUtil {
 		book.setItemMeta(meta);
 		return setItemNameLore(book, name, lore);
 	}
+	
+	/*
+	 * Some of the following dont have a 'item.hasItemMeta()' check as this only checks if there is EDITED item meta data. 
+	 * There is ALWAYS an ItemMeta.
+	 */
 	public static ItemStack setItemNameLore(ItemStack item, String name, String... lore) {
+		if(item == null)
+			return null;
 		ItemMeta itemMeta = item.getItemMeta();
 		if(name != null)
 			itemMeta.setDisplayName(Chat.translate(name));
@@ -62,6 +70,8 @@ public class ItemsUtil {
 	}
 
 	public static ItemStack setDisplayName(ItemStack item, String name) {
+		if(item == null)
+			return null;
 		ItemMeta itemMeta = item.getItemMeta();
 		if(name != null)
 			itemMeta.setDisplayName(Chat.translate(name));
@@ -87,13 +97,15 @@ public class ItemsUtil {
 	}
 	
 	public static boolean hasDisplayName(ItemStack item) {
-		if(item == null || !item.hasItemMeta())
+		if(item == null)
 			return false;
 		ItemMeta itemMeta = item.getItemMeta();
 		return itemMeta.hasDisplayName();
 	}
 
 	public static ItemStack setLore(ItemStack item, List<String> lore) {
+		if(item == null)
+			return null;
 		ItemMeta itemMeta = item.getItemMeta();
 		if(lore != null)
 			itemMeta.setLore(lore);
@@ -101,6 +113,8 @@ public class ItemsUtil {
 		return item;
 	}
 	public static ItemStack removeLore(ItemStack item) {
+		if(item == null)
+			return null;
 		ItemMeta itemMeta = item.getItemMeta();
 		itemMeta.setLore(null);
 		item.setItemMeta(itemMeta);
@@ -121,21 +135,21 @@ public class ItemsUtil {
 	}
 	
 	public static boolean isUnbreakable(ItemStack item) {
-		if(item == null || !item.hasItemMeta())
+		if(item == null)
 			return false;
 		ItemMeta itemMeta = item.getItemMeta();
 		return itemMeta.isUnbreakable();
 	}
 	
 	public static void setUnbreakable(ItemStack item, boolean unbreakable) {
-		if(item == null || !item.hasItemMeta())
+		if(item == null)
 			return;
 
 		ItemMeta itemMeta = item.getItemMeta();
 		itemMeta.setUnbreakable(unbreakable);
 	}
 	public static ItemStack addFlags(ItemStack item, ItemFlag...flags) {
-		if(item == null || !item.hasItemMeta())
+		if(item == null)
 			return null;
 		Check.notNull(flags, "Flags are missing");
 		ItemMeta meta = item.getItemMeta();
@@ -178,16 +192,31 @@ public class ItemsUtil {
 		if(item == null || !item.hasItemMeta())
 			return false;
 		ItemMeta meta = item.getItemMeta();
-		if(meta.getAttributeModifiers(attribute) != null) {
-			for(AttributeModifier modifier : meta.getAttributeModifiers(attribute)) {
+		Collection<AttributeModifier> modifiers;
+		if(meta.hasAttributeModifiers() && (modifiers = meta.getAttributeModifiers(attribute)) != null) {
+			for(AttributeModifier modifier : modifiers) {
 				if(modifier.getName().equals(modifierName))
 					return true;
 			}
 		}
 		return false;
 	}
-	public static ItemStack addAttributeModifier(ItemStack item, Attribute attribute, AttributeModifier modifier) {
+	public static AttributeModifier getAttributeModifier(ItemStack item, Attribute attribute, String modifierName) {
 		if(item == null || !item.hasItemMeta())
+			return null;
+		ItemMeta meta = item.getItemMeta();
+		Collection<AttributeModifier> modifiers;
+		if(meta.hasAttributeModifiers() && (modifiers = meta.getAttributeModifiers(attribute)) != null) {
+			for(AttributeModifier modifier : modifiers) {
+				if(modifier.getName().equals(modifierName))
+					return modifier;
+			}
+		}
+		return null;
+	}
+	
+	public static ItemStack addAttributeModifier(ItemStack item, Attribute attribute, AttributeModifier modifier) {
+		if(item == null)
 			return null;
 		ItemMeta meta = item.getItemMeta();
 		meta.addAttributeModifier(attribute, modifier);
@@ -206,8 +235,9 @@ public class ItemsUtil {
 		if(item == null || !item.hasItemMeta())
 			return null;
 		ItemMeta meta = item.getItemMeta();
-		if(meta.hasAttributeModifiers()) {
-			for(AttributeModifier modifier : meta.getAttributeModifiers(attribute)) {
+		Collection<AttributeModifier> modifiers;
+		if(meta.hasAttributeModifiers()  && (modifiers = meta.getAttributeModifiers(attribute)) != null) {
+			for(AttributeModifier modifier : modifiers) {
 				if(modifier.getName().equals(modifierName)) {
 					meta.removeAttributeModifier(attribute, modifier);
 					break;
@@ -217,10 +247,20 @@ public class ItemsUtil {
 		item.setItemMeta(meta);
 		return item;
 	}
-	
+
+	public static Collection<AttributeModifier> getAttributeModifiers(ItemStack item, Attribute attribute) {
+		if(item == null || !item.hasItemMeta())
+			return null;
+		ItemMeta meta = item.getItemMeta();
+		Collection<AttributeModifier> modifiers;
+		if(meta.hasAttributeModifiers() && (modifiers = meta.getAttributeModifiers(attribute)) != null) {
+			return modifiers;
+		}
+		return null;
+	}
 	public static String ItemStackToJSON(ItemStack itemStack) {
 	    // First we convert the item stack into an NMS itemstack
-	    net.minecraft.server.v1_14_R1.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(itemStack);
+	    net.minecraft.server.v1_15_R1.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(itemStack);
 	    NBTTagCompound compound = new NBTTagCompound();
 	    compound = nmsItemStack.save(compound);
 
@@ -231,7 +271,7 @@ public class ItemsUtil {
 		List<String> flavourList = Arrays.asList(flavour);
 		if(lore.size() > 0)
 			lore.add("");
-		lore.addAll(StringsUtil.prefixAdd("&7&o", Chat.deTranslate(flavourList)));
+		lore.addAll(StringsUtil.prefix(Chat.deTranslate(flavourList), "&7&o"));
 		return setItemNameLore(item, null, lore.toArray(new String[0]));
 	}
 }

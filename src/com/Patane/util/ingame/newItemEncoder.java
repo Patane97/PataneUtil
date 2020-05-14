@@ -4,6 +4,7 @@ import java.nio.charset.Charset;
 
 import org.bukkit.ChatColor;
 
+@Deprecated
 public class newItemEncoder {
 
 	// String constants. TODO Change them to something unique to avoid conflict with other plugins!

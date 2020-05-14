@@ -6,25 +6,24 @@ import java.util.List;
 import org.bukkit.ChatColor;
 
 public enum Chat {
-	PLUGIN_PREFIX("&7"),
-	PLUGIN_PREFIX_SMALL("&7");
+	PREFIX("&7"),
+	PREFIX_SMALL("&7");
 	
 	private String value;
 	
 	Chat(String value){
         set(value);
     }
-
+	
     public void set(String value) {
-        this.value = value;
+        this.value = value + "&r ";
     }
     
     public String toString() {
         return Chat.translate(value);
     }
-    public String format(String s) {
-        return (s == null) ? "" : toString().replace("%", s);
-    }
+
+    
     public static String translate(String s){
         return ChatColor.translateAlternateColorCodes('&', s);
     }

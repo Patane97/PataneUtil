@@ -6,16 +6,17 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_15_R1.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
 import com.Patane.Commands.CommandHandler;
 import com.Patane.Commands.CommandInfo;
 import com.Patane.Commands.PatCommand;
 import com.Patane.util.general.Chat;
+import com.Patane.util.general.Messenger;
 import com.Patane.util.general.StringsUtil;
 
-import net.minecraft.server.v1_14_R1.NBTTagCompound;
+import net.minecraft.server.v1_15_R1.NBTTagCompound;
 
 public class Commands {
 
@@ -27,7 +28,7 @@ public class Commands {
 		+"\n\n&7Click to auto-complete command");
 	}
 	public static String hoverFormat(ItemStack itemStack) {
-	    net.minecraft.server.v1_14_R1.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(itemStack);
+	    net.minecraft.server.v1_15_R1.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(itemStack);
 	    NBTTagCompound compound = new NBTTagCompound();
 	    compound = nmsItemStack.save(compound);
 
@@ -73,6 +74,8 @@ public class Commands {
 		        matchList.add(regexMatcher.group());
 		    }
 		}
+		if(args[args.length-1] == null || args[args.length-1].isEmpty())
+			matchList.add("");
 		return matchList.toArray(new String[0]);
 	}
 }

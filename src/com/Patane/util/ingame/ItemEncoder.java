@@ -23,14 +23,14 @@ public class ItemEncoder {
 	 */
 	public static ItemStack addTag(ItemStack item, String name, String value) {
 		name = generatePrefix() + name;
-		item = NBTEditor.setItemTag(item, value, name);
+		item = NBTEditor.set(item, value, name);
 		Messenger.debug("Adding tag '"+name+"' with value '"+value+"' to item with name '"+item.getItemMeta().getDisplayName()+"'.");
 		return item;
 	}
 	
 	public static ItemStack delTag(ItemStack item, String name) {
 		name = generatePrefix() + name;
-		item = NBTEditor.setItemTag(item, null, name);
+		item = NBTEditor.set(item, null, name);
 		Messenger.debug("Removing tag '"+name+"' from item with name '"+item.getItemMeta().getDisplayName()+"'.");
 		return item;
 	}

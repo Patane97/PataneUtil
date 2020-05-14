@@ -27,7 +27,7 @@ public class Messenger {
             return false;
 
         // Otherwise, send the message with the plugin prefix.
-        sender.sendMessage(Chat.PLUGIN_PREFIX_SMALL + ChatColor.translateAlternateColorCodes('&', msg));
+        sender.sendMessage(Chat.PREFIX_SMALL + ChatColor.translateAlternateColorCodes('&', msg));
         return true;
     }
 	public static boolean sendRaw(CommandSender sender, String msg) {
@@ -39,7 +39,24 @@ public class Messenger {
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
         return true;
     }
-
+	public static boolean send(CommandSender sender, BaseComponent... components) {
+		if (sender == null || components == null || components.length == 0)
+            return false;
+		
+		// Creating a combined array for both prefix AND components
+		BaseComponent[] combinedComponents = new BaseComponent[components.length+1];
+		
+		// Adding the prefix
+		combinedComponents[0] = StringsUtil.stringToComponent(Chat.PREFIX_SMALL.toString());
+		
+		// Adding each component
+		for(int i=1 ; i<combinedComponents.length ; i++)
+			combinedComponents[i] = components[i-1];
+		
+		// Sending it all the user
+		sender.spigot().sendMessage(combinedComponents);
+		return true;
+	}
 	public static boolean sendRaw(CommandSender sender, BaseComponent... components) {
         if (sender == null || components == null || components.length == 0)
             return false;
@@ -55,7 +72,7 @@ public class Messenger {
         return true;
     }
 	public static void broadcast(String msg){
-		Bukkit.broadcastMessage(Chat.PLUGIN_PREFIX_SMALL + ChatColor.translateAlternateColorCodes('&', msg));
+		Bukkit.broadcastMessage(Chat.PREFIX_SMALL + ChatColor.translateAlternateColorCodes('&', msg));
 	}
 	public static void info(String msg) {
 		logger.info(ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', msg)));
