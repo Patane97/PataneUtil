@@ -127,14 +127,6 @@ public abstract class CommandHandler implements CommandExecutor{
 			Messenger.send(sender, "&cThe &7"+commandString+" &ccommand does not exist. Type /br help for all Brewery commands that you can use!");
 			return true;
 		}
-		if(!(sender.hasPermission(command.info().permission()))) {
-			Messenger.send(sender, "&cYou do not have permission to use this command.");
-			return true;
-		}
-		if(command.info().playerOnly() && !(sender instanceof Player)) {
-			Messenger.send(sender, "&cYou must be a Player to use this command.");
-			return true;
-		}
 		handleCommand(sender, command.command(), Commands.prepareArgs(args));
 		return true;
 	}
@@ -144,9 +136,22 @@ public abstract class CommandHandler implements CommandExecutor{
 	 * @param command PatCommand to execute
 	 * @param args String[] arguments to pass through to the execution code
 	 * @param objects Object[] Objects to pass through to the execution code
-	 * @return True if the command executes with no failures. False otherwise.
 	 */
-	public boolean handleCommand(CommandSender sender, PatCommand command, String[] args, Object... objects) {
+	public void handleCommand(CommandSender sender, PatCommand command, String[] args, Object... objects) {
+		// Save the command info for later use
+		CommandInfo info = getPackage(command.getClass()).info();
+		
+		// Check if the user has permission. Return if failed
+		if(!(sender.hasPermission(info.permission()))) {
+			Messenger.send(sender, "&cYou do not have permission to use that command.");
+			return;
+		}
+		// Check if the command is playerOnly and if sender is player. Return if failed
+		if(info.playerOnly() && !(sender instanceof Player)) {
+			Messenger.send(sender, "&cYou must be a Player to use this command.");
+			return;
+		}
+		
 		// Trims the arguments to remove the first. This is because the first argument is ALWAYS the specified command (eg. /plugin [specified command] [subargs])
 		String[] subargs = (args.length > 1 ? Commands.grabArgs(args, 1, args.length) : new String[0]);
 		if(subargs.length == 0 && requiresArgs(command)) {
@@ -159,10 +164,6 @@ public abstract class CommandHandler implements CommandExecutor{
 			Messenger.send(sender, "&2Usage: &7"+PatCommand.grabInfo(command).usage());
 			listSubCommands(sender, command);
 		}
-		else
-			return true;
-		
-		return false;
 	}
 	
 	/**

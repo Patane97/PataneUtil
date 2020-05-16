@@ -3,12 +3,14 @@ package com.Patane.util.general;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
@@ -67,85 +69,78 @@ public class StringsUtil {
 	}
 	public static String generateChatTitle(String title) {
 		return "&2=======[&a"+title+"&2]=======";
+	}	
+	/**
+	 * Formatting a modifier for an attribute to a certain layout ready for hover text.
+	 * NOTE: If the '&e>' dial colour is an issue, can add another parameter for 'dial colour'
+	 * @param attribute
+	 * @param modifier
+	 * @param layout
+	 * @return
+	 */
+	public static String toHoverString(Attribute attribute, AttributeModifier modifier, Layout layout) {
+		if(attribute == null || modifier == null)
+			return "&8Nothing here!";
+		
+		return layout.build("Attribute", attribute.toString())
+			  +"\n&e> "+layout.build("Modifier", modifier.getName())
+			    +"\n   "+layout.build("Amount", Double.toString(modifier.getAmount()))
+			    +"\n   "+layout.build("Operation", modifier.getOperation().toString())
+			    +"\n   "+layout.build("Slot", (modifier.getSlot() == null ? "ALL" : modifier.getSlot().toString()));
 	}
 	
 	/**
-	 * Saves the details of an attribute modifier to a single string. Specifically used for 'onHover'
+	 * Formatting two modifiers of an attribute being compared to eachother for hover text.
 	 * @param attribute
 	 * @param modifier
+	 * @param layout
 	 * @return
 	 */
-	public static String attribModToString(Attribute attribute, AttributeModifier modifier) {
-		if(attribute == null || modifier == null)
-			return "&8Nothing here!";
-		return "&2Attribute: &7"+attribute
-				+"\n&2 Modifier: &7"+modifier.getName()
-				+"\n&2  Amount: &7"+modifier.getAmount()
-				+"\n&2  Operation: &7"+modifier.getOperation()
-				+"\n&2  Slot: &7"+(modifier.getSlot() == null ? "ALL" : modifier.getSlot());
-	}
-	/**
-	 * Saves the details of an attribute modifier and its differences to another modifier to a single string.
-	 * Used to show how one modifier differs from the other
-	 * @param attribute
-	 * @param oldModifier
-	 * @param newModifier
-	 * @return
-	 */
-	public static String attribModDifferenceToString(Attribute attribute, AttributeModifier oldModifier, AttributeModifier newModifier) {
-		if(attribute == null || oldModifier == null) {
-			if(newModifier != null)
-				return attribModToString(attribute, newModifier);
+	public static String toHoverString(Attribute attribute, AttributeModifier modifier1, AttributeModifier modifier2, Layout layout, Layout comparing) {
+		if(attribute == null || modifier1 == null) {
+			if(modifier2 != null)
+				return toHoverString(attribute, modifier2, layout);
 			return "&8Nothing here!";
 		}
-		
-		String oldSlot = (oldModifier.getSlot() == null ? "ALL" : oldModifier.getSlot().toString());
-		String newSlot = (newModifier.getSlot() == null ? "ALL" : newModifier.getSlot().toString());
-		return "&2Attribute: &7"+attribute
-				+"\n&2 Modifier: &7"+newModifier.getName()
-				+"\n&2  Amount: &7"+(oldModifier.getAmount() != newModifier.getAmount() 
-									? "&8"+oldModifier.getAmount()+"&r &7-> "+newModifier.getAmount() 
-									: newModifier.getAmount())
-				+"\n&2  Operation: &7"+(oldModifier.getOperation() != newModifier.getOperation() 
-									? "&8"+oldModifier.getOperation()+"&r &7-> "+newModifier.getOperation() 
-									: newModifier.getOperation())
-				+"\n&2  Slot: &7"+(oldModifier.getSlot() != newModifier.getSlot() 
-									? "&8"+oldSlot+"&r &7-> "+newSlot 
-									: newSlot);
+		// Preparing the two slots beforehand. Mostly done here as it gets messy below
+		String slot1 = (modifier1.getSlot() == null ? "ALL" : modifier1.getSlot().toString());
+		String slot2 = (modifier2.getSlot() == null ? "ALL" : modifier2.getSlot().toString());
+		return layout.build("Attribute", attribute.toString())
+			  +"\n&e> "+layout.build("Modifier", modifier2.getName())
+			  // Grabbing each element in either its standard format or the comparison format!
+			  	// Amount
+			    +"\n   "+(modifier1.getAmount() != modifier2.getAmount() 
+						? comparing.build("Amount", Double.toString(modifier1.getAmount()), Double.toString(modifier2.getAmount()))
+						: layout.build("Amount", Double.toString(modifier2.getAmount())))
+			    
+			  	// Operation
+			    +"\n   "+(modifier1.getOperation() != modifier2.getOperation() 
+	    				? comparing.build("Operation", modifier1.getOperation().toString(), modifier2.getOperation().toString())
+	    				: layout.build("Operation", modifier2.getOperation().toString()))
+
+			  	// Slot
+			    +"\n   "+(modifier1.getSlot() != modifier2.getSlot() 
+						? comparing.build("Slot", slot1, slot2) 
+						: layout.build("Slot", slot1, slot2));
 	}
 	
 	/**
-	 * Saves the details of an attribute modifier with red writing and strikethrough text. 
-	 * Quite specific for visuallising a modifier being removed.
-	 * @param attribute
-	 * @param modifier
-	 * @return
-	 */
-	public static String attribModRemovingToString(Attribute attribute, AttributeModifier modifier) {
-		if(attribute == null || modifier == null)
-			return "&8Nothing here!";
-		return "&2Attribute: &7"+attribute
-				+"\n&c Modifier: &8&m"+modifier.getName()
-				+"\n&c  Amount: &8&m"+modifier.getAmount()
-				+"\n&c  Operation: &8&m"+modifier.getOperation()
-				+"\n&c  Slot: &8&m"+(modifier.getSlot() == null ? "ALL" : modifier.getSlot());
-	}
-	
-	/**
-	 * Saves the details of an attributes entire modifier list into a single string.
+	 * Formatting all modifiers for a specific attribute for hover text
 	 * @param attribute
 	 * @param modifiers
+	 * @param layout
 	 * @return
 	 */
-	public static String attribModCollectionToString(Attribute attribute, Collection<AttributeModifier> modifiers) {
+	public static String toHoverString(Attribute attribute, Collection<AttributeModifier> modifiers, Layout layout) {
 		if(attribute == null || modifiers == null || modifiers.isEmpty())
 			return "&8Nothing here!";
-		String modifiersString = "&2Attribute: &7"+attribute;
+		
+		String modifiersString = layout.build("Attribute", attribute.toString());
 		for(AttributeModifier modifier : modifiers) {
-			modifiersString += "\n&e> &2Modifier: &7"+modifier.getName()
-							   +"\n&2   Amount: &7"+modifier.getAmount()
-							   +"\n&2   Operation: &7"+modifier.getOperation()
-							  +"\n&2   Slot: &7"+(modifier.getSlot() == null ? "ALL" : modifier.getSlot());
+			 modifiersString +="\n&e> "+layout.build("Modifier", modifier.getName())
+							     +"\n   "+layout.build("Amount", Double.toString(modifier.getAmount()))
+							     +"\n   "+layout.build("Operation", modifier.getOperation().toString())
+							     +"\n   "+layout.build("Slot", (modifier.getSlot() == null ? "ALL" : modifier.getSlot().toString()));
 		}
 		return modifiersString;
 	}
@@ -307,5 +302,12 @@ public class StringsUtil {
 		return object;
 	}
 	
-	
+	/**
+	 * The point of this class is to provide an interface for specific string layouts to be passed through to a function using LAMBDA
+	 * @author Stephen
+	 *
+	 */
+	public interface Layout{
+		String build(String... arguments);
+	}
 }
