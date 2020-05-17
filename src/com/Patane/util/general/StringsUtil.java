@@ -3,14 +3,12 @@ package com.Patane.util.general;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
@@ -69,16 +67,35 @@ public class StringsUtil {
 	}
 	public static String generateChatTitle(String title) {
 		return "&2=======[&a"+title+"&2]=======";
-	}	
+	}
+	/**
+	 * Formatting an enchantment and level to a certain layout ready for hover text.
+	 * NOTE: If the '&e>' dial colour is an issue, can add another parameter for 'dial colour'
+	 */
+	public static String toHoverString(Enchantment enchantment, int level, LambdaStrings layout) {
+		if(enchantment == null)
+			return "&8Nothing here!";
+		
+		return "&e> "+layout.build("Enchantment", enchantment.getKey().getKey())
+				+"\n   "+layout.build("Level", Integer.toString(level));
+		}
+	/**
+	 * Formatting an enchantment and two levels being compared to eachother for hover text
+	 */
+	public static String toHoverString(Enchantment enchantment, int level1, int level2, LambdaStrings layout, LambdaStrings comparing) {
+		if(enchantment == null)
+			return "&8Nothing here!";
+		
+		return "&e> "+layout.build("Enchantment", enchantment.getKey().getKey())
+				+"\n   "+(level1 != level2 
+						? comparing.build("Level", Integer.toString(level1), Integer.toString(level2))
+						: layout.build("Level", Integer.toString(level1)));
+		}
 	/**
 	 * Formatting a modifier for an attribute to a certain layout ready for hover text.
 	 * NOTE: If the '&e>' dial colour is an issue, can add another parameter for 'dial colour'
-	 * @param attribute
-	 * @param modifier
-	 * @param layout
-	 * @return
 	 */
-	public static String toHoverString(Attribute attribute, AttributeModifier modifier, Layout layout) {
+	public static String toHoverString(Attribute attribute, AttributeModifier modifier, LambdaStrings layout) {
 		if(attribute == null || modifier == null)
 			return "&8Nothing here!";
 		
@@ -91,12 +108,8 @@ public class StringsUtil {
 	
 	/**
 	 * Formatting two modifiers of an attribute being compared to eachother for hover text.
-	 * @param attribute
-	 * @param modifier
-	 * @param layout
-	 * @return
 	 */
-	public static String toHoverString(Attribute attribute, AttributeModifier modifier1, AttributeModifier modifier2, Layout layout, Layout comparing) {
+	public static String toHoverString(Attribute attribute, AttributeModifier modifier1, AttributeModifier modifier2, LambdaStrings layout, LambdaStrings comparing) {
 		if(attribute == null || modifier1 == null) {
 			if(modifier2 != null)
 				return toHoverString(attribute, modifier2, layout);
@@ -131,7 +144,7 @@ public class StringsUtil {
 	 * @param layout
 	 * @return
 	 */
-	public static String toHoverString(Attribute attribute, Collection<AttributeModifier> modifiers, Layout layout) {
+	public static String toHoverString(Attribute attribute, Collection<AttributeModifier> modifiers, LambdaStrings layout) {
 		if(attribute == null || modifiers == null || modifiers.isEmpty())
 			return "&8Nothing here!";
 		
@@ -303,11 +316,20 @@ public class StringsUtil {
 	}
 	
 	/**
-	 * The point of this class is to provide an interface for specific string layouts to be passed through to a function using LAMBDA
+	 * Provides an interface to create strings with specific arguments injected into it through Lambda
 	 * @author Stephen
 	 *
 	 */
-	public interface Layout{
-		String build(String... arguments);
+	public interface LambdaStrings{
+		String build(String... strings);
+	}
+	
+	/**
+	 * Provides an interface to create strings with a single specific argument injected into it through Lambda
+	 * @author Stephen
+	 *
+	 */
+	public interface LambdaString{
+		String build(String string);
 	}
 }

@@ -13,7 +13,6 @@ import com.Patane.Commands.CommandHandler;
 import com.Patane.Commands.CommandInfo;
 import com.Patane.Commands.PatCommand;
 import com.Patane.util.general.Chat;
-import com.Patane.util.general.Messenger;
 import com.Patane.util.general.StringsUtil;
 
 import net.minecraft.server.v1_15_R1.NBTTagCompound;
@@ -74,7 +73,7 @@ public class Commands {
 		        matchList.add(regexMatcher.group());
 		    }
 		}
-		if(args[args.length-1] == null || args[args.length-1].isEmpty())
+		if(args.length > 0 && (args[args.length-1] == null || args[args.length-1].isEmpty()))
 			matchList.add("");
 		return matchList.toArray(new String[0]);
 	}

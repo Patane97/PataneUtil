@@ -154,41 +154,13 @@ public abstract class CommandHandler implements CommandExecutor{
 		
 		// Trims the arguments to remove the first. This is because the first argument is ALWAYS the specified command (eg. /plugin [specified command] [subargs])
 		String[] subargs = (args.length > 1 ? Commands.grabArgs(args, 1, args.length) : new String[0]);
-		if(subargs.length == 0 && requiresArgs(command)) {
-			Messenger.send(sender, "&cThis command requires more arguments.");
-			commandHelp(sender, command);
-		}
+		
 		// Actual command executes below. If returned false it means the command was not given the correct values.
 		// Therefore, we send them the usage and list of child commands.
-		else if(!command.execute(sender, subargs, objects)) {
+		if(!command.execute(sender, subargs, objects)) {
 			Messenger.send(sender, "&2Usage: &7"+PatCommand.grabInfo(command).usage());
 			listSubCommands(sender, command);
 		}
-	}
-	
-	/**
-	 * Checks if the PatCommand requires any arguments through checking its command info usage and regex.
-	 * @param command PatCommand to check
-	 * @return whether the command requires arguments or not
-	 */
-	public static boolean requiresArgs(PatCommand command) {
-		CommandInfo cmdInfo = PatCommand.grabInfo(command);
-		// Checks if the argument has a /, followed by any amount of text, followed by the name of the command followed by NOTHING.
-		// If the usage shows something more after the name, then more arguments are requires for the command to work properly.
-		// If below matches, then it does not require any more arguments (thus NOTing the statement)
-		return !cmdInfo.usage().matches("/(?:.*) "+cmdInfo.name()+"\\s*(\\s\\((.*)\\))*");
-	}
-	
-	/**
-	 * Shows general command information.
-	 * *** This can be cleaned up/reviewed once commands + tabcomplete are fully complete
-	 * @param sender CommandSender to send to
-	 * @param command PatCommand to show information about
-	 */
-	private void commandHelp(CommandSender sender, PatCommand command) {
-		CommandInfo cmdInfo = PatCommand.grabInfo(command);
-		Messenger.send(sender, " &2Usage: &7"+cmdInfo.usage());
-		listSubCommands(sender, command);
 	}
 	
 	/**
@@ -325,6 +297,7 @@ public abstract class CommandHandler implements CommandExecutor{
 		final private String[] regexAliases;
 		final private boolean primary;
 		final private String commandString;
+		final private boolean hasArguments;
 		
 		private List<String> children = new ArrayList<String>();
 		private List<String> trimmedChildren = new ArrayList<String>();
@@ -341,7 +314,10 @@ public abstract class CommandHandler implements CommandExecutor{
 			this.regexAliases = regexAliases;
 			this.primary = (command.getClass().getSuperclass() == PatCommand.class);
 			this.commandString = createCommandString(info.usage());
-					
+			// Checks if the argument has a /, followed by any amount of text, followed by the name of the command followed by NOTHING.
+			// If the usage shows something more after the name, then more arguments are requires for the command to work properly.
+			// If below matches, then it does not require any more arguments (thus NOTing the statement)
+			this.hasArguments = !info.usage().matches("/(?:.*) "+info.name()+"\\s*(\\s\\((.*)\\))*");
 		}
 		private String regexPrep(String string) {
 			return "(?i)"+Pattern.quote(string).replaceAll("\\s*[\\[\\(\\<].*?[\\]\\)\\>]\\s*", "\\\\E\\\\s*\\\\S*\\\\s*\\\\Q");
@@ -401,6 +377,9 @@ public abstract class CommandHandler implements CommandExecutor{
 		
 		public boolean hasChildren() {
 			return !children.isEmpty();
+		}
+		public boolean hasArguments() {
+			return hasArguments;
 		}
 		public boolean isPrimary() {
 			return primary;
