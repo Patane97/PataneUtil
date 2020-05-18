@@ -11,9 +11,11 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 
 import com.Patane.util.collections.PatCollectable;
+import com.Patane.util.ingame.ItemsUtil;
 import com.sun.istack.internal.NotNull;
 
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -68,29 +70,136 @@ public class StringsUtil {
 	public static String generateChatTitle(String title) {
 		return "&2=======[&a"+title+"&2]=======";
 	}
+
+	/**
+	 * Same as {@link #formatter(LambdaStrings, String...)} but for a single Array entry.
+	 */
+	public static String singleFormatter(LambdaStrings layout, String... strings) {
+		// Creating double array in format for proper formatter
+		String[][] newStrings = new String[1][strings.length];
+		
+		// Loop through each string and turn it into a single array and save into newStrings
+		for(int i=0 ; i<strings.length ; i++)
+			newStrings[0][i] = strings[i];
+		
+		// Return formatter using new double array strings
+		return formatter(layout, newStrings);
+	}
+	/**
+	 * Same as {@link #formatter(LambdaStrings, String...)} but treats each item in strings as a 1 length array.
+	 */
+	public static String formatter(LambdaStrings layout, String... strings) {
+		// Creating double array in format for proper formatter
+		String[][] newStrings = new String[strings.length][];
+		
+		// Loop through each string and turn it into a single array and save into newStrings
+		for(int i=0 ; i<strings.length ; i++)
+			newStrings[i] = new String[] {strings[i]};
+		
+		// Return formatter using new double array strings
+		return formatter(layout, newStrings);
+	}
+	/**
+	 * Formats multiple arrays of strings into a specified layout.
+	 * 
+	 * @param layout LambdaStrings layout to confide to (eg. s -> "This is "+s[0]+" a "+s[1]+" test!")
+	 * @param strings Array of each bundle of strings (double array) (eg. new String[]{"TEST1", "TEST2"}, new String[]{"TEST3","TEST4"})
+	 * @return The strings formatted according to layout into a single String
+	 */
+	public static String formatter(LambdaStrings layout, String[]... strings) {
+		if(strings == null)
+			return "&8Nothing here!";
+		String returning = "";
+		for(int i=0 ; i<strings.length ; i++)
+			returning += layout.build(strings[i]);
+		
+		return returning;
+	}
+	/**
+	 * Same as {@link #compareFormatter(LambdaStrings, LambdaStrings, String[]...)} but for a single Array entry.
+	 */
+	public static String compareSingleFormatter(LambdaStrings layout, LambdaStrings compare, String... strings) {
+		// Creating double array in format for proper compareFormatter
+		String[][] newStrings = new String[1][strings.length];
+		
+		// Loop through each string and turn it into a single array and save into newStrings
+		for(int i=0 ; i<strings.length ; i++)
+			newStrings[0][i] = strings[i];
+		
+		// Return compareFormatter using new double array strings
+		return compareFormatter(layout, compare, newStrings);
+	}
+	/**
+	 * Same as {@link #compareFormatter(LambdaStrings, LambdaStrings, String[]...)} but treats each item in strings as a 1 length array.
+	 */
+	public static String compareFormatter(LambdaStrings layout, LambdaStrings compare, String... strings) {
+		// Creating double array in format for proper formatter
+		String[][] newStrings = new String[strings.length][];
+		
+		// Loop through each string and turn it into a single array and save into newStrings
+		for(int i=0 ; i<strings.length ; i++)
+			newStrings[i] = new String[] {strings[i]};
+		
+		// Return formatter using new double array strings
+		return compareFormatter(layout, compare, newStrings);
+	}
+	/**
+	 * Compares and formats multiple arrays of strings into a specified layout/compare layout.
+	 * Note: If there are 3 values within each array of 'strings', there must be 2 values given in 'layout' and 3 in 'compare'
+	 * 
+	 * @param layout LambdaStrings layout to confide to (eg. s -> "This is "+s[0]+" a "+s[1]+" test!")
+	 * @param compare LambdaStrings compare layout to confide to
+	 * @param strings Array of each bundle of strings (double array) (eg. new String[]{"TEST1", "TEST2"}, new String[]{"TEST3","TEST4"})
+	 * @return The strings formatted according to layout into a single String
+	 */
+	public static String compareFormatter(LambdaStrings layout, LambdaStrings compare, String[]... strings) {
+		String returning = "";
+		for(int i=0 ; i<strings.length ; i++) {
+			// If the given array has 2 values we simply compare the two
+			if(strings[i].length == 2) {
+				returning += (strings[i][0] == strings[i][1] 
+								? layout.build(strings[i][1]) 
+								: compare.build(strings[i][0], strings[i][1]));
+			} 
+			// If the given array has 3 or more values, we compare the indexes 1 & 2, and input index 0 into the layout first
+			// Generally used if there are headings beforehand
+			else if (strings[i].length >= 3) {
+			returning += (strings[i][1] == strings[i][2] 
+							? layout.build(strings[i][0], strings[i][2]) 
+							: compare.build(strings[i][0], strings[i][1], strings[i][2]));
+			// If for any reason there is just one value, simply print it
+			} else if (strings[i].length == 1)
+				returning += layout.build(strings[i][0]);
+			// And no values, we print nothing
+			else
+				returning += "&8Nothing!";
+			
+		}
+		return returning;
+	}
 	/**
 	 * Formatting an enchantment and level to a certain layout ready for hover text.
 	 * NOTE: If the '&e>' dial colour is an issue, can add another parameter for 'dial colour'
 	 */
-	public static String toHoverString(Enchantment enchantment, int level, LambdaStrings layout) {
-		if(enchantment == null)
-			return "&8Nothing here!";
-		
-		return "&e> "+layout.build("Enchantment", enchantment.getKey().getKey())
-				+"\n   "+layout.build("Level", Integer.toString(level));
-		}
-	/**
-	 * Formatting an enchantment and two levels being compared to eachother for hover text
-	 */
-	public static String toHoverString(Enchantment enchantment, int level1, int level2, LambdaStrings layout, LambdaStrings comparing) {
-		if(enchantment == null)
-			return "&8Nothing here!";
-		
-		return "&e> "+layout.build("Enchantment", enchantment.getKey().getKey())
-				+"\n   "+(level1 != level2 
-						? comparing.build("Level", Integer.toString(level1), Integer.toString(level2))
-						: layout.build("Level", Integer.toString(level1)));
-		}
+//	public static String toHoverString(Enchantment enchantment, int level, LambdaStrings layout) {
+//		if(enchantment == null)
+//			return "&8Nothing here!";
+//		
+//		return "&e> "+layout.build("Enchantment", enchantment.getKey().getKey())
+//				+"\n   "+layout.build("Level", Integer.toString(level));
+//	}
+//	/**
+//	 * Formatting an enchantment and two levels being compared to eachother for hover text
+//	 */
+//	public static String toHoverString(Enchantment enchantment, int level1, int level2, LambdaStrings layout, LambdaStrings comparing) {
+//		if(enchantment == null)
+//			return "&8Nothing here!";
+//		
+//		return "&e> "+layout.build("Enchantment", enchantment.getKey().getKey())
+//				+"\n   "+(level1 != level2 
+//						? comparing.build("Level", Integer.toString(level1), Integer.toString(level2))
+//						: layout.build("Level", Integer.toString(level1)));
+//		}
 	/**
 	 * Formatting a modifier for an attribute to a certain layout ready for hover text.
 	 * NOTE: If the '&e>' dial colour is an issue, can add another parameter for 'dial colour'
@@ -180,6 +289,11 @@ public class StringsUtil {
 		textComponent.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, autoCompleteText));
 		return textComponent;
 	}
+	public static TextComponent hoverItem(String text, ItemStack item) {
+		TextComponent textComponent = new TextComponent(Chat.translate(text));
+		textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new ComponentBuilder(ItemsUtil.ItemStackToJSON(item)).create()));
+		return textComponent;
+	}
 	public static String[] wordSplitter(String string, int amount, String prefix) {
 		ArrayList<String> returning = new ArrayList<String>();
 		ArrayList<String> current = new ArrayList<String>();
@@ -249,12 +363,11 @@ public class StringsUtil {
 			names.add(enchantment.getKey().getKey());
 		return names;
 	}
-	
 	public static <T extends Enum<?>> String[] enumValueStrings(T[] enums) {
 		String[] enumStrings = new String[enums.length];
 		
 		for(int i=0 ; i < enums.length ; i++)
-			enumStrings[i] = enums[i].name();
+			enumStrings[i] = enums[i].toString();
 		
 		return enumStrings;
 	}

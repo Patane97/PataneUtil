@@ -11,22 +11,18 @@ import com.Patane.util.general.StringsUtil.LambdaString;
 import com.Patane.util.ingame.Commands;
 
 public abstract class PatCommand {
-	/**
-	 * 
-	 * @param sender Player who ran the command.
-	 * @param args Arguments following the commands name.
-	 * @return False if the command failed to execute completely. True otherwise.
-	 */
-	public abstract boolean execute(CommandSender sender, String[] args, Object... objects);
-
-	//public abstract List<String> tabComplete(CommandSender sender, String[] args, Object... objects);
 	
+	public abstract boolean execute(CommandSender sender, String[] args, Object... objects);
+	
+//	public abstract List<String> tabComplete(CommandSender sender, String[] args, Object... objects);
+
+	// *** Remove this and replace with above once all commands are updated!
+	public List<String> tabComplete(CommandSender sender, String[] args, Object... objects){
+		return null;
+	}
 	@Deprecated
 	public List<String> tabComplete(CommandSender sender, String[] args, CommandPackage thisPackage) {
 		return thisPackage.trimmedChildren();
-	}
-	public List<String> tabComplete(CommandSender sender, String[] args, Object... objects) {
-		return tabCompleteCore(sender, args, objects);
 	}
 	
 	/**
@@ -65,6 +61,8 @@ public abstract class PatCommand {
 	protected boolean gotoChild(int childIndex, CommandSender sender, String[] args, Object... objects) {
 		return gotoChild(childIndex, s -> "&7"+s+"&c is not a valid argument.", sender, args, objects);
 	}
+	
+	
 	/**
 	 * This is called at the end of many tabcomplete functions AFTER all specific code is run for that command
 	 * It loops through itself (through command tabComplete) to determine whether to display child commands or something else with TabComplete
@@ -75,7 +73,7 @@ public abstract class PatCommand {
 	 * @param objects Any physical objects saved and carried on from previous commands
 	 * @return A String List of either the children command names or something else, such as object information
 	 */
-	public List<String> tabCompleteCore(CommandSender sender, String[] args, Object... objects){
+	protected List<String> tabCompleteCore(CommandSender sender, String[] args, Object... objects){
 		// Grabbing the package & maxArgs of this command for later use.
 		CommandPackage thisPackage = CommandHandler.getPackage(this.getClass());
 		int maxArgs = thisPackage.info().maxArgs();

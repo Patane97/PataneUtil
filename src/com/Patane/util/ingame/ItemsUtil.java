@@ -24,7 +24,6 @@ import com.google.common.collect.Multimap;
 import net.minecraft.server.v1_15_R1.NBTTagCompound;
 
 public class ItemsUtil {
-	
 	public static ItemStack createItem(Material material, int amount, String name, String...lore){
 		Check.notNull(material, "Failed to create item. Material component is missing or invalid.");
 		Check.notNull(amount, "Failed to create item. Amount component is missing or invalid.");
