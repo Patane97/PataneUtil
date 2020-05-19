@@ -3,6 +3,7 @@ package com.Patane.util.general;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
@@ -12,8 +13,11 @@ import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import com.Patane.util.YAML.MapParsable;
+import com.Patane.util.YAML.TypeParsable;
 import com.Patane.util.collections.PatCollectable;
 import com.Patane.util.ingame.ItemsUtil;
 import com.sun.istack.internal.NotNull;
@@ -24,7 +28,11 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class StringsUtil {
-	
+
+	/* ================================================================================
+	 * String Joiners & Splitters
+	 * ================================================================================
+	 */
 	public static String stringJoiner(Collection<String> strings, String delimiter) {
 		Check.notNull(strings);
 		return stringJoiner(strings.toArray(new String[0]), delimiter);
@@ -46,6 +54,28 @@ public class StringsUtil {
 		}
 		return stringJoiner.toString();
 	}
+	
+	public static String[] stringSplitter(String string, int amount, String prefix) {
+		ArrayList<String> returning = new ArrayList<String>();
+		ArrayList<String> current = new ArrayList<String>();
+		for(String word : string.split(" ")) {
+			if(amount == 0 || current.size() < amount)
+				current.add(word);
+			else {
+				returning.add(stringJoiner(current, " ", prefix, ""));
+				current.clear();
+				current.add(word);
+			}
+		}
+		if(current.size() > 0)
+			returning.add(stringJoiner(current, " ", prefix, ""));
+		return returning.toArray(new String[0]);
+	}
+	/* ================================================================================
+	 * Simple String Manipulation
+	 * ================================================================================
+	 */
+	
 	public static String formaliseString(String string) {
 		string = string.toLowerCase();
 		string = string.substring(0, 1).toUpperCase() + string.substring(1);
@@ -71,6 +101,11 @@ public class StringsUtil {
 		return "&2=======[&a"+title+"&2]=======";
 	}
 
+
+	/* ================================================================================
+	 * String Formatting
+	 * ================================================================================
+	 */
 	/**
 	 * Same as {@link #formatter(LambdaStrings, String...)} but for a single Array entry.
 	 */
@@ -177,29 +212,12 @@ public class StringsUtil {
 		}
 		return returning;
 	}
-	/**
-	 * Formatting an enchantment and level to a certain layout ready for hover text.
-	 * NOTE: If the '&e>' dial colour is an issue, can add another parameter for 'dial colour'
+
+	/* ================================================================================
+	 * Hover String Format 
+	 * (Currently just AttributeModifier, need to convert all into above formatting)
+	 * ================================================================================
 	 */
-//	public static String toHoverString(Enchantment enchantment, int level, LambdaStrings layout) {
-//		if(enchantment == null)
-//			return "&8Nothing here!";
-//		
-//		return "&e> "+layout.build("Enchantment", enchantment.getKey().getKey())
-//				+"\n   "+layout.build("Level", Integer.toString(level));
-//	}
-//	/**
-//	 * Formatting an enchantment and two levels being compared to eachother for hover text
-//	 */
-//	public static String toHoverString(Enchantment enchantment, int level1, int level2, LambdaStrings layout, LambdaStrings comparing) {
-//		if(enchantment == null)
-//			return "&8Nothing here!";
-//		
-//		return "&e> "+layout.build("Enchantment", enchantment.getKey().getKey())
-//				+"\n   "+(level1 != level2 
-//						? comparing.build("Level", Integer.toString(level1), Integer.toString(level2))
-//						: layout.build("Level", Integer.toString(level1)));
-//		}
 	/**
 	 * Formatting a modifier for an attribute to a certain layout ready for hover text.
 	 * NOTE: If the '&e>' dial colour is an issue, can add another parameter for 'dial colour'
@@ -267,7 +285,7 @@ public class StringsUtil {
 		return modifiersString;
 	}
 	/* ================================================================================
-	 * 
+	 * TextComponent Generators
 	 * ================================================================================
 	 */
 	public static TextComponent stringToComponent(String text) {
@@ -294,22 +312,62 @@ public class StringsUtil {
 		textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new ComponentBuilder(ItemsUtil.ItemStackToJSON(item)).create()));
 		return textComponent;
 	}
-	public static String[] wordSplitter(String string, int amount, String prefix) {
-		ArrayList<String> returning = new ArrayList<String>();
-		ArrayList<String> current = new ArrayList<String>();
-		for(String word : string.split(" ")) {
-			if(amount == 0 || current.size() < amount)
-				current.add(word);
-			else {
-				returning.add(stringJoiner(current, " ", prefix, ""));
-				current.clear();
-				current.add(word);
-			}
-		}
-		if(current.size() > 0)
-			returning.add(stringJoiner(current, " ", prefix, ""));
-		return returning.toArray(new String[0]);
+	/* ================================================================================
+	 * TypeParsable & MapParsable Generators
+	 * ================================================================================
+	 */
+	/**
+	 * 
+	 * @param layout
+	 * @param type
+	 * @param deep
+	 * @return Null if type is null. The type's information otherwise
+	 */
+	public static String typeParsToChatString(LambdaStrings layout, TypeParsable type, boolean deep) {
+		// If the type is null, send the type with 'undefined'
+		if(type == null)
+			return null;
+		
+		// Start with the 'title' consisting of type and type Name
+		String info = layout.build(type.type(), type.name());
+		
+		// If deep, we need to show all the types values
+		if(deep)
+			// So go to mapParsInfoDeep with the proper indentation and add it to info
+			// We don't bother recognizing it as a typeParsable as we do not need to type 'type anymore
+			info += mapParsToChatString(layout, type, "  ");
+		
+		// Return the info
+		return info;
 	}
+	
+	/**
+	 * 
+	 * @param layout
+	 * @param mapParsable
+	 * @param indentSpacing
+	 * @return
+	 */
+	public static String mapParsToChatString(LambdaStrings layout, MapParsable type, String indentSpacing) {
+		// Save all the fields in a map
+		Map<String, Object> fieldMap = type.mapFields();
+		
+		// Starting with an empty string
+		String text = "";
+		
+		// Loop through each field
+		for(String fieldName : fieldMap.keySet()) {
+			// If the field is also a MapParsable, run this same method and add the result to text
+			 if(fieldMap.get(fieldName) instanceof MapParsable)
+				  text += "\n" + indentSpacing + mapParsToChatString(layout, (MapParsable) fieldMap.get(fieldName), indentSpacing += indentSpacing);
+			 // Otherwise, build the layout using field name and its value as a string
+			 else
+				 text += "\n" + indentSpacing + layout.build(fieldName, fieldMap.get(fieldName).toString());
+		}
+		// Return the info
+		return text;
+	}
+
 	/* ================================================================================
 	 * Adding Prefixes, Suffixes or both to a single string or list of strings
 	 * ================================================================================
@@ -324,7 +382,7 @@ public class StringsUtil {
 		return strings.stream().map(s -> prefix + s + suffix).collect(Collectors.toList());
 	}
 	/* ================================================================================
-	 * 
+	 * Getting various minecraft elements
 	 * ================================================================================
 	 */
 	public static List<String> getOnlinePlayerNames(){
@@ -348,8 +406,9 @@ public class StringsUtil {
 	
 	public static List<String> getCollectableNames(List<? extends PatCollectable> list){
 		List<String> names = new ArrayList<String>();
-		for(PatCollectable collectable : list)
-			names.add(collectable.getName());
+		
+		list.forEach(c -> names.add(c.getName()));
+		
 		return names;
 	}
 
@@ -363,11 +422,42 @@ public class StringsUtil {
 			names.add(enchantment.getKey().getKey());
 		return names;
 	}
+	
+	public static String toChatString(LambdaStrings layout, PotionEffect... potionEffects) {
+		String potionsText = "";
+		for(PotionEffect potionEffect : potionEffects) {
+			if(!potionsText.isEmpty())
+				potionsText += "\n";
+			
+			potionsText += layout.build("&7"+potionEffect.getType().getName()+"&2", "");
+			potionsText += "\n  "+layout.build("duration", Integer.toString(potionEffect.getDuration()));
+			potionsText += "\n  "+layout.build("intensity", Integer.toString(potionEffect.getAmplifier()));
+			if(!potionEffect.isAmbient())
+				potionsText += "\n  "+layout.build("ambient", "false");
+			if(!potionEffect.hasParticles())
+				potionsText += "\n  "+layout.build("particles", "false");
+			if(!potionEffect.hasIcon())
+				potionsText += "\n  "+layout.build("icon", "false");
+		}
+		return potionsText;
+	}
+
+	/* ================================================================================
+	 * Enum Value Grabbers
+	 * ================================================================================
+	 */
 	public static <T extends Enum<?>> String[] enumValueStrings(T[] enums) {
 		String[] enumStrings = new String[enums.length];
 		
 		for(int i=0 ; i < enums.length ; i++)
 			enumStrings[i] = enums[i].toString();
+		
+		return enumStrings;
+	}
+	public static <T extends Enum<?>> List<String> enumValueStrings(List<T> enums) {
+		List<String> enumStrings = new ArrayList<String>();
+		
+		enums.forEach(e -> enumStrings.add(e.toString()));
 		
 		return enumStrings;
 	}
@@ -398,6 +488,10 @@ public class StringsUtil {
 
 		return object;
 	}
+	/* ================================================================================
+	 * Creates an Enum  from String safely (By handling any exceptions, printing them and returning null if it fails)
+	 * ================================================================================
+	 */
 	public static <T extends Enum<T>> T constructSafeEnum(@NotNull String string, @NotNull Class<T> clazz) {
 
 		try {
@@ -427,7 +521,11 @@ public class StringsUtil {
 
 		return object;
 	}
-	
+
+	/* ================================================================================
+	 * Lambda Interfaces
+	 * ================================================================================
+	 */
 	/**
 	 * Provides an interface to create strings with specific arguments injected into it through Lambda
 	 * @author Stephen

@@ -36,7 +36,20 @@ public enum Chat {
     public static boolean hasAlpha(String s){
     	return s.matches(".*[a-zA-Z]+.*");
     }
-
+    
+    public static String add(String s, ChatColor color) {
+    	return s.replaceAll("(&[a-r0-9])", "$1&"+color.getChar());
+    }
+    public static String replace(String s, ChatColor color) {
+    	return s.replaceAll("(&[a-r0-9])", "&"+color.getChar());
+    }
+    public static String add(String s, String color) {
+    	return s.replaceAll("(&[a-r0-9])", "$1"+color);
+    }
+    public static String replace(String s, String color) {
+    	return s.replaceAll("(&[a-r0-9])", color);
+    }
+    
 	public static List<String> translate(List<String> stringList) {
 		List<String> result = new ArrayList<String>();
 		for(String s : stringList)
