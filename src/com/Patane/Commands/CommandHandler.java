@@ -184,7 +184,7 @@ public abstract class CommandHandler implements CommandExecutor{
 				commandText.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(Commands.hoverFormat(childCmdInfo)).create()));
 				
 				// Sets the TextComponents Click Event to suggest the commands usage to the player
-				commandText.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, childCmdInfo.usage()));
+				commandText.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, getPackage(childName).buildString()));
 				
 				// Sends TextComponent to the player
 				Messenger.sendRaw(sender, commandText);
@@ -327,7 +327,7 @@ public abstract class CommandHandler implements CommandExecutor{
 			return string.replaceFirst("\\S+((?:\\s[\\[\\(\\<].*?[\\]\\)\\>])*)$", alias+"$1");
 		}
 		private String createCommandString(String usage) {
-			return usage.replaceAll("[\\[\\(\\<].*?[\\]\\)\\>]", "{ARGUMENT}");
+			return usage.replaceAll("[\\[\\(\\<].*?[\\]\\)\\>]", "{arg}");
 		}
 		
 		public boolean matches(String string) {
@@ -355,13 +355,13 @@ public abstract class CommandHandler implements CommandExecutor{
 		public String buildString(String... args) {
 			String newCommandString = commandString;
 			for(String arg : args) {
-				if(commandString.contains("{ARGUMENT}"))
-					newCommandString = newCommandString.replaceFirst("\\{ARGUMENT\\}", arg);
+				if(commandString.contains("{arg}"))
+					newCommandString = newCommandString.replaceFirst("\\{arg\\}", arg);
 				else
 					newCommandString += " "+arg;
 			}
-			newCommandString.replaceAll("\\{ARGUMENT\\}", "");
-			return newCommandString;
+			newCommandString = newCommandString.replaceAll(" \\{arg\\}", "");
+			return newCommandString+" ";
 		}
 		
 		public String[] aliases() {
