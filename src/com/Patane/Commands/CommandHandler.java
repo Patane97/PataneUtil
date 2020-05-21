@@ -127,7 +127,7 @@ public abstract class CommandHandler implements CommandExecutor{
 			Messenger.send(sender, "&cThe &7"+commandString+" &ccommand does not exist. Type /br help for all Brewery commands that you can use!");
 			return true;
 		}
-		handleCommand(sender, command.command(), Commands.prepareArgs(args));
+		handleCommand(sender, command.command(), Commands.groupQuoted(false, false, args));
 		return true;
 	}
 	/**

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.bukkit.command.Command;
@@ -77,20 +78,21 @@ public class TabCompleteHandler implements TabCompleter {
 		tabSaver.remove(sender);
 	}
 	@Override
-	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-		// By default, 'checking' is the last argument
-		String checking = args[args.length-1];
+	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
 		
+		// Suggestions are grabbed from tabSaver. They get updated whenever a new word has been added or removed (checked below)
 		List<String> suggestions = (tabSaver.containsKey(sender) ? tabSaver.get(sender).suggestions : new ArrayList<String>());
 		
-		//															plugin   arg#1
-		// If there is 1 argument then we are looking at the base /[plugin] command,
-		// Therefore, we should display all primary commands
+		/* ========================================================= plugin   arg[0] ======
+		 * If there is 1 argument then we are looking at the base /[plugin] command,
+		 * Therefore, we should display all primary commands
+		 * ================================================================================
+		 */
 		if(args.length == 1) {
 			tabSaver.remove(sender);
 			suggestions = Arrays.asList(CommandHandler.grabInstance().getParentCommandNames());
 		}
-		else {			
+		else {
 			/* ================================================================================
 			 * This is the heaviest form of computation from TabComplete.
 			 * If determined that the conditions have changed (in this case, the amount of arguments have changed), then we compute what words the plugin should suggest.
@@ -101,20 +103,23 @@ public class TabCompleteHandler implements TabCompleter {
 			// If the tabSaver does not contain any information for this commandsender (usually as the user is on the first argument)
 			// OR if the arguments length is different to what it previously was (+1 or -1 generally)
 			if(!tabSaver.containsKey(sender) || args.length != tabSaver.get(sender).argsLength) {
-				// Attempt to find the first CommandPackage based on the first argument
-				CommandPackage commandPackage = CommandHandler.getPackage(args[0]);
+				
+				// We prepare the args here in case any arguments are quoted as they write
+				String[] preparedArgs = Commands.groupQuoted(false, true, args);
+				
+				// Attempt to find the first CommandPackage based on the first prepared argument
+				CommandPackage commandPackage = CommandHandler.getPackage(preparedArgs[0]);
 				
 				// If command doesnt exist, return nothing.
 				if(commandPackage == null)
 					return suggestions;
 				
-				suggestions = handleTabComplete(sender, commandPackage.command(), Commands.prepareArgs(args));
+				// If the command does exist, go through handleTabComplete appropriately and return the suggestions
+				suggestions = handleTabComplete(sender, commandPackage.command(), preparedArgs);
 				
+				// Save the new args length and suggestions
 				tabSaver.put(sender, new tabInfo(args.length, suggestions));
 			}
-			/*
-			 * ================================================================================
-			 */
 		}
 		
 		/*
@@ -126,21 +131,49 @@ public class TabCompleteHandler implements TabCompleter {
 		 * eg. Typing 'com' could tabcomplete to 'mand' instead of the full 'command'
 		 * 
 		 */
+		// Start with an empty regexSuggestions list. This will eventually be populated with regex-filtered suggestions
 		List<String> regexSuggestions = new ArrayList<String>();
 		
-		// Quotes the string being checked. This stops regex from being used to create errors.
-		// The reason we dont allow regex is that it will work with autofill, but not with command execution, therefore theres no point.
-		checking = Pattern.quote(checking);
+		// Grouping quotations in the original args, KEEPING any quotations instead of removing (difference between preparedArgs above)
+		String[] checkableArgs = Commands.groupQuoted(true, true, args);
 		
+		// Getting the last argument from checkableArgs
+		String checking = checkableArgs[checkableArgs.length - 1];
+		
+		// Looping through each suggestion
 		for(String suggestion : suggestions) {
-			if(suggestion.matches("(?i)"+checking+".*")) {
-				regexSuggestions.add(suggestion.replaceFirst("(?i)"+checking.replaceFirst("((?:\\S*\\s)*).*$", "$1"), ""));
+			// If any suggestion contains checking followed by zero to many of any character {.*}
+			// Case insensitive {(?i)}
+			// checking is quoted here in case user tries to mess with this using their own regex
+			if(suggestion.matches("(?i)"+Pattern.quote(checking)+".*")) {
+				
+				/* ================================================================================
+				 * The following is here to ensure multi-worded arguments (grouped by unopened quotes)
+				 * will trim away any previous words which have already been typed by the player.
+				 * This makes the autofill experience feel MUCH more fluid as it moves with them.
+				 * ================================================================================
+				 */
+				// suggestionTrim starts with the full suggestion
+				String suggestionTrim = suggestion;
+				
+				// This matches each word within checking
+				// Compiling a Pattern which searches for one to many non-space characters {\\S+}
+				// followed by one to many space characters {\\s+}
+				// Case insensitive {(?i)}
+				Matcher matcher = Pattern.compile("(?i)\\S+\\s+").matcher(checking);
+				
+				// While there is a matched string found, move to that string as it will be used to trim our suggestion
+				// String is saved in group(0)
+				while(matcher.find())
+					// suggestionTrim (on first iteration, suggestion) trims itself by removing the found string, quoted and case insensitive
+					suggestionTrim = suggestionTrim.replaceFirst("(?i)"+Pattern.quote((matcher.group(0))), "");
+				
+				// Once all trimming is done, add it to regex Suggestions
+				regexSuggestions.add(suggestionTrim);
 			}
 		}
-		/*
-		 * ================================================================================
-		 */
 		
+		// Finally return the regexSuggestions list!
 		return regexSuggestions;
 		
 	}

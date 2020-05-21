@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
@@ -20,6 +19,7 @@ import com.Patane.util.YAML.MapParsable;
 import com.Patane.util.YAML.TypeParsable;
 import com.Patane.util.collections.PatCollectable;
 import com.Patane.util.ingame.ItemsUtil;
+import com.Patane.util.main.PataneUtil;
 import com.sun.istack.internal.NotNull;
 
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -100,7 +100,23 @@ public class StringsUtil {
 	public static String generateChatTitle(String title) {
 		return "&2=======[&a"+title+"&2]=======";
 	}
-
+	
+	/**
+	 * Groups any strings with the 'containing' string within strings with 'groupWith'
+	 */
+	public static List<String> groupAnyContaining(List<String> strings, String containing, String groupWith) {
+		List<String> newStrings = new ArrayList<String>();
+		
+		strings.forEach(s -> {
+			if(s.contains(containing))
+				newStrings.add(groupWith + s + groupWith);
+			else
+				newStrings.add(s);
+		});
+		
+		return newStrings;
+		
+	}
 
 	/* ================================================================================
 	 * String Formatting
@@ -385,12 +401,32 @@ public class StringsUtil {
 	 * Getting various minecraft elements
 	 * ================================================================================
 	 */
+	
+	/**
+	 * Gets all raw online player names (chat colours stripped)
+	 * @return String list of all online player names in raw form
+	 */
 	public static List<String> getOnlinePlayerNames(){
 		List<String> playerNames = new ArrayList<String>();
-		for(Player player : Bukkit.getOnlinePlayers()) {
-			playerNames.add(Chat.strip(player.getDisplayName()));
-		}
+		
+		PataneUtil.getInstance().getServer().getOnlinePlayers().forEach(p -> playerNames.add(Chat.strip(p.getDisplayName())));
+		
 		return playerNames;
+	}
+	
+	/**
+	 * Gets all raw online player names (chat colours stripped) that are currently not hidden to the player
+	 * @param player Player to check everyone elses hidden status on
+	 * @return String list of all online player names in raw form that are currently not hidden from given player
+	 */
+	public static List<String> getVisibleOnlinePlayerNames(Player player){
+		List<String> visiblePlayerNames = new ArrayList<String>();
+		
+		PataneUtil.getInstance().getServer().getOnlinePlayers().forEach(p -> {
+			if(player.canSee(p))
+				visiblePlayerNames.add(Chat.strip(p.getDisplayName()));
+		});
+		return visiblePlayerNames;
 	}
 	
 	private static String[] potionEffectTypeStrings;

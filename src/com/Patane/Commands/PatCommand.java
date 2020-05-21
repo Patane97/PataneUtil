@@ -83,7 +83,6 @@ public abstract class PatCommand {
 			// ... then list all the child commands!
 			return thisPackage.trimmedChildren();
 		}
-		
 		// Attempts to find the child command as the latest argument given.
 		// Note: The latest argument will always lead to a child command unless the command has no children, which is checked above.
 		CommandPackage childPackage = CommandHandler.getChildPackage(this.getClass(), args[maxArgs]);

@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import com.Patane.util.YAML.MapParsable;
@@ -34,6 +35,29 @@ public class GeneralUtil {
 			return clazz.getSimpleName();
 		}
 	}
+	
+	/**
+	 * Gets all online players that are not hidden from given player
+	 * @param player Player to check everyone elses hidden status on
+	 * @return Player List of all players currently not hidden from given player
+	 */
+	public static List<Player> getVisibleOnlinePlayers(Player player){
+		List<Player> visiblePlayers = new ArrayList<Player>();
+		
+		PataneUtil.getInstance().getServer().getOnlinePlayers().forEach(p -> {
+			if(player.canSee(p))
+				visiblePlayers.add(p);
+		});
+		return visiblePlayers;
+	}
+	public static List<Player> getOnlinePlayers(){
+		List<Player> players = new ArrayList<Player>();
+		
+		PataneUtil.getInstance().getServer().getOnlinePlayers().forEach(p -> players.add(p));
+		
+		return players;
+	}
+	
 	public static List<LivingEntity> getLiving(List<Entity> entities){
 		List<LivingEntity> living = new ArrayList<LivingEntity>();
 		for(Entity entity : entities)
