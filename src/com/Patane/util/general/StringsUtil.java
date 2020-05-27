@@ -1,5 +1,6 @@
 package com.Patane.util.general;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -16,7 +17,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import com.Patane.util.YAML.MapParsable;
-import com.Patane.util.YAML.TypeParsable;
 import com.Patane.util.collections.PatCollectable;
 import com.Patane.util.ingame.ItemsUtil;
 import com.Patane.util.main.PataneUtil;
@@ -195,6 +195,9 @@ public class StringsUtil {
 		return compareFormatter(layout, compare, newStrings);
 	}
 	/**
+	 *  *** Comment and re-write description using the TABLE analogy. 
+	 *  *** Also ensure above methods use same understanding of 'each string[] is a column'
+	 * 
 	 * Compares and formats multiple arrays of strings into a specified layout/compare layout.
 	 * Note: If there are 3 values within each array of 'strings', there must be 2 values given in 'layout' and 3 in 'compare'
 	 * 
@@ -205,30 +208,95 @@ public class StringsUtil {
 	 */
 	public static String compareFormatter(LambdaStrings layout, LambdaStrings compare, String[]... strings) {
 		String returning = "";
-		for(int i=0 ; i<strings.length ; i++) {
-			// If the given array has 2 values we simply compare the two
-			if(strings[i].length == 2) {
-				returning += (strings[i][0] == strings[i][1] 
-								? layout.build(strings[i][1]) 
-								: compare.build(strings[i][0], strings[i][1]));
-			} 
-			// If the given array has 3 or more values, we compare the indexes 1 & 2, and input index 0 into the layout first
-			// Generally used if there are headings beforehand
-			else if (strings[i].length >= 3) {
-			returning += (strings[i][1] == strings[i][2] 
-							? layout.build(strings[i][0], strings[i][2]) 
-							: compare.build(strings[i][0], strings[i][1], strings[i][2]));
-			// If for any reason there is just one value, simply print it
-			} else if (strings[i].length == 1)
-				returning += layout.build(strings[i][0]);
-			// And no values, we print nothing
-			else
-				returning += "&8Nothing!";
-			
-		}
+		int length;
+		switch(strings.length) {
+			case 0:	return returning;
+			case 1:	return formatter(layout, strings[0]);
+			case 2: 
+				length = Math.min(strings[0].length, strings[1].length);
+				for(int i=0 ; i<length ; i++) {
+					returning += (strings[0][i].equals(strings[1][i])
+									? layout.build(strings[1][i])
+									: compare.build(strings[0][i], strings[1][i]));
+				}
+				break;
+			case 3:
+			default:
+				length = Math.min(Math.min(strings[0].length, strings[1].length), strings[2].length);
+				for(int i=0 ; i<length ; i++) {
+					returning += (strings[1][i].equals(strings[2][i])
+									? layout.build(strings[0][i], strings[2][i])
+									: compare.build(strings[0][i], strings[1][i], strings[2][i]));
+				}
+			}
 		return returning;
+		
+//		String returning = "";
+//		for(int i=0 ; i<strings.length ; i++) {
+//			// If the given array has 2 values we simply compare the two
+//			if(strings[i].length == 2) {
+//				returning += (strings[i][0] == strings[i][1] 
+//								? layout.build(strings[i][1]) 
+//								: compare.build(strings[i][0], strings[i][1]));
+//			} 
+//			// If the given array has 3 or more values, we compare the indexes 1 & 2, and input index 0 into the layout first
+//			// Generally used if there are headings beforehand
+//			else if (strings[i].length >= 3) {
+//			returning += (strings[i][1] == strings[i][2] 
+//							? layout.build(strings[i][0], strings[i][2]) 
+//							: compare.build(strings[i][0], strings[i][1], strings[i][2]));
+//			// If for any reason there is just one value, simply print it
+//			} else if (strings[i].length == 1)
+//				returning += layout.build(strings[i][0]);
+//			// And no values, we print nothing
+//			else
+//				returning += "&8Nothing!";
+//			
+//		}
+//		return returning;
+	}
+	
+	/**
+	 * Prepares a MapParsable object for being passed into any of the formatter methods. Linked below
+	 * @link #formatter(LambdaStrings, String...)
+	 * @link #formatter(LambdaStrings, String[]...)
+	 * @link #compareFormatter(LambdaStrings, LambdaStrings, String...)
+	 * @link #compareFormatter(LambdaStrings, LambdaStrings, String[]...)
+	 * @param mapParsable MapParsable to prepare values for
+	 * @return String interpretation of all values within mapParsable
+	 */
+	public static String[] prepValueStrings(MapParsable mapParsable) {
+		// Grabbing fields and values in appropriate format for chat
+		Map<String, String> fieldChatStrings = mapParsable.getValueStrings();
+		
+		// Starting field value strings as size of fields size
+		String[] valueChatStrings = new String[fieldChatStrings.size()];
+		
+		// Starting iteration for fieldValueStrings at 0
+		int i=0;
+		// Looping through each field
+		for(String fieldName : fieldChatStrings.keySet()) {
+			// Saving each value into a toString format
+			valueChatStrings[i] = fieldChatStrings.get(fieldName);
+			
+			// Iterate
+			i++;
+		}
+		// Return fieldValueStrings
+		return valueChatStrings;
+		
 	}
 
+	public static String[] getFieldNames(Class<?> clazz) {
+		Field[] fields = clazz.getFields();
+		String[] fieldNames = new String[fields.length];
+		
+		for(int i=0 ; i<fieldNames.length ; i++)
+			fieldNames[i] = fields[i].getName();
+		
+		return fieldNames;
+	}
+	
 	/* ================================================================================
 	 * Hover String Format 
 	 * (Currently just AttributeModifier, need to convert all into above formatting)
@@ -305,83 +373,28 @@ public class StringsUtil {
 	 * ================================================================================
 	 */
 	public static TextComponent stringToComponent(String text) {
-		return new TextComponent(Chat.translate(text));
+		return new TextComponent(TextComponent.fromLegacyText(Chat.translate(text)));
 	}
 	public static TextComponent hoverText(String text, String hover) {
-		TextComponent textComponent = new TextComponent(Chat.translate(text));
+		TextComponent textComponent = new TextComponent(TextComponent.fromLegacyText(Chat.translate(text)));
 		textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(Chat.translate(hover)).create()));
 		return textComponent;
 	}
 	public static TextComponent autoCompleteText(String text, String autoCompleteText) {
-		TextComponent textComponent = new TextComponent(Chat.translate(text));
+		TextComponent textComponent = new TextComponent(TextComponent.fromLegacyText(Chat.translate(text)));
 		textComponent.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, autoCompleteText));
 		return textComponent;
 	}
 	public static TextComponent autoCompleteHoverText(String text, String hover, String autoCompleteText) {
-		TextComponent textComponent = new TextComponent(Chat.translate(text));
+		TextComponent textComponent = new TextComponent(TextComponent.fromLegacyText(Chat.translate(text)));
 		textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(Chat.translate(hover)).create()));	
 		textComponent.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, autoCompleteText));
 		return textComponent;
 	}
 	public static TextComponent hoverItem(String text, ItemStack item) {
-		TextComponent textComponent = new TextComponent(Chat.translate(text));
+		TextComponent textComponent = new TextComponent(TextComponent.fromLegacyText(Chat.translate(text)));
 		textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new ComponentBuilder(ItemsUtil.ItemStackToJSON(item)).create()));
 		return textComponent;
-	}
-	/* ================================================================================
-	 * TypeParsable & MapParsable Generators
-	 * ================================================================================
-	 */
-	/**
-	 * 
-	 * @param layout
-	 * @param type
-	 * @param deep
-	 * @return Null if type is null. The type's information otherwise
-	 */
-	public static String typeParsToChatString(LambdaStrings layout, TypeParsable type, boolean deep) {
-		// If the type is null, send the type with 'undefined'
-		if(type == null)
-			return null;
-		
-		// Start with the 'title' consisting of type and type Name
-		String info = layout.build(type.type(), type.name());
-		
-		// If deep, we need to show all the types values
-		if(deep)
-			// So go to mapParsInfoDeep with the proper indentation and add it to info
-			// We don't bother recognizing it as a typeParsable as we do not need to type 'type anymore
-			info += mapParsToChatString(layout, type, "  ");
-		
-		// Return the info
-		return info;
-	}
-	
-	/**
-	 * 
-	 * @param layout
-	 * @param mapParsable
-	 * @param indentSpacing
-	 * @return
-	 */
-	public static String mapParsToChatString(LambdaStrings layout, MapParsable type, String indentSpacing) {
-		// Save all the fields in a map
-		Map<String, Object> fieldMap = type.mapFields();
-		
-		// Starting with an empty string
-		String text = "";
-		
-		// Loop through each field
-		for(String fieldName : fieldMap.keySet()) {
-			// If the field is also a MapParsable, run this same method and add the result to text
-			 if(fieldMap.get(fieldName) instanceof MapParsable)
-				  text += "\n" + indentSpacing + mapParsToChatString(layout, (MapParsable) fieldMap.get(fieldName), indentSpacing += indentSpacing);
-			 // Otherwise, build the layout using field name and its value as a string
-			 else
-				 text += "\n" + indentSpacing + layout.build(fieldName, fieldMap.get(fieldName).toString());
-		}
-		// Return the info
-		return text;
 	}
 
 	/* ================================================================================
@@ -525,7 +538,7 @@ public class StringsUtil {
 		return object;
 	}
 	/* ================================================================================
-	 * Creates an Enum  from String safely (By handling any exceptions, printing them and returning null if it fails)
+	 * Creates an Enum from String safely (By handling any exceptions, printing them and returning null if it fails)
 	 * ================================================================================
 	 */
 	public static <T extends Enum<T>> T constructSafeEnum(@NotNull String string, @NotNull Class<T> clazz) {
@@ -557,6 +570,7 @@ public class StringsUtil {
 
 		return object;
 	}
+	
 
 	/* ================================================================================
 	 * Lambda Interfaces

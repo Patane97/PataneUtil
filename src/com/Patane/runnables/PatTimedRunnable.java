@@ -6,17 +6,17 @@ public abstract class PatTimedRunnable extends PatRunnable{
 	private float ticksLeft;
 	
 	public PatTimedRunnable(float delay, float rate, float duration) {
-		super(delay*20f, rate*20f);
-		this.duration = duration*20f;
-		this.rate = rate*20f;
+		super(delay, rate);
+		this.duration = duration;
+		this.rate = rate;
 		this.ticksLeft = this.duration;
 	}
 
 	public void reset(){
 		ticksLeft = duration;
 	}
-	public void subtract(float seconds){
-		ticksLeft -= seconds*20f;
+	public void subtract(float ticks){
+		ticksLeft -= ticks;
 	}
 
 	public float duration(){

@@ -20,7 +20,10 @@ public class LocationsUtil {
 	 */
 	public static List<LivingEntity> getRadius(Location location, float radius){
 //	    int chunkRadius = radius < 16 ? 1 : (radius - (radius % 16)) / 16;
-		// RADIUS CURRENTLY IS A 'SQUARE RADIUS'. UPDATE LATER.
+		// *** RADIUS CURRENTLY IS A 'SQUARE RADIUS'. UPDATE LATER.
+		//     alternatively, we can switch radius to something similar to trigger
+		//     where there are different types such as "box radius", "radius", line
+		//     and even moving components with "radius of 2 blocks, moving in direction struck for 10 blocks at rate of 1 per second"
 		location.getWorld().spawnParticle(Particle.CRIT, location, 100, 0,0,0, 0.1);
 		
 	    ArrayList<LivingEntity> radiusEntities = new ArrayList<LivingEntity>();

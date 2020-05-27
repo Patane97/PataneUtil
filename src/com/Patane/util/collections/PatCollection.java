@@ -2,6 +2,7 @@ package com.Patane.util.collections;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import com.Patane.util.general.Messenger;
 
@@ -42,11 +43,11 @@ public class PatCollection<T extends PatCollectable> {
 		return false;
 	}
 	
-	public ArrayList<T> getAllItems(){
+	public List<T> getAllItems(){
 		return new ArrayList<T>(collection.values());
 	}
 	
-	public ArrayList<String> getAllIDs(){
+	public List<String> getAllIDs(){
 		return new ArrayList<String>(collection.keySet());
 	}
 }

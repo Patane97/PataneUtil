@@ -75,7 +75,7 @@ public class GeneralUtil {
 			if(values.length > i)
 				fieldValues.put(name, values[i]);
 			else
-				throw new IllegalArgumentException("&cPlease provide a"+(StringsUtil.isVowel(name.charAt(0)) ? "n " : " ")+name+" for this "+clazz.getSimpleName()+".");
+				throw new IllegalArgumentException("&ePlease provide a"+(StringsUtil.isVowel(name.charAt(0)) ? "n " : " ")+name+" for &7"+clazz.getSimpleName()+"&e.");
 		}
 		
 		// Creating T object ready to be created using Java Reflection and returned.
@@ -95,10 +95,7 @@ public class GeneralUtil {
 		}
 		// If the object has an exception in its initilizer, then this triggers.
 		catch (InvocationTargetException e){
-			// FIND A WAY TO CONVERT CAUSE INTO AN EXCEPTION SO THINGS MAKE MORE SENSE!!!
-			InvocationTargetException el = new InvocationTargetException(null, e.getCause().getMessage());
-			el.setStackTrace(e.getCause().getStackTrace());
-			throw el;
+			throw e;
 		}
 		// All possible exceptions simply printing the stack trace.
 		catch (Exception e) {

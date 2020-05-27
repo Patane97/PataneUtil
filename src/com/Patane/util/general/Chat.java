@@ -9,6 +9,7 @@ public enum Chat {
 	PREFIX("&7"),
 	PREFIX_SMALL("&7");
 	
+	
 	private String value;
 	
 	Chat(String value){
@@ -22,7 +23,8 @@ public enum Chat {
     public String toString() {
         return Chat.translate(value);
     }
-
+    
+	public static String INDENT = "  ";
     
     public static String translate(String s){
         return ChatColor.translateAlternateColorCodes('&', s);
@@ -67,5 +69,15 @@ public enum Chat {
 		for(String s : stringList)
 			result.add(strip(s));
 		return result;
+	}
+	public static String indent(int indentCount) {
+		String indent = "";
+		int i=0;
+		while(i<indentCount) {
+			indent += INDENT;
+			i++;
+		}
+		return indent;
+		
 	}
 }

@@ -424,32 +424,32 @@ public abstract class YAMLFile extends YAMLParser{
 			// Creating T object ready to be created using Java Reflection and returned.
 			// If there are any problems creating object, null will be returned.
 			T object = null;
-			try{
-				try{
-					// Attempts to create a new instance of the T object using the FieldValues.
-					object = clazz.getConstructor(Map.class).newInstance(fieldValues);
-				} 
-				// This means that there is no constructor with values needed for the T object.
-				// Therefore, the constructor must be an empty, default constructor.
-				catch (NoSuchMethodException e){
-					// Attempts to create a new instance of the T object using the default constructor.
-					object = clazz.getConstructor().newInstance();
-				}
-			}
-			// If the object has an exception in its initilizer, then this triggers.
-			catch (InvocationTargetException e){
-				// FIND A WAY TO CONVERT CAUSE INTO AN EXCEPTION SO THINGS MAKE MORE SENSE!!!
-				InvocationTargetException el = new InvocationTargetException(null, e.getCause().getMessage());
-				el.setStackTrace(e.getCause().getStackTrace());
-				throw el;
-			}
-			// All possible exceptions simply printing the stack trace.
-			catch (Exception e) {
-				e.printStackTrace();
-			}
+			
+			object = getFromClass(clazz, fieldValues);
+			
 			return object;
 
 	}
+	 
+	 private static <T extends MapParsable> T getFromClass(Class<? extends T> clazz, Map<String, String> fieldValues) {
+		 try{
+			try{
+				// Attempts to create a new instance of the T object using the FieldValues.
+				return clazz.getConstructor(Map.class).newInstance(fieldValues);
+			} 
+			// This means that there is no constructor with values needed for the T object.
+			// Therefore, the constructor must be an empty, default constructor.
+			catch (NoSuchMethodException e){
+				// Attempts to create a new instance of the T object using the default constructor.
+				return clazz.getConstructor().newInstance();
+			}
+		}
+		// All possible exceptions simply printing the stack trace.
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		 return null;
+	 }
 	 /**
 	  * Uses Java Reflection to Project a MapParsable class to a YML file.
 	  * @param section Section to place data in.
@@ -471,17 +471,17 @@ public abstract class YAMLFile extends YAMLParser{
 			if(object instanceof TypeParsable) {
 				// This checks if the object and default are the same type.
 				// If so, we can save the type name in the default section.
-				if(object.name().equals(defaultObject.name()))
-					defaultSection.set("type", object.name());
+				if(object.className().equals(defaultObject.className()))
+					defaultSection.set("type", object.className());
 				// Otherwise, save it in the current section.
 				else
-					section.set("type", object.name());
+					section.set("type", object.className());
 			}
 			
 			// Saves each field/value within object that is different to defaultObject.
 			Map<String, Object> fields = object.getDifferentFields(defaultObject);
 			// Saves each field/value within defaultObject that is different to object.
-			Map<String, Object> defaultFields = defaultObject.mapFields();
+			Map<String, Object> defaultFields = defaultObject.getFieldMap();
 			
 			// Loops through fields and sets each field/value
 			for(String field : fields.keySet())
