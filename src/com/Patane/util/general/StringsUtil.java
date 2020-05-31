@@ -122,138 +122,146 @@ public class StringsUtil {
 	 * String Formatting
 	 * ================================================================================
 	 */
+	
 	/**
-	 * Same as {@link #formatter(LambdaStrings, String...)} but for a single Array entry.
+	 * Treating the layout as a String Array of 1 length, creates a single Column using the
+	 * given strings passed through the layout
+	 * @param layout
+	 * @param singleColumn
+	 * @return
 	 */
-	public static String singleFormatter(LambdaStrings layout, String... strings) {
-		// Creating double array in format for proper formatter
-		String[][] newStrings = new String[1][strings.length];
+	public static String singleColumnFormatter(int indentCount, LambdaStrings layout, String... singleColumn) {
+		// Creates a single column, with rows of 'singleColumn' length
+		String[][] tableStrings = new String[1][singleColumn.length];
 		
-		// Loop through each string and turn it into a single array and save into newStrings
-		for(int i=0 ; i<strings.length ; i++)
-			newStrings[0][i] = strings[i];
+		// Loop through each 'singleColumn' and save element into single row
+		for(int i=0 ; i<singleColumn.length ; i++)
+			tableStrings[0][i] = singleColumn[i];
 		
-		// Return formatter using new double array strings
-		return formatter(layout, newStrings);
+		// Return formatter using new table of strings
+		return tableFormatter(indentCount, layout, tableStrings);
 	}
+
 	/**
-	 * Same as {@link #formatter(LambdaStrings, String...)} but treats each item in strings as a 1 length array.
-	 */
-	public static String formatter(LambdaStrings layout, String... strings) {
-		// Creating double array in format for proper formatter
-		String[][] newStrings = new String[strings.length][];
-		
-		// Loop through each string and turn it into a single array and save into newStrings
-		for(int i=0 ; i<strings.length ; i++)
-			newStrings[i] = new String[] {strings[i]};
-		
-		// Return formatter using new double array strings
-		return formatter(layout, newStrings);
-	}
-	/**
-	 * Formats multiple arrays of strings into a specified layout.
 	 * 
-	 * @param layout LambdaStrings layout to confide to (eg. s -> "This is "+s[0]+" a "+s[1]+" test!")
-	 * @param strings Array of each bundle of strings (double array) (eg. new String[]{"TEST1", "TEST2"}, new String[]{"TEST3","TEST4"})
-	 * @return The strings formatted according to layout into a single String
+	 * Treating the layout as a String Array of 'singleRow' length, creates a single Row using the
+	 * given strings passed through the layout
+	 * @param layout
+	 * @param singleRow
+	 * @return
 	 */
-	public static String formatter(LambdaStrings layout, String[]... strings) {
-		if(strings == null)
-			return "&8Nothing here!";
-		String returning = "";
-		for(int i=0 ; i<strings.length ; i++)
-			returning += layout.build(strings[i]);
-		
-		return returning;
+	public static String singleRowFormatter(int indentCount, LambdaStrings layout, String... singleRow) {
+		// Creating 'singleRow' length worth of columns, with only a single row in each
+		String[][] tableStrings = new String[singleRow.length][1];
+		// Loop through each 'singleRow' and save element into single column
+		for(int i=0 ; i<singleRow.length ; i++)
+			tableStrings[i][0] = singleRow[i];
+
+		// Return formatter using new table of strings
+		return tableFormatter(indentCount, layout, tableStrings);
 	}
+	
 	/**
-	 * Same as {@link #compareFormatter(LambdaStrings, LambdaStrings, String[]...)} but for a single Array entry.
+	 * Treating the layout as a String Array of 'columns' length, creates a "table" using each element of
+	 * 'columns' as an individual column
+	 * @param layout
+	 * @param columns
+	 * @return
 	 */
-	public static String compareSingleFormatter(LambdaStrings layout, LambdaStrings compare, String... strings) {
-		// Creating double array in format for proper compareFormatter
-		String[][] newStrings = new String[1][strings.length];
+	public static String tableFormatter(int indentCount, LambdaStrings layout, String[]... columns) {
+		String tableString = "";
+		String[] nextRow = new String[columns.length];
 		
-		// Loop through each string and turn it into a single array and save into newStrings
-		for(int i=0 ; i<strings.length ; i++)
-			newStrings[0][i] = strings[i];
+		// Using the first column's length as a defining length, we loop
+		// We use the column length as we want to cycle through each row and collect each j element in the column
+		for(int i=0 ; i<columns[0].length ; i++) {
+			
+			// Cycling through each column 'j' to grab the value in row 'i' and save into nextRow[j]
+			for(int j=0 ; j<nextRow.length ; j++)
+				nextRow[j] = columns[j][i];
+			
+			// Add new row through layout build
+			tableString += Chat.indent(indentCount) + layout.build(nextRow);
+		}
 		
-		// Return compareFormatter using new double array strings
-		return compareFormatter(layout, compare, newStrings);
+		// Return the table
+		return tableString;
 	}
+	
 	/**
-	 * Same as {@link #compareFormatter(LambdaStrings, LambdaStrings, String[]...)} but treats each item in strings as a 1 length array.
+	 * Treating the layout as a String Array of 1 length, creates a single Column using the
+	 * given strings passed through the layout. This method should not really be used over
+	 * {@link #singleColumnFormatter(LambdaStrings, String...)} as they do the same thing considering
+	 * 'compare' cannot ever be accessed with a single column
+	 * @param layout
+	 * @param layout
+	 * @param singleColumn
+	 * @return
 	 */
-	public static String compareFormatter(LambdaStrings layout, LambdaStrings compare, String... strings) {
-		// Creating double array in format for proper formatter
-		String[][] newStrings = new String[strings.length][];
-		
-		// Loop through each string and turn it into a single array and save into newStrings
-		for(int i=0 ; i<strings.length ; i++)
-			newStrings[i] = new String[] {strings[i]};
-		
-		// Return formatter using new double array strings
-		return compareFormatter(layout, compare, newStrings);
+	public static String singleColumnCompareFormatter(int indentCount, LambdaStrings layout, LambdaStrings compare, String... singleColumn) {
+		return singleColumnFormatter(indentCount, layout, singleColumn);
 	}
+
 	/**
-	 *  *** Comment and re-write description using the TABLE analogy. 
-	 *  *** Also ensure above methods use same understanding of 'each string[] is a column'
 	 * 
-	 * Compares and formats multiple arrays of strings into a specified layout/compare layout.
-	 * Note: If there are 3 values within each array of 'strings', there must be 2 values given in 'layout' and 3 in 'compare'
-	 * 
-	 * @param layout LambdaStrings layout to confide to (eg. s -> "This is "+s[0]+" a "+s[1]+" test!")
-	 * @param compare LambdaStrings compare layout to confide to
-	 * @param strings Array of each bundle of strings (double array) (eg. new String[]{"TEST1", "TEST2"}, new String[]{"TEST3","TEST4"})
-	 * @return The strings formatted according to layout into a single String
+	 * Treating the layout as a String Array of 'singleRow' length, creates a single Row using the
+	 * given strings passed through the layout.
+	 * If 'singleRow' is of length 2, it compares the 0th and 1st element. If they are different, shows 0th compared to 1st using compare layout
+	 * If 'singleRow' is of length 3, it compares the 1st and 2nd element, with having the 0th element as a title.
+	 * @param layout
+	 * @param compare
+	 * @param singleRow
+	 * @return
 	 */
-	public static String compareFormatter(LambdaStrings layout, LambdaStrings compare, String[]... strings) {
-		String returning = "";
+	public static String singleRowCompareFormatter(int indentCount, LambdaStrings layout, LambdaStrings compare, String... singleRow) {
+		// Creating 'singleRow' length worth of columns, with only a single row in each
+		String[][] tableStrings = new String[singleRow.length][1];
+
+		// Loop through each 'singleRow' and save element into single column
+		for(int i=0 ; i<singleRow.length ; i++)
+			tableStrings[i][0] = singleRow[i];
+
+		// Return formatter using new table of strings
+		return tableCompareFormatter(indentCount, layout, compare, tableStrings);
+	}
+	/**
+	 * Treating the layout as a String Array of 'columns' length, creates a "table" using each element of
+	 * 'columns' as an individual column. Also uses the compare layout to compare if columns are of length 2 or greater.
+	 * 
+	 * *** Rewrite case 2 and 3 to be similar to 'tableFormatter'
+	 * @param layout
+	 * @param compare
+	 * @param singleRow
+	 * @return
+	 */
+	public static String tableCompareFormatter(int indentCount, LambdaStrings layout, LambdaStrings compare, String[]... columns) {
+		String tableString = "";
 		int length;
-		switch(strings.length) {
-			case 0:	return returning;
-			case 1:	return formatter(layout, strings[0]);
+		switch(columns.length) {
+			case 0:	return tableString;
+			case 1:	return singleColumnFormatter(indentCount, layout, columns[0]);
 			case 2: 
-				length = Math.min(strings[0].length, strings[1].length);
+				length = Math.min(columns[0].length, columns[1].length);
 				for(int i=0 ; i<length ; i++) {
-					returning += (strings[0][i].equals(strings[1][i])
-									? layout.build(strings[1][i])
-									: compare.build(strings[0][i], strings[1][i]));
+					if(!tableString.isEmpty())
+						tableString +="\n";
+					tableString += Chat.indent(indentCount) + (columns[0][i].equals(columns[1][i])
+									? layout.build(columns[1][i])
+									: compare.build(columns[0][i], columns[1][i]));
 				}
 				break;
 			case 3:
 			default:
-				length = Math.min(Math.min(strings[0].length, strings[1].length), strings[2].length);
+				length = Math.min(Math.min(columns[0].length, columns[1].length), columns[2].length);
 				for(int i=0 ; i<length ; i++) {
-					returning += (strings[1][i].equals(strings[2][i])
-									? layout.build(strings[0][i], strings[2][i])
-									: compare.build(strings[0][i], strings[1][i], strings[2][i]));
+					if(!tableString.isEmpty())
+						tableString +="\n";
+					tableString += Chat.indent(indentCount) + (columns[1][i].equals(columns[2][i])
+									? layout.build(columns[0][i], columns[2][i])
+									: compare.build(columns[0][i], columns[1][i], columns[2][i]));
 				}
 			}
-		return returning;
-		
-//		String returning = "";
-//		for(int i=0 ; i<strings.length ; i++) {
-//			// If the given array has 2 values we simply compare the two
-//			if(strings[i].length == 2) {
-//				returning += (strings[i][0] == strings[i][1] 
-//								? layout.build(strings[i][1]) 
-//								: compare.build(strings[i][0], strings[i][1]));
-//			} 
-//			// If the given array has 3 or more values, we compare the indexes 1 & 2, and input index 0 into the layout first
-//			// Generally used if there are headings beforehand
-//			else if (strings[i].length >= 3) {
-//			returning += (strings[i][1] == strings[i][2] 
-//							? layout.build(strings[i][0], strings[i][2]) 
-//							: compare.build(strings[i][0], strings[i][1], strings[i][2]));
-//			// If for any reason there is just one value, simply print it
-//			} else if (strings[i].length == 1)
-//				returning += layout.build(strings[i][0]);
-//			// And no values, we print nothing
-//			else
-//				returning += "&8Nothing!";
-//			
-//		}
-//		return returning;
+		return tableString;
 	}
 	
 	/**
@@ -284,9 +292,8 @@ public class StringsUtil {
 		}
 		// Return fieldValueStrings
 		return valueChatStrings;
-		
 	}
-
+	
 	public static String[] getFieldNames(Class<?> clazz) {
 		Field[] fields = clazz.getFields();
 		String[] fieldNames = new String[fields.length];
@@ -295,6 +302,89 @@ public class StringsUtil {
 			fieldNames[i] = fields[i].getName();
 		
 		return fieldNames;
+	}
+	
+	public static String[] prepValueStrings(AttributeModifier modifier) {
+		return new String[] {modifier.getName()
+						, Double.toString(modifier.getAmount())
+						, modifier.getOperation().toString()
+						, (modifier.getSlot() == null ? "ALL" : modifier.getSlot().toString())};
+	}
+	public static String[] getFieldNames(AttributeModifier modifier) {
+		return new String[]{"Modifier","Amount","Operation","Slot"};
+	}
+	
+	public static String[] prepValueStrings(PotionEffect potionEffect) {
+		return new String[] {potionEffect.getType().toString()
+						, Integer.toString(potionEffect.getDuration())
+						, Integer.toString(potionEffect.getAmplifier())
+						, Boolean.toString(potionEffect.isAmbient())
+						, Boolean.toString(potionEffect.hasParticles())
+						, Boolean.toString(potionEffect.hasIcon())};
+	}
+	public static String[] getFieldNames(PotionEffect potionEffect) {
+		return new String[] {"Type", "Duration", "Amplifier", "Ambient", "Particles", "Icon"};
+	}
+	
+
+	
+	public static String toChatString(int indentCount, boolean deep, LambdaStrings layout, Attribute attribute, AttributeModifier... attributeModifiers) {
+		String chatString = (attribute != null ? Chat.indent(indentCount) + layout.build("Attribute", attribute.toString()) : "");
+		if(!deep)
+			return chatString + " (" + attributeModifiers.length + ")";
+		if(attributeModifiers.length == 0)
+			return chatString;
+		for(AttributeModifier modifier : attributeModifiers) {
+			if(!chatString.isEmpty())
+				chatString += "\n";
+			
+			chatString += Chat.indent(indentCount+1) + layout.build("Modifier", modifier.getName())
+						+ "\n"+Chat.indent(indentCount+2) + layout.build("Amount", Double.toString(modifier.getAmount()))
+						+ "\n"+Chat.indent(indentCount+2) + layout.build("Operation", modifier.getOperation().toString())
+						+ "\n"+Chat.indent(indentCount+2) + layout.build("Slot", (modifier.getSlot() == null ? "ALL" : modifier.getSlot().toString()));
+		}
+		return chatString;
+	}
+
+	
+	public static String toChatString(int indentCount, boolean deep, LambdaStrings layout, PotionEffect... potionEffects) {
+		String chatString = "";
+		for(PotionEffect potionEffect : potionEffects) {
+			if(!chatString.isEmpty())
+				chatString += "\n";
+			if(!deep) {
+				chatString += Chat.indent(indentCount) + layout.build("&7"+potionEffect.getType().getName(), potionEffect.getDuration()+", "+potionEffect.getAmplifier());
+				continue;
+			}
+			chatString += Chat.indent(indentCount) + layout.build("&7"+potionEffect.getType().getName(), "");
+			if(deep) {
+				chatString += "\n"+Chat.indent(indentCount+1) + layout.build("duration", Integer.toString(potionEffect.getDuration())+" ticks");
+				chatString += "\n"+Chat.indent(indentCount+1) + layout.build("amplifier", Integer.toString(potionEffect.getAmplifier()));
+				if(!potionEffect.isAmbient())
+					chatString += "\n"+Chat.indent(indentCount+1) + layout.build("ambient", "false");
+				if(!potionEffect.hasParticles())
+					chatString += "\n"+Chat.indent(indentCount+1) + layout.build("particles", "false");
+				if(!potionEffect.hasIcon())
+					chatString += "\n"+Chat.indent(indentCount+1) + layout.build("icon", "false");
+			}
+		}
+		return chatString;
+	}
+	public static String toChatString(int indentCount, boolean deep, LambdaStrings layout, Enchantment enchantment, int level) {
+		if(deep)
+			return Chat.indent(indentCount) + layout.build("Enchantment", enchantment.getKey().getKey())
+				+ "\n"+Chat.indent(indentCount+1) + layout.build("Level", Integer.toString(level));
+		return Chat.indent(indentCount) + layout.build("Enchantment", enchantment.getKey().getKey() + "("+level+")");
+	}
+	public static String toChatString(int indentCount, boolean deep, LambdaStrings layout, Map<Enchantment, Integer> enchantments) {
+		String chatString = "";
+		for(Enchantment enchantment : enchantments.keySet()) {
+			if(!chatString.isEmpty())
+				chatString += "\n";
+			
+			chatString += toChatString(indentCount, deep, layout, enchantment, enchantments.get(enchantment));
+		}
+		return chatString;
 	}
 	
 	/* ================================================================================
@@ -306,68 +396,68 @@ public class StringsUtil {
 	 * Formatting a modifier for an attribute to a certain layout ready for hover text.
 	 * NOTE: If the '&e>' dial colour is an issue, can add another parameter for 'dial colour'
 	 */
-	public static String toHoverString(Attribute attribute, AttributeModifier modifier, LambdaStrings layout) {
-		if(attribute == null || modifier == null)
-			return "&8Nothing here!";
-		
-		return layout.build("Attribute", attribute.toString())
-			  +"\n&e> "+layout.build("Modifier", modifier.getName())
-			    +"\n   "+layout.build("Amount", Double.toString(modifier.getAmount()))
-			    +"\n   "+layout.build("Operation", modifier.getOperation().toString())
-			    +"\n   "+layout.build("Slot", (modifier.getSlot() == null ? "ALL" : modifier.getSlot().toString()));
-	}
-	
-	/**
-	 * Formatting two modifiers of an attribute being compared to eachother for hover text.
-	 */
-	public static String toHoverString(Attribute attribute, AttributeModifier modifier1, AttributeModifier modifier2, LambdaStrings layout, LambdaStrings comparing) {
-		if(attribute == null || modifier1 == null) {
-			if(modifier2 != null)
-				return toHoverString(attribute, modifier2, layout);
-			return "&8Nothing here!";
-		}
-		// Preparing the two slots beforehand. Mostly done here as it gets messy below
-		String slot1 = (modifier1.getSlot() == null ? "ALL" : modifier1.getSlot().toString());
-		String slot2 = (modifier2.getSlot() == null ? "ALL" : modifier2.getSlot().toString());
-		return layout.build("Attribute", attribute.toString())
-			  +"\n&e> "+layout.build("Modifier", modifier2.getName())
-			  // Grabbing each element in either its standard format or the comparison format!
-			  	// Amount
-			    +"\n   "+(modifier1.getAmount() != modifier2.getAmount() 
-						? comparing.build("Amount", Double.toString(modifier1.getAmount()), Double.toString(modifier2.getAmount()))
-						: layout.build("Amount", Double.toString(modifier2.getAmount())))
-			    
-			  	// Operation
-			    +"\n   "+(modifier1.getOperation() != modifier2.getOperation() 
-	    				? comparing.build("Operation", modifier1.getOperation().toString(), modifier2.getOperation().toString())
-	    				: layout.build("Operation", modifier2.getOperation().toString()))
-
-			  	// Slot
-			    +"\n   "+(modifier1.getSlot() != modifier2.getSlot() 
-						? comparing.build("Slot", slot1, slot2) 
-						: layout.build("Slot", slot1, slot2));
-	}
-	
-	/**
-	 * Formatting all modifiers for a specific attribute for hover text
-	 * @param attribute
-	 * @param modifiers
-	 * @param layout
-	 * @return
-	 */
-	public static String toHoverString(Attribute attribute, Collection<AttributeModifier> modifiers, LambdaStrings layout) {
-		if(attribute == null || modifiers == null || modifiers.isEmpty())
-			return "&8Nothing here!";
-		
-		String modifiersString = layout.build("Attribute", attribute.toString());
-		for(AttributeModifier modifier : modifiers) {
-			 modifiersString +="\n&e> "+layout.build("Modifier", modifier.getName())
-							     +"\n   "+layout.build("Amount", Double.toString(modifier.getAmount()))
-							     +"\n   "+layout.build("Operation", modifier.getOperation().toString())
-							     +"\n   "+layout.build("Slot", (modifier.getSlot() == null ? "ALL" : modifier.getSlot().toString()));
-		}
-		return modifiersString;
-	}
+//	public static String toHoverString(Attribute attribute, AttributeModifier modifier, LambdaStrings layout) {
+//		if(attribute == null || modifier == null)
+//			return "&8Nothing here!";
+//		
+//		return layout.build("Attribute", attribute.toString())
+//			  +"\n&e> "+layout.build("Modifier", modifier.getName())
+//			    +"\n   "+layout.build("Amount", Double.toString(modifier.getAmount()))
+//			    +"\n   "+layout.build("Operation", modifier.getOperation().toString())
+//			    +"\n   "+layout.build("Slot", (modifier.getSlot() == null ? "ALL" : modifier.getSlot().toString()));
+//	}
+//	
+//	/**
+//	 * Formatting two modifiers of an attribute being compared to eachother for hover text.
+//	 */
+//	public static String toHoverString(Attribute attribute, AttributeModifier modifier1, AttributeModifier modifier2, LambdaStrings layout, LambdaStrings comparing) {
+//		if(attribute == null || modifier1 == null) {
+//			if(modifier2 != null)
+//				return toHoverString(attribute, modifier2, layout);
+//			return "&8Nothing here!";
+//		}
+//		// Preparing the two slots beforehand. Mostly done here as it gets messy below
+//		String slot1 = (modifier1.getSlot() == null ? "ALL" : modifier1.getSlot().toString());
+//		String slot2 = (modifier2.getSlot() == null ? "ALL" : modifier2.getSlot().toString());
+//		return layout.build("Attribute", attribute.toString())
+//			  +"\n&e> "+layout.build("Modifier", modifier2.getName())
+//			  // Grabbing each element in either its standard format or the comparison format!
+//			  	// Amount
+//			    +"\n   "+(modifier1.getAmount() != modifier2.getAmount() 
+//						? comparing.build("Amount", Double.toString(modifier1.getAmount()), Double.toString(modifier2.getAmount()))
+//						: layout.build("Amount", Double.toString(modifier2.getAmount())))
+//			    
+//			  	// Operation
+//			    +"\n   "+(modifier1.getOperation() != modifier2.getOperation() 
+//	    				? comparing.build("Operation", modifier1.getOperation().toString(), modifier2.getOperation().toString())
+//	    				: layout.build("Operation", modifier2.getOperation().toString()))
+//
+//			  	// Slot
+//			    +"\n   "+(modifier1.getSlot() != modifier2.getSlot() 
+//						? comparing.build("Slot", slot1, slot2) 
+//						: layout.build("Slot", slot1, slot2));
+//	}
+//	
+//	/**
+//	 * Formatting all modifiers for a specific attribute for hover text
+//	 * @param attribute
+//	 * @param modifiers
+//	 * @param layout
+//	 * @return
+//	 */
+//	public static String toHoverString(Attribute attribute, Collection<AttributeModifier> modifiers, LambdaStrings layout) {
+//		if(attribute == null || modifiers == null || modifiers.isEmpty())
+//			return "&8Nothing here!";
+//		
+//		String modifiersString = layout.build("Attribute", attribute.toString());
+//		for(AttributeModifier modifier : modifiers) {
+//			 modifiersString +="\n&e> "+layout.build("Modifier", modifier.getName())
+//							     +"\n   "+layout.build("Amount", Double.toString(modifier.getAmount()))
+//							     +"\n   "+layout.build("Operation", modifier.getOperation().toString())
+//							     +"\n   "+layout.build("Slot", (modifier.getSlot() == null ? "ALL" : modifier.getSlot().toString()));
+//		}
+//		return modifiersString;
+//	}
 	/* ================================================================================
 	 * TextComponent Generators
 	 * ================================================================================
@@ -470,25 +560,6 @@ public class StringsUtil {
 		for(Enchantment enchantment : enchantments)
 			names.add(enchantment.getKey().getKey());
 		return names;
-	}
-	
-	public static String toChatString(LambdaStrings layout, PotionEffect... potionEffects) {
-		String potionsText = "";
-		for(PotionEffect potionEffect : potionEffects) {
-			if(!potionsText.isEmpty())
-				potionsText += "\n";
-			
-			potionsText += layout.build("&7"+potionEffect.getType().getName()+"&2", "");
-			potionsText += "\n  "+layout.build("duration", Integer.toString(potionEffect.getDuration()));
-			potionsText += "\n  "+layout.build("intensity", Integer.toString(potionEffect.getAmplifier()));
-			if(!potionEffect.isAmbient())
-				potionsText += "\n  "+layout.build("ambient", "false");
-			if(!potionEffect.hasParticles())
-				potionsText += "\n  "+layout.build("particles", "false");
-			if(!potionEffect.hasIcon())
-				potionsText += "\n  "+layout.build("icon", "false");
-		}
-		return potionsText;
 	}
 
 	/* ================================================================================

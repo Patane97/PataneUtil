@@ -249,13 +249,13 @@ public class ItemsUtil {
 
 	public static Collection<AttributeModifier> getAttributeModifiers(ItemStack item, Attribute attribute) {
 		if(item == null || !item.hasItemMeta())
-			return null;
+			return new ArrayList<AttributeModifier>();
 		ItemMeta meta = item.getItemMeta();
 		Collection<AttributeModifier> modifiers;
 		if(meta.hasAttributeModifiers() && (modifiers = meta.getAttributeModifiers(attribute)) != null) {
 			return modifiers;
 		}
-		return null;
+		return new ArrayList<AttributeModifier>();
 	}
 	public static String ItemStackToJSON(ItemStack itemStack) {
 	    // First we convert the item stack into an NMS itemstack
