@@ -95,7 +95,7 @@ public abstract class MapParsable extends Nameable implements ChatStringable{
 		for(String fieldName : fieldMap.keySet()) {
 			// If the value is null, set its string to Missing and continue to next field 
 			if(fieldMap.get(fieldName) == null) {
-				customValueStrings.put(fieldName, "&8Missing");
+				customValueStrings.put(fieldName, "&8Null");
 				continue;
 			}
 				
@@ -267,10 +267,10 @@ public abstract class MapParsable extends Nameable implements ChatStringable{
 		for(String fieldName : fieldMap.keySet()) {
 			// If the field is also a MapParsable, run this same method and add the result to text
 			if(fieldMap.get(fieldName) instanceof ChatStringable)
-				text += "\n" + Chat.indent(indentCount+1) + ((ChatStringable) fieldMap.get(fieldName)).toChatString(indentCount+1, deep, deepLayout);
+				text += "\n" + ((ChatStringable) fieldMap.get(fieldName)).toChatString(indentCount, deep, deepLayout);
 			// Otherwise, build the layout using field name and its value as a string
 			else
-				text += "\n" + Chat.indent(indentCount+1) + alternateLayout.build(fieldName, this.getValueStrings().get(fieldName));
+				text += "\n" + Chat.indent(indentCount) + alternateLayout.build(fieldName, this.getValueStrings().get(fieldName));
 		}
 		// Return the info
 		return text;
@@ -309,9 +309,9 @@ public abstract class MapParsable extends Nameable implements ChatStringable{
 		Map<String, String> fieldValues = new LinkedHashMap<String, String>();
 		
 		// Finds and groups any values encased in brackets. Eg, 'field1,value1' | 'field2,value2' from {(field1,value1),(field2,value2)}
-		Pattern whole = Pattern.compile("\\((.+?,(?:{.*?}|[^{}])*?)\\)");
+		Pattern whole = Pattern.compile("\\((.+?,(?:\\{.*?\\}|[^{}])*?)\\)");
 		// Seperates the two strings from the above group. Eg, 'field1' | 'value1' from field1,value1
-		Pattern individual = Pattern.compile("(.*?),(?:({.*}|[^{}]*))");
+		Pattern individual = Pattern.compile("(.*?),(?:(\\{.*\\}|[^{}]*))");
 		
 		// Match to the map parsable string
 		Matcher wholeMatcher = whole.matcher(mapParsableString);

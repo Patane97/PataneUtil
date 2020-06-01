@@ -49,9 +49,39 @@ public enum Chat {
     	return s.replaceAll("(&[a-r0-9])", "$1"+color);
     }
     public static String replace(String s, String color) {
-    	return s.replaceAll("(&[a-r0-9])", color);
+    	return s.replaceAll("&[a-r0-9]", color);
+    }
+    public static String replace(String s, String color1, String color2) {
+    	return s.replaceAll(color1, color2);
+    }
+    public static String replace(String s, ChatColor color1, ChatColor color2) {
+    	return s.replaceAll("&"+color1.getChar(), "&"+color2.getChar());
+    }
+    public static String darken(String s) {
+    	s.replaceAll("&9", "&1");
+    	s.replaceAll("&a", "&2");
+    	s.replaceAll("&b", "&3");
+    	s.replaceAll("&c", "&4");
+    	s.replaceAll("&d", "&5");
+    	s.replaceAll("&e", "&6");
+    	s.replaceAll("&8", "&0");
+    	s.replaceAll("&7", "&8");
+    	s.replaceAll("&f", "&7");
+    	return s;
     }
     
+    public static String brighten(String s) {
+    	s.replaceAll("&1", "&9");
+    	s.replaceAll("&2", "&a");
+    	s.replaceAll("&3", "&b");
+    	s.replaceAll("&4", "&c");
+    	s.replaceAll("&5", "&d");
+    	s.replaceAll("&6", "&e");
+    	s.replaceAll("&7", "&f");
+    	s.replaceAll("&8", "&7");
+    	s.replaceAll("&0", "&8");
+    	return s;
+    }
 	public static List<String> translate(List<String> stringList) {
 		List<String> result = new ArrayList<String>();
 		for(String s : stringList)

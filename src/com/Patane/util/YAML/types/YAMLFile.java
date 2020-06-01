@@ -381,7 +381,7 @@ public abstract class YAMLFile extends YAMLParser{
 	 * @throws YAMLException If the section given is null.
 	 * @throws ClassNotFoundException If the Class given is null.
 	 * @throws InvocationTargetException 
-	 */public static <T extends MapParsable> T getMapParsable(@Nonnull ConfigurationSection section, ConfigurationSection defaultSection, @Nonnull Class<? extends T> clazz, String... ignoreFieldsArray) throws YAMLException, ClassNotFoundException, InvocationTargetException{
+	 */public static <T extends MapParsable> T getMapParsable(@Nonnull ConfigurationSection section, ConfigurationSection defaultSection, @Nonnull Class<? extends T> clazz, String... ignoreFieldsArray) throws YAMLException, ClassNotFoundException, IllegalArgumentException{
 			// Throws YAMLException if section is null or not a section.
 			Check.notNull(section);
 			
@@ -408,7 +408,16 @@ public abstract class YAMLFile extends YAMLParser{
 			for(String field : fields){
 				// If the field is not to be ignored.
 				if(!ignoreFields.contains(field)){
-					
+					ConfigurationSection possibleSection;
+					if((possibleSection = YAMLFile.getSection(section, field)) != null){
+						// IS POSSIBLY A MAPPARSABLE?
+						// *** NEED TO PROPERLY IMPLEMENT
+						//     if this 'getMapParsable' finds a configuration section, it should check
+						//     if the config section has the same name as a value. If so, check if that value is a
+						//     map parsable. If it is a map parsable, save the section as a string (method below)
+						// *** Also implement above for 'setting' map parsable below
+						continue;
+					}
 					// The value is obtained from the header section. If this is null, it is obtained from the defaultSection.
 					String value = getString(field, section, defaultSection);
 					
@@ -425,14 +434,39 @@ public abstract class YAMLFile extends YAMLParser{
 			// If there are any problems creating object, null will be returned.
 			T object = null;
 			
-			object = getFromClass(clazz, fieldValues);
+			try {
+				object = getFromClass(clazz, fieldValues);
+			} catch (IllegalAccessException | InvocationTargetException | SecurityException | InstantiationException | NoSuchMethodException e) {
+				e.printStackTrace();
+			}
 			
 			return object;
 
 	}
+	
+	 /**
+	  * Converts a ConfigurationSection to a String appropriate for creating a MapParsable object with MapParsable.fromString()
+	  * @param section
+	  * @param defaultSection
+	  * @return
+	  */
+	public static String sectionToString(ConfigurationSection section, ConfigurationSection defaultSection) {
+		String start = "{";
+		for(String sectionField : section.getKeys(false)) {
+			if(start != "{")
+				start += ",";
+			if(getSection(section, sectionField) != null) {
+				start += "("+sectionField+","+sectionToString(getSection(section, sectionField), getSection(defaultSection, sectionField))+")";
+			}
+				// do soemthing
+			start += "("+sectionField+","+getString(sectionField, section, defaultSection)+")";
+		}
+		start += "}";
+		return start;
+	}
 	 
-	 private static <T extends MapParsable> T getFromClass(Class<? extends T> clazz, Map<String, String> fieldValues) {
-		 try{
+	private static <T extends MapParsable> T getFromClass(Class<? extends T> clazz, Map<String, String> fieldValues) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, NoSuchMethodException {
+		try {
 			try{
 				// Attempts to create a new instance of the T object using the FieldValues.
 				return clazz.getConstructor(Map.class).newInstance(fieldValues);
@@ -443,14 +477,13 @@ public abstract class YAMLFile extends YAMLParser{
 				// Attempts to create a new instance of the T object using the default constructor.
 				return clazz.getConstructor().newInstance();
 			}
+		} catch(InvocationTargetException e) {
+			if(e.getCause() instanceof IllegalArgumentException)
+				throw (IllegalArgumentException) e.getCause();
+			throw e;
 		}
-		// All possible exceptions simply printing the stack trace.
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		 return null;
-	 }
-	 /**
+	}
+	/**
 	  * Uses Java Reflection to Project a MapParsable class to a YML file.
 	  * @param section Section to place data in.
 	  * @param defaultSection Default Section to place base data in.
@@ -482,18 +515,20 @@ public abstract class YAMLFile extends YAMLParser{
 			Map<String, Object> fields = object.getDifferentFields(defaultObject);
 			// Saves each field/value within defaultObject that is different to object.
 			Map<String, Object> defaultFields = defaultObject.getFieldMap();
-			
+
+			Messenger.debug(object.className());
 			// Loops through fields and sets each field/value
-			for(String field : fields.keySet())
+			for(String field : fields.keySet()) {
 				// If the value is a number, add only that. Otherwise, convert it to a string first.
 				section.set(field, (fields.get(field) instanceof Number ? fields.get(field) : fields.get(field).toString()));
 			
-
+			}
 			// Loops through defaultFields and sets each field/value
-			for(String field : defaultFields.keySet())
+			for(String field : defaultFields.keySet()) {
 				// If the value is a number, add only that. Otherwise, convert it to a string first.
 				defaultSection.set(field, (defaultFields.get(field) instanceof Number ? defaultFields.get(field) : defaultFields.get(field).toString()));
 			
+			}
 			// Clears the section if it is empty
 			if(section.getKeys(false).isEmpty())
 				section.getParent().set(extractLast(section), null);

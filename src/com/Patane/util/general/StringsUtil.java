@@ -353,7 +353,7 @@ public class StringsUtil {
 			if(!chatString.isEmpty())
 				chatString += "\n";
 			if(!deep) {
-				chatString += Chat.indent(indentCount) + layout.build("&7"+potionEffect.getType().getName(), potionEffect.getDuration()+", "+potionEffect.getAmplifier());
+				chatString += Chat.indent(indentCount) + layout.build("&7"+potionEffect.getType().getName(), Integer.toString(potionEffect.getAmplifier()));
 				continue;
 			}
 			chatString += Chat.indent(indentCount) + layout.build("&7"+potionEffect.getType().getName(), "");
