@@ -38,7 +38,7 @@ public class Config {
     private boolean hideLoad;
     
  
-    public Config(String filePath, String fileName, String header){
+    public Config(String filePath, String fileName, String header) {
         this.filePath = (filePath == null ? "" : (filePath.startsWith(File.separator) ? "" : File.separator) + filePath);
         this.fileName = fileName + (fileName.endsWith(".yml") ? "" : ".yml");
 //        this.header = header;
@@ -78,7 +78,7 @@ public class Config {
             e.printStackTrace();
     	}
     }
-    public void save(){
+    public void save() {
         try {
         	if(!hideSave)
         		Messenger.info("Saving " + fileName + "...");
@@ -98,8 +98,8 @@ public class Config {
 //        	}
 //        	else
 //        		file = new File(plugin.getDataFolder(), fileName);
-//            if (!file.exists()){
-//                if (plugin.getResource(fileName) != null){
+//            if (!file.exists()) {
+//                if (plugin.getResource(fileName) != null) {
 //                	if(!hideCreate)
 //                		Messenger.info("Creating " + fileName + "...");
 //                    plugin.saveResource(fileName, false);
@@ -109,7 +109,7 @@ public class Config {
 //            		Messenger.info("Loading " + fileName + "...");
 //            	load(file);
 //            }
-//            if(header != null){
+//            if(header != null) {
 //	            options().header(header);
 //	            buildHeader();
 //            }

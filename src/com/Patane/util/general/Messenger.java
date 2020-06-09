@@ -47,7 +47,7 @@ public class Messenger {
 		BaseComponent[] combinedComponents = new BaseComponent[components.length+1];
 		
 		// Adding the prefix
-		combinedComponents[0] = StringsUtil.stringToComponent(Chat.PREFIX_SMALL.toString());
+		combinedComponents[0] = StringsUtil.createTextComponent(Chat.PREFIX_SMALL.toString());
 		
 		// Adding each component
 		for(int i=1 ; i<combinedComponents.length ; i++)
@@ -71,7 +71,7 @@ public class Messenger {
         player.spigot().sendMessage(position, components);
         return true;
     }
-	public static void broadcast(String msg){
+	public static void broadcast(String msg) {
 		Bukkit.broadcastMessage(Chat.PREFIX_SMALL + ChatColor.translateAlternateColorCodes('&', msg));
 	}
 	public static void info(String msg) {
@@ -85,8 +85,8 @@ public class Messenger {
 	public static void severe(String msg) {
 		logger.severe(ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', msg)));
 	}
-	public static void send(Msg type, String msg){
-		switch(type){
+	public static void send(Msg type, String msg) {
+		switch(type) {
 		case BROADCAST:
 			broadcast(msg);
 			break;
@@ -104,7 +104,7 @@ public class Messenger {
 	public static void debug(Msg type, String msg) {
         if (type == null || msg.equals(""))
             return;
-		if(PataneUtil.getDebug()){
+		if(PataneUtil.getDebug()) {
 			msg = ">> " + msg;
 			send(type, msg);
 		}
@@ -115,7 +115,7 @@ public class Messenger {
 	public static void debug(CommandSender sender, String msg) {
         if (sender == null || msg.equals(""))
             return;
-		if(PataneUtil.getDebug()){
+		if(PataneUtil.getDebug()) {
 			msg = ">> &c" + msg;
 			send(sender, msg);
 		}

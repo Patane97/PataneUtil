@@ -54,7 +54,7 @@ public abstract class YAMLFile extends YAMLParser{
 	
 	// This should be handled by saveResource() instead
 //	public void createPrefix() {
-//		if(prefix != null && getPrefix() == null){
+//		if(prefix != null && getPrefix() == null) {
 //			configHandler.getConfig().createSection(prefix);
 //			configHandler.saveConfigQuietly();
 //		}
@@ -66,8 +66,8 @@ public abstract class YAMLFile extends YAMLParser{
 		return configHandler.getConfig().getConfigurationSection(prefix);
 	}
 	
-	public void clearPrefix(){
-		for(String paths : getPrefix().getKeys(true)){
+	public void clearPrefix() {
+		for(String paths : getPrefix().getKeys(true)) {
 			getPrefix().set(paths, null);
 		}
 	}
@@ -83,7 +83,7 @@ public abstract class YAMLFile extends YAMLParser{
 	public void setSelect(ConfigurationSection section) {
 		selection = section;
 	}
-	public ConfigurationSection getSelect(){
+	public ConfigurationSection getSelect() {
 		return selection;
 	}
 
@@ -103,7 +103,7 @@ public abstract class YAMLFile extends YAMLParser{
 	 * @param strings The path to the section, including the section itself.
 	 * @return A boolean of whether the section is present in the file.
 	 */
-	public boolean isSection(String...strings){
+	public boolean isSection(String...strings) {
 		String path = genPath(strings);
 		boolean section = configHandler.getConfig().isConfigurationSection(path);
 		// If it isnt a configuration section, return whether it has a value set.
@@ -125,7 +125,7 @@ public abstract class YAMLFile extends YAMLParser{
 	 * @return The ConfigurationSection and path combined into a new ConfigurationSection.
 	 */
 	public static ConfigurationSection getSection(ConfigurationSection section, String...strings) {
-		if(section == null || strings.length == 0){
+		if(section == null || strings.length == 0) {
 			return section;
 		}
 		String path = joinPathString(strings);
@@ -139,7 +139,7 @@ public abstract class YAMLFile extends YAMLParser{
 	 * @return The ConfigurationSection and path combined into a new ConfigurationSection.
 	 */
 	public static ConfigurationSection getSectionAndWarn(ConfigurationSection section, String...strings) {
-		if(section == null || strings.length == 0){
+		if(section == null || strings.length == 0) {
 			return section;
 		}
 		String path = joinPathString(strings);
@@ -172,7 +172,7 @@ public abstract class YAMLFile extends YAMLParser{
 		boolean empty;
 		try{
 			empty = getSection(path).getKeys(false).isEmpty();
-		} catch (NullPointerException e){
+		} catch (NullPointerException e) {
 			empty = true;
 		}
 		// If it is empty (or holds a value instead of keys), return whether it has a value in its path.
@@ -201,7 +201,7 @@ public abstract class YAMLFile extends YAMLParser{
 	 * @param section The ConfigurationSection to check.
 	 * @return The last item of the ConfigurationSection's path or null.
 	 */
-	public static String extractLast(ConfigurationSection section){
+	public static String extractLast(ConfigurationSection section) {
 		if(section == null)
 			return null;
 		String path = section.getCurrentPath();
@@ -214,7 +214,7 @@ public abstract class YAMLFile extends YAMLParser{
 	 * @param section The ConfigurationSection to check.
 	 * @return The original path, without the last section item of the ConfigurationSection's path or null.
 	 */
-	public static String excludeLast(ConfigurationSection section){
+	public static String excludeLast(ConfigurationSection section) {
 		if(section == null)
 			return null;
 		String path = section.getCurrentPath();
@@ -230,8 +230,8 @@ public abstract class YAMLFile extends YAMLParser{
 	 * @param sections ConfigurationSections to loop through.
 	 * @return Either the first not-null section, or null if all sections are null.
 	 */
-	public static ConfigurationSection getAvailable(ConfigurationSection...sections){
-		for(ConfigurationSection section : sections){
+	public static ConfigurationSection getAvailable(ConfigurationSection...sections) {
+		for(ConfigurationSection section : sections) {
 			if(section != null)
 				return section;
 		}
@@ -243,8 +243,8 @@ public abstract class YAMLFile extends YAMLParser{
 	 * @param sections ConfigurationSections to loop through.
 	 * @return Either the first not-null section, or null if all sections are null.
 	 */
-	public static ConfigurationSection getAvailableWithSet(String name, ConfigurationSection...sections){
-		for(ConfigurationSection section : sections){
+	public static ConfigurationSection getAvailableWithSet(String name, ConfigurationSection...sections) {
+		for(ConfigurationSection section : sections) {
 			if(section != null && section.isSet(name))
 				return section;
 		}
@@ -260,7 +260,7 @@ public abstract class YAMLFile extends YAMLParser{
 	 * @param a ConfigurationSection of first section.
 	 * @return Either the value using a or null.
 	 */
-	public static String getString(String string, ConfigurationSection a){
+	public static String getString(String string, ConfigurationSection a) {
 		String value = null;
 		if(string != null && a != null)
 			value = a.getString(string);
@@ -275,7 +275,7 @@ public abstract class YAMLFile extends YAMLParser{
 	 * @param b ConfigurationSection of default section.
 	 * @return Either the value using a, using b or null.
 	 */
-	public static String getString(String string, ConfigurationSection a, ConfigurationSection b){
+	public static String getString(String string, ConfigurationSection a, ConfigurationSection b) {
 		String value = getString(string, a);
 		if(value == null)
 			value = getString(string, b);
@@ -380,8 +380,9 @@ public abstract class YAMLFile extends YAMLParser{
 	 * @return A new Object of the given Class constructed via Java Reflection.
 	 * @throws YAMLException If the section given is null.
 	 * @throws ClassNotFoundException If the Class given is null.
-	 * @throws InvocationTargetException 
-	 */public static <T extends MapParsable> T getMapParsable(@Nonnull ConfigurationSection section, ConfigurationSection defaultSection, @Nonnull Class<? extends T> clazz, String... ignoreFieldsArray) throws YAMLException, ClassNotFoundException, IllegalArgumentException{
+	 * @throws NullPointerException If any values required to create the object are missing
+	 * @throws IllegalArgumentException If any values required to create the object are invalid
+	 */public static <T extends MapParsable> T getMapParsable(@Nonnull ConfigurationSection section, ConfigurationSection defaultSection, @Nonnull Class<? extends T> clazz, String... ignoreFieldsArray) throws YAMLException, ClassNotFoundException, NullPointerException, IllegalArgumentException{
 			// Throws YAMLException if section is null or not a section.
 			Check.notNull(section);
 			
@@ -405,11 +406,11 @@ public abstract class YAMLFile extends YAMLParser{
 			
 			
 			// Loops through each field within the clazz
-			for(String field : fields){
+			for(String field : fields) {
 				// If the field is not to be ignored.
-				if(!ignoreFields.contains(field)){
+				if(!ignoreFields.contains(field)) {
 					ConfigurationSection possibleSection;
-					if((possibleSection = YAMLFile.getSection(section, field)) != null){
+					if((possibleSection = YAMLFile.getSection(section, field)) != null) {
 						// IS POSSIBLY A MAPPARSABLE?
 						// *** NEED TO PROPERLY IMPLEMENT
 						//     if this 'getMapParsable' finds a configuration section, it should check
@@ -473,13 +474,15 @@ public abstract class YAMLFile extends YAMLParser{
 			} 
 			// This means that there is no constructor with values needed for the T object.
 			// Therefore, the constructor must be an empty, default constructor.
-			catch (NoSuchMethodException e){
+			catch (NoSuchMethodException e) {
 				// Attempts to create a new instance of the T object using the default constructor.
 				return clazz.getConstructor().newInstance();
 			}
 		} catch(InvocationTargetException e) {
 			if(e.getCause() instanceof IllegalArgumentException)
 				throw (IllegalArgumentException) e.getCause();
+			if(e.getCause() instanceof NullPointerException)
+				throw (NullPointerException) e.getCause();
 			throw e;
 		}
 	}
@@ -552,7 +555,7 @@ public abstract class YAMLFile extends YAMLParser{
 			object = T.valueOf(clazz, StringsUtil.normalize(string));
 		} 
 		// IllegalArgumentException if 'string' is not found in the 'clazz' enum.
-		catch (IllegalArgumentException e){
+		catch (IllegalArgumentException e) {
 			try {
 				// If the 'UPPERCASE_FORMAT' fails, then tries just using the string as-is.
 				object = T.valueOf(clazz, string);
@@ -577,13 +580,13 @@ public abstract class YAMLFile extends YAMLParser{
 	 */
 	
 	@Deprecated
-	public<T> T mergeInto(T majorObject, T minorObject){
+	public<T> T mergeInto(T majorObject, T minorObject) {
 		try{
 			Class<?> clazz = majorObject.getClass();
 			Field[] fields = clazz.getDeclaredFields();
-			for(Field field : fields){
+			for(Field field : fields) {
 				Object majorField = field.get(majorObject);
-				if(majorField == null){
+				if(majorField == null) {
 					field.setAccessible(true);
 					field.set(majorObject, field.get(minorObject));
 				}

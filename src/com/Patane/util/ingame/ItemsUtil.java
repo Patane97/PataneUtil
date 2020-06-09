@@ -24,7 +24,7 @@ import com.google.common.collect.Multimap;
 import net.minecraft.server.v1_15_R1.NBTTagCompound;
 
 public class ItemsUtil {
-	public static ItemStack createItem(Material material, int amount, String name, String...lore){
+	public static ItemStack createItem(Material material, int amount, String name, String...lore) {
 		Check.notNull(material, "Failed to create item. Material component is missing or invalid.");
 		Check.notNull(amount, "Failed to create item. Amount component is missing or invalid.");
 		Check.greaterThan(amount, 0, "Failed to create item. Amount ("+amount+") must be above 0.");
@@ -34,7 +34,7 @@ public class ItemsUtil {
 		ItemMeta itemMeta = item.getItemMeta();
 		if(name != null)
 			itemMeta.setDisplayName(Chat.translate(name));
-		if(lore != null){
+		if(lore != null) {
 			List<String> finalLore = new ArrayList<String>(Arrays.asList(lore));
 			finalLore = Chat.translate(finalLore);
 			itemMeta.setLore(finalLore);
@@ -169,7 +169,7 @@ public class ItemsUtil {
 		item.setItemMeta(meta);
 		return item;
 	}
-	public static Set<ItemFlag> getFlags(ItemStack item){
+	public static Set<ItemFlag> getFlags(ItemStack item) {
 		if(item == null || !item.hasItemMeta())
 			return null;
 		ItemMeta meta = item.getItemMeta();
@@ -181,7 +181,7 @@ public class ItemsUtil {
 		ItemMeta meta = item.getItemMeta();
 		return meta.hasAttributeModifiers();
 	}
-	public static Multimap<Attribute, AttributeModifier> getAttributes(ItemStack item){
+	public static Multimap<Attribute, AttributeModifier> getAttributes(ItemStack item) {
 		if(item == null || !item.hasItemMeta())
 			return null;
 		ItemMeta meta = item.getItemMeta();

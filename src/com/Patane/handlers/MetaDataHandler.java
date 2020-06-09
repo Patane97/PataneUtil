@@ -24,13 +24,13 @@ public class MetaDataHandler implements PatHandler{
 	 * @param value Value to be added within the metadata.
 	 * @return True if element was successfully added or already present to the collection, False otherwise.
 	 */
-	public static boolean add(LivingEntity entity, String metaName, Object value){
+	public static boolean add(LivingEntity entity, String metaName, Object value) {
 		// Adding the metadata name and value to the entity as a FixedMetadataValue.
 		if(!entity.hasMetadata(metaName))
 			entity.setMetadata(metaName, new FixedMetadataValue(PataneUtil.getInstance(), value));
 		
 		// If the collection already has the metadata name in it or if its respective List is not null.
-		if(collection.containsKey(metaName) && collection.get(metaName) != null){
+		if(collection.containsKey(metaName) && collection.get(metaName) != null) {
 			
 			// If the entity is already in the metaName's List, then simply return true.
 			if(collection.get(metaName).contains(entity))
@@ -58,7 +58,7 @@ public class MetaDataHandler implements PatHandler{
 	 * @param value Value to be added within the metadata.
 	 * @return True if each element was successfully added or already present to the collection, False otherwise.
 	 */
-	public static boolean add(List<LivingEntity> entities, String metaName, Object value){
+	public static boolean add(List<LivingEntity> entities, String metaName, Object value) {
 		// Defaulted return to true.
 		boolean result = true;
 
@@ -77,7 +77,7 @@ public class MetaDataHandler implements PatHandler{
 	 * @param value Value to be added within the metadata.
 	 * @param duration Duration that metadata will be attached to entity.
 	 */
-	public static void addTimed(LivingEntity entity, String metaName, Object value, float duration){
+	public static void addTimed(LivingEntity entity, String metaName, Object value, float duration) {
 		new TimedMetaDataTask(entity, metaName, value, duration);
 	}
 	/**
@@ -86,12 +86,12 @@ public class MetaDataHandler implements PatHandler{
 	 * @param metaName Name portion of the metadata.
 	 * @return True if element was found and removed from the collection, False otherwise.
 	 */
-	public static boolean remove(LivingEntity entity, String metaName){
+	public static boolean remove(LivingEntity entity, String metaName) {
 		// Removing the metadata from the entity.
 		entity.removeMetadata(metaName, PataneUtil.getInstance());
 
 		// If the collection already has the metadata name in it or if its respective List is not null.
-		if(collection.containsKey(metaName) && collection.get(metaName) != null){
+		if(collection.containsKey(metaName) && collection.get(metaName) != null) {
 			
 			// Saves the removal result due to following two lines.
 			boolean result = collection.get(metaName).remove(entity);
@@ -100,7 +100,7 @@ public class MetaDataHandler implements PatHandler{
 			Messenger.debug("-<"+entity.getName()+", "+metaName+">");
 			
 			// If the list is empty after the entity is removed, then the entry is removed from the collection.
-			if(collection.get(metaName).isEmpty()){
+			if(collection.get(metaName).isEmpty()) {
 				collection.remove(metaName);
 			}
 			
@@ -114,15 +114,15 @@ public class MetaDataHandler implements PatHandler{
 	 * @param metaName Name portion of the metadata.
 	 * @return True if each element was found and removed from the collection, False otherwise.
 	 */
-	public static boolean remove(String metaName){
+	public static boolean remove(String metaName) {
 		// If the collection already has the metadata name in it or if its respective List is not null.
-		if(collection.containsKey(metaName) && collection.get(metaName) != null){
+		if(collection.containsKey(metaName) && collection.get(metaName) != null) {
 			
 			// Defaulted return to true.
 			boolean result = true;
 			
 			// Loops through each LivingEntity in the metadatas List.
-			for(LivingEntity entity : new ArrayList<LivingEntity>(collection.get(metaName))){
+			for(LivingEntity entity : new ArrayList<LivingEntity>(collection.get(metaName))) {
 				
 				// If any entry didnt remove properly, return false AFTER loop is complete.
 				if(!remove(entity, metaName))
@@ -139,9 +139,9 @@ public class MetaDataHandler implements PatHandler{
 	 * @param metaName Name portion of the metadata.
 	 * @return The Object value of the metadata, otherwise null.
 	 */
-	public static Object getValue(LivingEntity entity, String metaName){
+	public static Object getValue(LivingEntity entity, String metaName) {
 		// Grabbing the list of MetadataValues attached to the metadata on that entity.
-		for(MetadataValue value : entity.getMetadata(metaName)){
+		for(MetadataValue value : entity.getMetadata(metaName)) {
 			
 			// Filtering to only get the metaData for our plugin.
 			if(value instanceof FixedMetadataValue && value.getOwningPlugin().equals(PataneUtil.getInstance()))
@@ -158,9 +158,9 @@ public class MetaDataHandler implements PatHandler{
 	 * @param metaName Name portion of the metadata.
 	 * @return True of entity has metadata, False otherwise.
 	 */
-	public static boolean hasValue(LivingEntity entity, String metaName){
+	public static boolean hasValue(LivingEntity entity, String metaName) {
 		// Grabbing the list of MetadataValues attached to the metadata on that entity.
-		for(MetadataValue value : entity.getMetadata(metaName)){
+		for(MetadataValue value : entity.getMetadata(metaName)) {
 			
 			// Filtering to only get the metaData for our plugin.
 			if(value instanceof FixedMetadataValue && value.getOwningPlugin().equals(PataneUtil.getInstance()))
@@ -176,9 +176,9 @@ public class MetaDataHandler implements PatHandler{
 	 * @param regex Regex to check.
 	 * @return True if the entity has a metadata that matches the regex, False otherwise.
 	 */
-	public static boolean check(LivingEntity entity, String regex){
-		for(String key : collection.keySet()){
-			if(key.matches(regex) && collection.get(key).contains(entity)){
+	public static boolean check(LivingEntity entity, String regex) {
+		for(String key : collection.keySet()) {
+			if(key.matches(regex) && collection.get(key).contains(entity)) {
 				return true;
 			}
 		}
@@ -190,9 +190,9 @@ public class MetaDataHandler implements PatHandler{
 	 * @param regex Regex to check.
 	 * @return The Object connected to the metadata, null otherwise.
 	 */
-	public static Object grabFirst(LivingEntity entity, String regex){
-		for(String key : collection.keySet()){
-			if(key.matches(regex) && collection.get(key).contains(entity)){
+	public static Object grabFirst(LivingEntity entity, String regex) {
+		for(String key : collection.keySet()) {
+			if(key.matches(regex) && collection.get(key).contains(entity)) {
 				return getValue(entity, key);
 			}
 		}

@@ -13,12 +13,12 @@ public abstract class BaseListener implements Listener{
 	/**
 	 * Registers this Listener.
 	 */
-	public void register(){
+	public void register() {
 		try{
 			PataneUtil.getInstance().getServer().getPluginManager().registerEvents(this, PataneUtil.getInstance());
 			
 			Messenger.debug("Registered "+this.getClass().getSimpleName() + " [" + this.hashCode() + "]");
-		} catch (Exception e){
+		} catch (Exception e) {
 			Messenger.debug("Failed to register "+this.getClass().getSimpleName() + " [" + this.hashCode() + "]");
 			e.printStackTrace();
 		}

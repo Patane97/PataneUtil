@@ -8,11 +8,15 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -20,6 +24,7 @@ import com.Patane.util.YAML.MapParsable;
 import com.Patane.util.collections.PatCollectable;
 import com.Patane.util.ingame.ItemsUtil;
 import com.Patane.util.main.PataneUtil;
+import com.google.common.collect.Multimap;
 import com.sun.istack.internal.NotNull;
 
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -47,9 +52,9 @@ public class StringsUtil {
 	public static String stringJoiner(String[] strings, String delimiter, String prefix, String suffix) {
 		return stringJoiner(strings, new StringJoiner(delimiter, prefix, suffix));
 	}
-	private static String stringJoiner(String[] strings, StringJoiner stringJoiner){
+	private static String stringJoiner(String[] strings, StringJoiner stringJoiner) {
 		Check.notNull(strings);
-		for(String string : strings){
+		for(String string : strings) {
 			stringJoiner.add(string);
 		}
 		return stringJoiner.toString();
@@ -98,7 +103,7 @@ public class StringsUtil {
 		return string.replace(" ", "_").toUpperCase();
 	}
 	public static String generateChatTitle(String title) {
-		return "&2=======[&a"+title+"&2]=======";
+		return "&2=====[&a "+title+" &2]=====";
 	}
 	
 	/**
@@ -172,6 +177,10 @@ public class StringsUtil {
 		String tableString = "";
 		String[] nextRow = new String[columns.length];
 		
+		// If no table, return nothing
+		if(columns.length < 1)
+			return tableString;
+		
 		// Using the first column's length as a defining length, we loop
 		// We use the column length as we want to cycle through each row and collect each j element in the column
 		for(int i=0 ; i<columns[0].length ; i++) {
@@ -181,7 +190,7 @@ public class StringsUtil {
 				nextRow[j] = columns[j][i];
 			
 			// Add new row through layout build
-			tableString += Chat.indent(indentCount) + layout.build(nextRow);
+			tableString += "\n"+Chat.indent(indentCount) + layout.build(nextRow);
 		}
 		
 		// Return the table
@@ -327,7 +336,15 @@ public class StringsUtil {
 	}
 	
 
-	
+
+	/* ================================================================================
+	 * toChatString Methods
+	 * ================================================================================
+	 */
+		/* ================================================================================
+		 * Attribute Modifiers
+		 * ================================================================================
+		 */
 	public static String toChatString(int indentCount, boolean deep, LambdaStrings layout, Attribute attribute, AttributeModifier... attributeModifiers) {
 		String chatString = (attribute != null ? Chat.indent(indentCount) + layout.build("Attribute", attribute.toString()) : "");
 		if(!deep)
@@ -345,7 +362,21 @@ public class StringsUtil {
 		}
 		return chatString;
 	}
+	public static String toChatString(int indentCount, boolean deep, LambdaStrings layout, Multimap<Attribute, AttributeModifier> attributeModifiers) {
+		String chatString = "";
+		for(Attribute attribute : attributeModifiers.keySet()) {
+			if(!chatString.isEmpty())
+				chatString += "\n";
+			
+			chatString += toChatString(indentCount, deep, layout, attribute, attributeModifiers.get(attribute).toArray(new AttributeModifier[0]));
+		}
+		return chatString;
+	}
 
+		/* ================================================================================
+		 * Potion Effects
+		 * ================================================================================
+		 */
 	
 	public static String toChatString(int indentCount, boolean deep, LambdaStrings layout, PotionEffect... potionEffects) {
 		String chatString = "";
@@ -370,12 +401,19 @@ public class StringsUtil {
 		}
 		return chatString;
 	}
+
+		/* ================================================================================
+		 * Enchantment(s)
+		 * ================================================================================
+		 */
+	
 	public static String toChatString(int indentCount, boolean deep, LambdaStrings layout, Enchantment enchantment, int level) {
 		if(deep)
 			return Chat.indent(indentCount) + layout.build("Enchantment", enchantment.getKey().getKey())
 				+ "\n"+Chat.indent(indentCount+1) + layout.build("Level", Integer.toString(level));
-		return Chat.indent(indentCount) + layout.build("Enchantment", enchantment.getKey().getKey() + "("+level+")");
+		return Chat.indent(indentCount) + layout.build(enchantment.getKey().getKey(), Integer.toString(level));
 	}
+	
 	public static String toChatString(int indentCount, boolean deep, LambdaStrings layout, Map<Enchantment, Integer> enchantments) {
 		String chatString = "";
 		for(Enchantment enchantment : enchantments.keySet()) {
@@ -386,83 +424,157 @@ public class StringsUtil {
 		}
 		return chatString;
 	}
+
+		/* ================================================================================
+		 * ItemStack
+		 * ================================================================================
+		 */
 	
-	/* ================================================================================
-	 * Hover String Format 
-	 * (Currently just AttributeModifier, need to convert all into above formatting)
-	 * ================================================================================
-	 */
+	public static String toChatString(int indentCount, boolean deep, LambdaStrings layout, ItemStack item) {
+		if(!deep)
+			return Chat.indent(indentCount) + layout.build(item.getType().toString());
+		
+		// Material
+		String chatString = Chat.indent(indentCount) + layout.build("Material", item.getType().toString());
+		
+		// Stack size
+		if(item.getAmount() > 1)
+			chatString += "\n"+Chat.indent(indentCount) + layout.build("Stack Size", Integer.toString(item.getAmount()));
+		
+		if(item.hasItemMeta()) {
+			ItemMeta itemMeta = item.getItemMeta();
+			// Display name
+			if(itemMeta.hasDisplayName())
+				chatString += "\n"+Chat.indent(indentCount) + layout.build("Name", itemMeta.getDisplayName());
+			
+			// Lore
+			if(itemMeta.hasLore())
+				chatString += "\n"+Chat.indent(indentCount) + layout.build("Lore", itemMeta.getLore().size()+" Line"+(itemMeta.getLore().size() > 1 ? "s" : ""));
+			
+			// Enchantment
+			if(itemMeta.hasEnchants())
+				chatString += "\n"+Chat.indent(indentCount) + layout.build("Enchantments", Integer.toString(itemMeta.getEnchants().size()));
+			
+			// Attribute Modifiers
+			if(itemMeta.hasAttributeModifiers())
+				chatString += "\n"+Chat.indent(indentCount) + layout.build("Attributes", itemMeta.getAttributeModifiers().values().size()+" Modifier"+(itemMeta.getAttributeModifiers().values().size() > 1 ? "s" : ""));
+			
+			// Item Flags
+			if(!itemMeta.getItemFlags().isEmpty())
+				chatString += "\n"+Chat.indent(indentCount) + layout.build("Flags", (itemMeta.getItemFlags().size() == ItemFlag.values().length ? "All" : Integer.toString(itemMeta.getEnchants().size())));
+		}
+		return chatString;
+	}
+	public static TextComponent[] toChatHover(int indentCount, boolean deep, LambdaStrings layout, ItemStack item) {
+
+		List<TextComponent> componentList = new ArrayList<TextComponent>();
+		
+		TextComponent current;
+		if(!deep) {
+			current = createTextComponent(Chat.indent(indentCount) + layout.build(item.getType().toString()));
+			current.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(Chat.translate(toChatString(0, true, layout, item))).create()));
+			componentList.add(current);
+		}
+		else {
+			// Material
+			current = createTextComponent(Chat.indent(indentCount) + layout.build("Material", item.getType().toString()));
+			current.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new ComponentBuilder(ItemsUtil.ItemStackToJSON(item)).create()));
+			componentList.add(current);
+			
+			// Stack size
+			if(item.getAmount() > 1) {
+				current = createTextComponent("\n"+Chat.indent(indentCount) + layout.build("Stack Size", Integer.toString(item.getAmount())));
+				current.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(Chat.translate(
+						"&f&lStack Size\n"
+					  + "&7This item will spawn as a stack of "+item.getAmount()+". Its Maximum stack size is "+item.getMaxStackSize()+".")).create()));
+				componentList.add(current);
+			}
+			
+			if(item.hasItemMeta()) {
+				ItemMeta itemMeta = item.getItemMeta();
+				// Display name
+				if(itemMeta.hasDisplayName()) {
+					current = createTextComponent("\n"+Chat.indent(indentCount) + layout.build("Name", itemMeta.getDisplayName()));
+					current.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(Chat.translate(
+							"&f&lName\n"
+						  + "&7This items custom display name is &f"+itemMeta.getDisplayName()+"&7.")).create()));
+					componentList.add(current);
+				}
+				
+				// Lore
+				if(itemMeta.hasLore()) {
+					current = createTextComponent("\n"+Chat.indent(indentCount) + layout.build("Lore", itemMeta.getLore().size()+" Line"+(itemMeta.getLore().size() > 1 ? "s" : "")));
+					current.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(Chat.translate(
+							"&f&lLore"
+						  + StringsUtil.singleColumnFormatter(0, s -> "&2> &5&o"+s[0], itemMeta.getLore().toArray(new String[0])))).create()));
+					componentList.add(current);
+				}
+				
+				// Enchantment
+				if(itemMeta.hasEnchants()) {
+					current = createTextComponent("\n"+Chat.indent(indentCount) + layout.build("Enchantments", Integer.toString(itemMeta.getEnchants().size())));
+					current.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(Chat.translate(
+							"&f&lEnchantments\n"
+						  + StringsUtil.toChatString(0, false, s -> "&2> &7"+s[0]+" "+s[1], itemMeta.getEnchants()))).create()));
+					componentList.add(current);
+				}
+				
+				// Attribute Modifiers
+				if(itemMeta.hasAttributeModifiers()) {
+					current = createTextComponent("\n"+Chat.indent(indentCount) + layout.build("Attributes", itemMeta.getAttributeModifiers().values().size()+" Modifier"+(itemMeta.getAttributeModifiers().values().size() > 1 ? "s" : "")));
+					current.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(Chat.translate(
+							"&f&lAttributes\n"
+						  + StringsUtil.toChatString(0, true, layout, itemMeta.getAttributeModifiers()))).create()));
+					componentList.add(current);
+				}
+				
+				// Item Flags
+				if(!itemMeta.getItemFlags().isEmpty()) {
+					current = createTextComponent("\n"+Chat.indent(indentCount) + layout.build("Flags", (itemMeta.getItemFlags().size() == ItemFlag.values().length ? "All" : Integer.toString(itemMeta.getEnchants().size()))));
+					current.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(Chat.translate(
+							"&f&lFlags"
+						  + StringsUtil.singleColumnFormatter(0, s -> "&2> &7"+s[0], StringsUtil.enumValueStrings(itemMeta.getItemFlags().toArray(new ItemFlag[0]))))).create()));
+					componentList.add(current);
+				}
+			}
+		}
+		return componentList.toArray(new TextComponent[0]);
+	}
+
+		/* ================================================================================
+		 * Many ChatStringables to chat string
+		 * ================================================================================
+		 */
+	
 	/**
-	 * Formatting a modifier for an attribute to a certain layout ready for hover text.
-	 * NOTE: If the '&e>' dial colour is an issue, can add another parameter for 'dial colour'
+	 * Prints many ChatStringable objects to a single string
+	 * @param indentCount Indent count for each ChatStringable object
+	 * @param gapCount Vertical 'new line' Gap between each ChatStringable object
+	 * @param deep Whether to do a deep chat string or not
+	 * @param loopLayout Layout surrounding each ChatStringable object. Null for default format (default format: s -> s)
+	 * @param stringableLayout Layout to send through to ChatStringable object. Null for that objects default format.
+	 * @param stringables ChatStringable objects
+	 * @return a single string containing all formatted objects.
 	 */
-//	public static String toHoverString(Attribute attribute, AttributeModifier modifier, LambdaStrings layout) {
-//		if(attribute == null || modifier == null)
-//			return "&8Nothing here!";
-//		
-//		return layout.build("Attribute", attribute.toString())
-//			  +"\n&e> "+layout.build("Modifier", modifier.getName())
-//			    +"\n   "+layout.build("Amount", Double.toString(modifier.getAmount()))
-//			    +"\n   "+layout.build("Operation", modifier.getOperation().toString())
-//			    +"\n   "+layout.build("Slot", (modifier.getSlot() == null ? "ALL" : modifier.getSlot().toString()));
-//	}
-//	
-//	/**
-//	 * Formatting two modifiers of an attribute being compared to eachother for hover text.
-//	 */
-//	public static String toHoverString(Attribute attribute, AttributeModifier modifier1, AttributeModifier modifier2, LambdaStrings layout, LambdaStrings comparing) {
-//		if(attribute == null || modifier1 == null) {
-//			if(modifier2 != null)
-//				return toHoverString(attribute, modifier2, layout);
-//			return "&8Nothing here!";
-//		}
-//		// Preparing the two slots beforehand. Mostly done here as it gets messy below
-//		String slot1 = (modifier1.getSlot() == null ? "ALL" : modifier1.getSlot().toString());
-//		String slot2 = (modifier2.getSlot() == null ? "ALL" : modifier2.getSlot().toString());
-//		return layout.build("Attribute", attribute.toString())
-//			  +"\n&e> "+layout.build("Modifier", modifier2.getName())
-//			  // Grabbing each element in either its standard format or the comparison format!
-//			  	// Amount
-//			    +"\n   "+(modifier1.getAmount() != modifier2.getAmount() 
-//						? comparing.build("Amount", Double.toString(modifier1.getAmount()), Double.toString(modifier2.getAmount()))
-//						: layout.build("Amount", Double.toString(modifier2.getAmount())))
-//			    
-//			  	// Operation
-//			    +"\n   "+(modifier1.getOperation() != modifier2.getOperation() 
-//	    				? comparing.build("Operation", modifier1.getOperation().toString(), modifier2.getOperation().toString())
-//	    				: layout.build("Operation", modifier2.getOperation().toString()))
-//
-//			  	// Slot
-//			    +"\n   "+(modifier1.getSlot() != modifier2.getSlot() 
-//						? comparing.build("Slot", slot1, slot2) 
-//						: layout.build("Slot", slot1, slot2));
-//	}
-//	
-//	/**
-//	 * Formatting all modifiers for a specific attribute for hover text
-//	 * @param attribute
-//	 * @param modifiers
-//	 * @param layout
-//	 * @return
-//	 */
-//	public static String toHoverString(Attribute attribute, Collection<AttributeModifier> modifiers, LambdaStrings layout) {
-//		if(attribute == null || modifiers == null || modifiers.isEmpty())
-//			return "&8Nothing here!";
-//		
-//		String modifiersString = layout.build("Attribute", attribute.toString());
-//		for(AttributeModifier modifier : modifiers) {
-//			 modifiersString +="\n&e> "+layout.build("Modifier", modifier.getName())
-//							     +"\n   "+layout.build("Amount", Double.toString(modifier.getAmount()))
-//							     +"\n   "+layout.build("Operation", modifier.getOperation().toString())
-//							     +"\n   "+layout.build("Slot", (modifier.getSlot() == null ? "ALL" : modifier.getSlot().toString()));
-//		}
-//		return modifiersString;
-//	}
+	public static String manyToChatString(int indentCount, int gapCount, boolean deep, @Nullable LambdaString loopLayout, @Nullable LambdaStrings stringableLayout, ChatStringable... stringables) {
+		String chatString = "";
+		// If loop layout is null, just print the looped stringable
+		if(loopLayout == null)
+			loopLayout = s -> s;
+			
+		for(ChatStringable stringable : stringables) {
+			if(stringable != stringables[0])
+				chatString += Chat.gap(gapCount);
+			chatString += loopLayout.build(stringable.toChatString(indentCount, deep, stringableLayout));
+		}
+		return chatString;
+	}
+	
 	/* ================================================================================
 	 * TextComponent Generators
 	 * ================================================================================
 	 */
-	public static TextComponent stringToComponent(String text) {
+	public static TextComponent createTextComponent(String text) {
 		return new TextComponent(TextComponent.fromLegacyText(Chat.translate(text)));
 	}
 	public static TextComponent hoverText(String text, String hover) {
@@ -497,7 +609,7 @@ public class StringsUtil {
 	public static List<String> suffix(List<String> strings, String suffix) {
 		return strings.stream().map(s -> s + suffix).collect(Collectors.toList());
 	}
-	public static List<String> encase(List<String> strings, String prefix, String suffix){
+	public static List<String> encase(List<String> strings, String prefix, String suffix) {
 		return strings.stream().map(s -> prefix + s + suffix).collect(Collectors.toList());
 	}
 	/* ================================================================================
@@ -509,7 +621,7 @@ public class StringsUtil {
 	 * Gets all raw online player names (chat colours stripped)
 	 * @return String list of all online player names in raw form
 	 */
-	public static List<String> getOnlinePlayerNames(){
+	public static List<String> getOnlinePlayerNames() {
 		List<String> playerNames = new ArrayList<String>();
 		
 		PataneUtil.getInstance().getServer().getOnlinePlayers().forEach(p -> playerNames.add(Chat.strip(p.getDisplayName())));
@@ -522,7 +634,7 @@ public class StringsUtil {
 	 * @param player Player to check everyone elses hidden status on
 	 * @return String list of all online player names in raw form that are currently not hidden from given player
 	 */
-	public static List<String> getVisibleOnlinePlayerNames(Player player){
+	public static List<String> getVisibleOnlinePlayerNames(Player player) {
 		List<String> visiblePlayerNames = new ArrayList<String>();
 		
 		PataneUtil.getInstance().getServer().getOnlinePlayers().forEach(p -> {
@@ -543,7 +655,7 @@ public class StringsUtil {
 		return potionEffectTypeStrings;
 	}
 	
-	public static List<String> getCollectableNames(List<? extends PatCollectable> list){
+	public static List<String> getCollectableNames(List<? extends PatCollectable> list) {
 		List<String> names = new ArrayList<String>();
 		
 		list.forEach(c -> names.add(c.getName()));
@@ -551,7 +663,7 @@ public class StringsUtil {
 		return names;
 	}
 
-	public static List<String> getMCEnchantmentNames(Enchantment... enchantments){
+	public static List<String> getMCEnchantmentNames(Enchantment... enchantments) {
 		List<String> names = new ArrayList<String>();
 		
 		if (enchantments.length == 0)
@@ -601,7 +713,7 @@ public class StringsUtil {
 			object = T.valueOf(clazz, StringsUtil.normalize(string));
 		} 
 		// IllegalArgumentException if 'string' is not found in the 'clazz' enum.
-		catch (IllegalArgumentException e){
+		catch (IllegalArgumentException e) {
 			// If the 'UPPERCASE_FORMAT' fails, then tries just using the string as-is.
 			object = T.valueOf(clazz, string);
 		}
@@ -628,7 +740,7 @@ public class StringsUtil {
 			object = T.valueOf(clazz, StringsUtil.normalize(string));
 		} 
 		// IllegalArgumentException if 'string' is not found in the 'clazz' enum.
-		catch (IllegalArgumentException e){
+		catch (IllegalArgumentException e) {
 			try {
 				// If the 'UPPERCASE_FORMAT' fails, then tries just using the string as-is.
 				object = T.valueOf(clazz, string);

@@ -9,7 +9,7 @@ public class PataneUtil {
 	private static String pluginName;
 	private static boolean debugging;
 
-	public static void setup(Plugin plugin, String pluginName, String prefix, String smallPrefix, boolean debug){
+	public static void setup(Plugin plugin, String pluginName, String prefix, String smallPrefix, boolean debug) {
 		PataneUtil.plugin = plugin;
 		PataneUtil.pluginName = pluginName;
 		Chat.PREFIX.set(prefix);

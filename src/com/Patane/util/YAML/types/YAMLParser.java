@@ -5,22 +5,22 @@ import com.Patane.util.general.Messenger.Msg;
 
 public class YAMLParser {
 	@Deprecated
-	public static Integer getIntFromString(String string){
-		if(string == null){
+	public static Integer getIntFromString(String string) {
+		if(string == null) {
 			Messenger.send(Msg.WARNING, "String to convert to Integer is Null.");
 			return null;
 		}
 		Integer integer = null;
 		try{
 			integer = Math.round(Float.parseFloat(string));
-		}catch (NumberFormatException e){
+		}catch (NumberFormatException e) {
 			Messenger.send(Msg.WARNING, "'"+string+"' is not a valid format for an Integer.");
 			throw e;
 		}
 		return integer;
 	}
 	@Deprecated
-	public static Float getFloatFromString(String string){
+	public static Float getFloatFromString(String string) {
 		if(string == null) {
 			Messenger.send(Msg.WARNING, "String to convert to Float is Null.");
 			return null;
@@ -28,7 +28,7 @@ public class YAMLParser {
 		Float integer = null;
 		try{
 			integer = Float.parseFloat(string);
-		}catch (NumberFormatException e){
+		}catch (NumberFormatException e) {
 			Messenger.send(Msg.WARNING, "'"+string+"' is not a valid format for a Float.");
 			throw e;
 		}

@@ -56,7 +56,7 @@ public class Check {
 			throw new ClassNotFoundException(message);
 	}
 	
-	public static <T> T isTrue(T object, boolean statement, String message){
+	public static <T> T isTrue(T object, boolean statement, String message) {
 		if(!statement)
 			throw new IllegalArgumentException(message);
 		return object;
@@ -79,12 +79,12 @@ public class Check {
 	/*
 	 * INTEGER
 	 */
-	public static int greaterThan(int a, int b, String message){
+	public static int greaterThan(int a, int b, String message) {
 		if(a <= b)
 			throw new IllegalArgumentException(message);
 		return a;
 	}
-	public static int lessThan(int a, int b, String message){
+	public static int lessThan(int a, int b, String message) {
 		if(a >= b)
 			throw new IllegalArgumentException(message);
 		return a;
@@ -103,12 +103,12 @@ public class Check {
 	/*
 	 * FLOAT
 	 */
-	public static float greaterThan(float a, float b, String message){
+	public static float greaterThan(float a, float b, String message) {
 		if(a <= b)
 			throw new IllegalArgumentException(message);
 		return a;
 	}
-	public static float lessThan(float a, float b, String message){
+	public static float lessThan(float a, float b, String message) {
 		if(a >= b)
 			throw new IllegalArgumentException(message);
 		return a;
@@ -127,12 +127,12 @@ public class Check {
 	/*
 	 * DOUBLE
 	 */
-	public static double greaterThan(double a, double b, String message){
+	public static double greaterThan(double a, double b, String message) {
 		if(a <= b)
 			throw new IllegalArgumentException(message);
 		return a;
 	}
-	public static double lessThan(double a, double b, String message){
+	public static double lessThan(double a, double b, String message) {
 		if(a >= b)
 			throw new IllegalArgumentException(message);
 		return a;

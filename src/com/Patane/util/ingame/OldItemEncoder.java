@@ -21,7 +21,7 @@ public class OldItemEncoder {
 	            hiddenData += "§" + c;
 	        }
 	        return hiddenData;
-	    }catch (Exception e){
+	    }catch (Exception e) {
 	        e.printStackTrace();
 	        return null;
 	    }

@@ -17,7 +17,7 @@ public abstract class PatCommand {
 //	public abstract List<String> tabComplete(CommandSender sender, String[] args, Object... objects);
 
 	// *** Remove this and replace with above once all commands are updated!
-	public List<String> tabComplete(CommandSender sender, String[] args, Object... objects){
+	public List<String> tabComplete(CommandSender sender, String[] args, Object... objects) {
 		return null;
 	}
 	@Deprecated
@@ -73,7 +73,7 @@ public abstract class PatCommand {
 	 * @param objects Any physical objects saved and carried on from previous commands
 	 * @return A String List of either the children command names or something else, such as object information
 	 */
-	protected List<String> tabCompleteCore(CommandSender sender, String[] args, Object... objects){
+	protected List<String> tabCompleteCore(CommandSender sender, String[] args, Object... objects) {
 		// Grabbing the package & maxArgs of this command for later use.
 		CommandPackage thisPackage = CommandHandler.getPackage(this.getClass());
 		int maxArgs = thisPackage.info().maxArgs();

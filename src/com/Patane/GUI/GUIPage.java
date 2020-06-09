@@ -83,7 +83,7 @@ public class GUIPage {
 	 * @param icon ItemStack to use as a display
 	 * @return
 	 */
-	public GUIIcon addIcon(int slot, GUIIcon icon){
+	public GUIIcon addIcon(int slot, GUIIcon icon) {
 		Check.greaterThanEqual(slot, 0, "GUI Icon slot must be greater than 0");
 		Check.lessThan(slot, inventory.getSize(), "GUI Icon slot must be less than " + inventory.getSize());
 		icons.put(slot, Check.notNull(icon, "GUI Icon is missing"));

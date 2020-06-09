@@ -12,7 +12,7 @@ public enum Chat {
 	
 	private String value;
 	
-	Chat(String value){
+	Chat(String value) {
         set(value);
     }
 	
@@ -26,16 +26,16 @@ public enum Chat {
     
 	public static String INDENT = "  ";
     
-    public static String translate(String s){
+    public static String translate(String s) {
         return ChatColor.translateAlternateColorCodes('&', s);
     }
     public static String deTranslate(String s) {
     	return s.replace("§", "&");
     }
-    public static String strip(String s){
+    public static String strip(String s) {
     	return ChatColor.stripColor(s);
     }
-    public static boolean hasAlpha(String s){
+    public static boolean hasAlpha(String s) {
     	return s.matches(".*[a-zA-Z]+.*");
     }
     
@@ -109,5 +109,14 @@ public enum Chat {
 		}
 		return indent;
 		
+	}
+	public static String gap(int gapCount) {
+		String gap = "";
+		int i=0;
+		while(i<gapCount) {
+			gap += "\n";
+			i++;
+		}
+		return gap;
 	}
 }

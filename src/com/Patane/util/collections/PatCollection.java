@@ -9,11 +9,11 @@ import com.Patane.util.general.Messenger;
 public class PatCollection<T extends PatCollectable> {
 	private HashMap<String, T> collection = new HashMap<String, T>();
 	
-	public T add(T newItem){
+	public T add(T newItem) {
 		Messenger.debug("Adding "+newItem.getName()+" to "+newItem.getClass().getSimpleName()+ "Collection");
 		return collection.put(newItem.getName(), newItem);
 	}
-	public T remove(String id){
+	public T remove(String id) {
 		for(String keyId : collection.keySet()) {
 			if(id.equalsIgnoreCase(keyId)) {
 				T removed = collection.remove(keyId);
@@ -24,10 +24,10 @@ public class PatCollection<T extends PatCollectable> {
 		return null;
 	}
 	
-	public void removeAll(){
+	public void removeAll() {
 		collection.clear();
 	}
-	public T getItem(String id){
+	public T getItem(String id) {
 		for(String keyId : collection.keySet()) {
 			if(id.equalsIgnoreCase(keyId))
 				return collection.get(keyId);
@@ -35,7 +35,7 @@ public class PatCollection<T extends PatCollectable> {
 		return null;
 	}
 	
-	public boolean hasItem(String id){
+	public boolean hasItem(String id) {
 		for(String keyId : collection.keySet()) {
 			if(id.equalsIgnoreCase(keyId))
 				return true;
@@ -43,11 +43,11 @@ public class PatCollection<T extends PatCollectable> {
 		return false;
 	}
 	
-	public List<T> getAllItems(){
+	public List<T> getAllItems() {
 		return new ArrayList<T>(collection.values());
 	}
 	
-	public List<String> getAllIDs(){
+	public List<String> getAllIDs() {
 		return new ArrayList<String>(collection.keySet());
 	}
 }

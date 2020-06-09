@@ -14,7 +14,7 @@ public class GUIIcon {
 
 	Map<GUIClick, List<GUIAction>> actions = new HashMap<GUIClick, List<GUIAction>>();
 	
-	public GUIIcon(ItemStack icon){
+	public GUIIcon(ItemStack icon) {
 		Check.notNull(icon, "GUI Icon needs a valid ItemStack");
 		this.icon = icon;
 	}
@@ -26,7 +26,7 @@ public class GUIIcon {
 		actions.get(click).add(action);
 		return this;
 	}
-	public List<GUIAction> getActions(GUIClick click){
+	public List<GUIAction> getActions(GUIClick click) {
 //		List<GUIAction> currentActions = actions.get(click);
 //		currentActions.addAll(actions.get(GUIClick.ALL));
 		return actions.get(click);

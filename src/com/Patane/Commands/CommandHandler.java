@@ -123,7 +123,7 @@ public abstract class CommandHandler implements CommandExecutor{
 		// Finds the CommandPackage related to said argument
 		CommandPackage command = getPackage(commandString);
 		
-		if(command == null){
+		if(command == null) {
 			Messenger.send(sender, "&cThe &7"+commandString+" &ccommand does not exist. Type /br help for all Brewery commands that you can use!");
 			return true;
 		}
@@ -266,7 +266,7 @@ public abstract class CommandHandler implements CommandExecutor{
 	 *     
 	 * @param command PatCommand to register into the HashMap
 	 */
-	public void register(Class< ? extends PatCommand> command){
+	public void register(Class< ? extends PatCommand> command) {
 		CommandInfo cmdInfo = command.getAnnotation(CommandInfo.class);
 		if(cmdInfo == null) {
 			Messenger.severe("'"+command.getSimpleName()+"' is missing its annotation info. Please contact the "+PataneUtil.getInstance().getName()+" plugin developer to fix the issue.");

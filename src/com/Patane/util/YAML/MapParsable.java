@@ -2,6 +2,7 @@ package com.Patane.util.YAML;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -10,13 +11,17 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.Patane.util.annotations.FieldDescriber;
 import com.Patane.util.general.Chat;
+import com.Patane.util.general.ChatHoverable;
 import com.Patane.util.general.ChatStringable;
 import com.Patane.util.general.Check;
 import com.Patane.util.general.StringsUtil;
 import com.Patane.util.general.StringsUtil.LambdaStrings;
 
-public abstract class MapParsable extends Nameable implements ChatStringable{
+import net.md_5.bungee.api.chat.TextComponent;
+
+public abstract class MapParsable extends ClassDescribable implements ChatStringable, ChatHoverable{
 	
 	protected Map<String, Object> fieldMap;
 
@@ -124,7 +129,7 @@ public abstract class MapParsable extends Nameable implements ChatStringable{
 		return valueStrings;
 	}
 	
-	public Map<String, Object> getDifferentFields(MapParsable other){
+	public Map<String, Object> getDifferentFields(MapParsable other) {
 		
 		// If the two objects dont have the same name, then their fields will always be different
 		if(!className().equals(other.className()))
@@ -141,7 +146,7 @@ public abstract class MapParsable extends Nameable implements ChatStringable{
 		return differentFields;
 	}
 	
-	public static List<String> getSuggestion(Field field){
+	public static List<String> getSuggestion(Field field) {
 		// If field is of type Enum, return the list of enum strings instead of the field name
 		if(field.getType().isEnum()) {
 			@SuppressWarnings("unchecked")
@@ -155,46 +160,46 @@ public abstract class MapParsable extends Nameable implements ChatStringable{
 	 * Value Getters
 	 * ================================================================================
 	 */
-	protected String getString(Map<String, String> fields, String name, String defaultValue){
+	protected String getString(Map<String, String> fields, String name, String defaultValue) {
 		try{
 			return getString(fields, name);
-		} catch(IllegalArgumentException e){
+		} catch(IllegalArgumentException e) {
 			return defaultValue;
 		}
 	}
-	protected String getString(Map<String, String> fields, String name){
+	protected String getString(Map<String, String> fields, String name) {
 		String value = fields.get(name);
 		String result;
 		try{
 			result = Check.notNull(value);
-		} catch (NullPointerException e){
-			throw new IllegalArgumentException("'"+className()+"' is missing the '"+name+"' field");
+		} catch (NullPointerException e) {
+			throw new NullPointerException("&7"+className()+"&e requires a value for &7"+name+"&e.");
 		}
 		return result;
 	}
-	protected int getInt(Map<String, String> fields, String name, int defaultValue){
+	protected int getInt(Map<String, String> fields, String name, int defaultValue) {
 		try{
 			return getInt(fields, name);
-		} catch(IllegalArgumentException e){
+		} catch(IllegalArgumentException e) {
 			return defaultValue;
 		}
 	}
-	protected int getInt(Map<String, String> fields, String name){
+	protected int getInt(Map<String, String> fields, String name) {
 		String value = fields.get(name);
 		int result;
 		try{
 			result = Integer.parseInt(value);
-		} catch (NullPointerException e){
-			throw new IllegalArgumentException("'"+className()+"' is missing the '"+name+"' field");
-		} catch (NumberFormatException e){
-			throw new IllegalArgumentException("'"+className()+"' has invalid value in '"+name+"' field (Value must be numerical)");
+		} catch (NullPointerException e) {
+			throw new NullPointerException("&7"+className()+"&e requires a value for &7"+name+"&e. This must be a number.");
+		} catch (NumberFormatException e) {
+			throw new IllegalArgumentException("&7"+value+"&e is not a valid value for &7"+name+"&e. It must be a number.");
 		}
 		return result;
 	}
-	protected double getDouble(Map<String, String> fields, String name, double defaultValue){
+	protected double getDouble(Map<String, String> fields, String name, double defaultValue) {
 		try{
 			return getDouble(fields, name);
-		} catch(IllegalArgumentException e){
+		} catch(IllegalArgumentException e) {
 			return defaultValue;
 		}
 	}
@@ -203,32 +208,35 @@ public abstract class MapParsable extends Nameable implements ChatStringable{
 		double result;
 		try{
 			result = Double.parseDouble(value);
-		} catch (NullPointerException e){
-			throw new IllegalArgumentException("'"+className()+"' is missing the '"+name+"' field");
-		} catch (NumberFormatException e){
-			throw new IllegalArgumentException("'"+className()+"' has invalid value in '"+name+"' field (Value must be numerical)");
+		} catch (NullPointerException e) {
+			throw new NullPointerException("&7"+className()+"&e requires a value for &7"+name+"&e. This must be a number.");
+		} catch (NumberFormatException e) {
+			throw new IllegalArgumentException("&7"+value+"&e is not a valid value for &7"+name+"&e. It must be a number.");
 		}
 		return result;
 	}
-	protected <T extends Enum<T>> T getDamageCause(Class<T> clazz, Map<String, String> fields, String name, T defaultValue){
+	protected <T extends Enum<T>> T getDamageCause(Class<T> clazz, Map<String, String> fields, String name, T defaultValue) {
 		try{
 			return getEnumValue(clazz, fields, name);
-		} catch(IllegalArgumentException e){
+		} catch(IllegalArgumentException e) {
 			return defaultValue;
 		}
 	}
-	protected <T extends Enum<T>> T getEnumValue(Class<T> clazz, Map<String, String> fields, String name){
+	protected <T extends Enum<T>> T getEnumValue(Class<T> clazz, Map<String, String> fields, String name) {
 		String value = fields.get(name);
 		T result;
 		if(value == null)
-			throw new IllegalArgumentException("'"+className()+"' is missing the '"+name+"' field");
-		result = T.valueOf(clazz, value);
-		if(result == null)
-			throw new IllegalArgumentException("'"+className()+"' has invalid value in '"+name+"' field (Value must be a "+clazz.getSimpleName()+" type)");
+			throw new NullPointerException("&7"+className()+"&e requires a value for &7"+name+"&e. This must be a type of &7"+clazz.getSimpleName()+"&e.");
+		try {
+			result = T.valueOf(clazz, value);
+		}
+		catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException("&7"+value+"&e is not a valid value for &7"+name+"&e. It must be a type of &7"+clazz.getSimpleName()+"&e.");
+		}
 		return result;
 	}
 	/* ================================================================================
-	 * ChatStringable Methods
+	 * ChatStringable & ChatHoverable Methods
 	 * ================================================================================
 	 */
 	
@@ -265,7 +273,7 @@ public abstract class MapParsable extends Nameable implements ChatStringable{
 		
 		// Loop through each field
 		for(String fieldName : fieldMap.keySet()) {
-			// If the field is also a MapParsable, run this same method and add the result to text
+			// If the field is also a ChatStringable, run this same method and add the result to text
 			if(fieldMap.get(fieldName) instanceof ChatStringable)
 				text += "\n" + ((ChatStringable) fieldMap.get(fieldName)).toChatString(indentCount, deep, deepLayout);
 			// Otherwise, build the layout using field name and its value as a string
@@ -275,6 +283,65 @@ public abstract class MapParsable extends Nameable implements ChatStringable{
 		// Return the info
 		return text;
 
+	}
+	public TextComponent[] toChatHover(int indentCount, boolean deep) {
+		return toChatHover(indentCount, deep, null);
+	}
+	
+	public TextComponent[] toChatHover(int indentCount, boolean deep, LambdaStrings alternateLayout) {
+		// USEFUL SECTION TO COPY TO OTHER TOCHATSTRINGS!
+		// If alternatelayout is null, then keep deepLayout as null as it means deeper ChatStringables use their default layout as well
+		LambdaStrings deepLayout = alternateLayout;
+		// If the alternateLayout is null, we want to use the default layout for itself
+		alternateLayout = (alternateLayout == null ? layout() : alternateLayout);
+		// //////////////////////////////////////////////
+		
+		// Save all the fields in a map
+		Map<String, Object> fieldMap = this.getFieldMap();
+		
+		// Starting with an empty TextComponent List
+		List<TextComponent> componentList = new ArrayList<TextComponent>();
+		
+		TextComponent current;
+		// Loop through each field
+		for(String fieldName : fieldMap.keySet()) {
+			// If the field is also a ChatHoverable, run this same method and add a new line AND its results to compontnList
+			if(fieldMap.get(fieldName) instanceof ChatHoverable) {
+				componentList.add(StringsUtil.createTextComponent("\n"));
+				componentList.addAll(Arrays.asList(((ChatHoverable) fieldMap.get(fieldName)).toChatHover(indentCount, deep, deepLayout)));
+			}
+			// Otherwise, build the hover text to show the fieldname with its description on hover
+			else {
+				current = StringsUtil.hoverText("\n"+Chat.indent(indentCount) + alternateLayout.build(fieldName, this.getValueStrings().get(fieldName))
+						, "&f&l"+fieldName
+						+ "\n&7"+getFieldDesc(fieldName));
+				componentList.add(current);
+			}
+		}
+		// Return componentList as Array, not arraylist
+		return componentList.toArray(new TextComponent[0]);
+	}
+
+	/* ================================================================================
+	 * Field description grabbing
+	 * ================================================================================
+	 */
+	/**
+	 * Grabs the description for a field of this class if provided
+	 * @param fieldName Name of the field to get
+	 * @return the desctiption of the given fieldname or 'Missing Description' along with a printed stack trace for the error.
+	 */
+	protected String getFieldDesc(String fieldName) {
+		try {
+			Field field = this.getClass().getField(fieldName);
+			FieldDescriber fb = field.getAnnotation(FieldDescriber.class);
+			if(fb == null)
+				throw new NoClassDefFoundError(String.format("%s in %s is missing the @FieldDescriber annotation.", fieldName, className()));
+			return fb.desc();
+		} catch (NoSuchFieldException | SecurityException | NoClassDefFoundError e) {
+			e.printStackTrace();
+			return "Missing Description.";
+		}
 	}
 	
 	/* ================================================================================
@@ -335,13 +402,13 @@ public abstract class MapParsable extends Nameable implements ChatStringable{
 			} 
 			// This means that there is no constructor with values needed for the T object.
 			// Therefore, the constructor must be an empty, default constructor.
-			catch (NoSuchMethodException e){
+			catch (NoSuchMethodException e) {
 				// Attempts to create a new instance of the T object using the default constructor.
 				object = clazz.getConstructor().newInstance();
 			}
 		}
 		// If the object has an exception in its initilizer, then this triggers.
-		catch (InvocationTargetException e){
+		catch (InvocationTargetException e) {
 			throw e;
 		}
 		// All possible exceptions simply printing the stack trace.

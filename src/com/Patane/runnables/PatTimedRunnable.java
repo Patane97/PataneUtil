@@ -12,17 +12,17 @@ public abstract class PatTimedRunnable extends PatRunnable{
 		this.ticksLeft = this.duration;
 	}
 
-	public void reset(){
+	public void reset() {
 		ticksLeft = duration;
 	}
-	public void subtract(float ticks){
+	public void subtract(float ticks) {
 		ticksLeft -= ticks;
 	}
 
-	public float duration(){
+	public float duration() {
 		return duration;
 	}
-	public float ticksLeft(){
+	public float ticksLeft() {
 		return ticksLeft;
 	}
 	public abstract void task();
@@ -30,7 +30,7 @@ public abstract class PatTimedRunnable extends PatRunnable{
 	
 	@Override
 	public void run() {
-		if(ticksLeft < 0f){
+		if(ticksLeft < 0f) {
 			try {
 				complete();
 			} catch(Exception e) {
