@@ -409,6 +409,7 @@ public abstract class YAMLFile extends YAMLParser{
 			for(String field : fields) {
 				// If the field is not to be ignored.
 				if(!ignoreFields.contains(field)) {
+					@SuppressWarnings("unused")
 					ConfigurationSection possibleSection;
 					if((possibleSection = YAMLFile.getSection(section, field)) != null) {
 						// IS POSSIBLY A MAPPARSABLE?
@@ -518,8 +519,7 @@ public abstract class YAMLFile extends YAMLParser{
 			Map<String, Object> fields = object.getDifferentFields(defaultObject);
 			// Saves each field/value within defaultObject that is different to object.
 			Map<String, Object> defaultFields = defaultObject.getFieldMap();
-
-			Messenger.debug(object.className());
+			
 			// Loops through fields and sets each field/value
 			for(String field : fields.keySet()) {
 				// If the value is a number, add only that. Otherwise, convert it to a string first.
