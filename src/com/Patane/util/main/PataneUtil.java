@@ -2,6 +2,7 @@ package com.Patane.util.main;
 
 import org.bukkit.plugin.Plugin;
 
+import com.Patane.util.formables.ParticleHandler;
 import com.Patane.util.general.Chat;
 
 public class PataneUtil {
@@ -15,6 +16,8 @@ public class PataneUtil {
 		Chat.PREFIX.set(prefix);
 		Chat.PREFIX_SMALL.set(smallPrefix);
 		PataneUtil.debugging = debug;
+		
+		ParticleHandler.registerAll();
 	}
 	public static Plugin getInstance() {
 		return plugin;

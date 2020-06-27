@@ -13,7 +13,6 @@ import org.bukkit.entity.Player;
 
 import com.Patane.util.general.Chat;
 import com.Patane.util.general.Messenger;
-import com.Patane.util.general.StringsUtil;
 import com.Patane.util.ingame.Commands;
 import com.Patane.util.main.PataneUtil;
 
@@ -85,7 +84,7 @@ public abstract class CommandHandler implements CommandExecutor{
 		// Save parentCommandNames by converting parentCommandList from List to Array
 		parentCommandNames = parentCommandList.toArray(new String[0]);
 
-		Messenger.debug(PataneUtil.getPluginName()+" has registered the following commands: " + StringsUtil.stringJoiner(commandNames, ", "));
+		Messenger.debug(String.format("Registered %d unique commands!", commandNames.length));
 	}
 	
 	/**
@@ -165,7 +164,6 @@ public abstract class CommandHandler implements CommandExecutor{
 	
 	/**
 	 * Lists all child commands of specified command
-	 * *** This can be cleaned up/reviewed once commands + tabcomplete are fully complete
 	 * @param sender CommandSender to send to
 	 * @param command PatCommand to show child commands
 	 */
@@ -183,6 +181,8 @@ public abstract class CommandHandler implements CommandExecutor{
 				// Sets the TextComponents Hover Event to show text of cmdInfo in the appropriate format
 				commandText.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(Commands.hoverFormat(childCmdInfo)).create()));
 				
+				// *** This suggestcommand needs to fill in values if it can, and placeholders if it cant.
+				//     Maybe have an "args" input into this method to feed into the buildString command?
 				// Sets the TextComponents Click Event to suggest the commands usage to the player
 				commandText.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, getPackage(childName).buildString()));
 				

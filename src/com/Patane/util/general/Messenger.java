@@ -102,7 +102,7 @@ public class Messenger {
 		}
 	}
 	public static void debug(Msg type, String msg) {
-        if (type == null || msg.equals(""))
+        if (type == null)
             return;
 		if(PataneUtil.getDebug()) {
 			msg = ">> " + msg;

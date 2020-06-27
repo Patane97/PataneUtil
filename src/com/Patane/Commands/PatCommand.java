@@ -14,16 +14,8 @@ public abstract class PatCommand {
 	
 	public abstract boolean execute(CommandSender sender, String[] args, Object... objects);
 	
-//	public abstract List<String> tabComplete(CommandSender sender, String[] args, Object... objects);
+	public abstract List<String> tabComplete(CommandSender sender, String[] args, Object... objects);
 
-	// *** Remove this and replace with above once all commands are updated!
-	public List<String> tabComplete(CommandSender sender, String[] args, Object... objects) {
-		return null;
-	}
-	@Deprecated
-	public List<String> tabComplete(CommandSender sender, String[] args, CommandPackage thisPackage) {
-		return thisPackage.trimmedChildren();
-	}
 	
 	/**
 	 * Looks for a child command in a given index and sends it through to the CommandHandler.handleCommand function

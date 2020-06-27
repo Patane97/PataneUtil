@@ -2,7 +2,7 @@ package com.Patane.util.YAML.types;
 
 import com.Patane.util.YAML.ConfigHandler.SaveState;
 
-public abstract class YAMLEditable extends YAMLFile{
+public abstract class YAMLEditable extends YAMLFile {
 	
 	public YAMLEditable(String fileName, String prefix, String... filePath) {
 		super(fileName, filePath);

@@ -65,7 +65,7 @@ public class GUIPage {
 	
 	public void display(GUIInstance instance) {
 //		this.instance = instance;
-		this.instances.add(instance); //******************* Not sure if this is correct
+		this.instances.add(instance);
 		ItemStack cursor = instance.getPlayer().getItemOnCursor();
 		instance.getPlayer().setItemOnCursor(null);
 		instance.loading = true;
@@ -75,7 +75,7 @@ public class GUIPage {
 	}
 	public void open(GUIPage other) {
 //		other.display(instance);
-		other.display(this.instances.get(0)); //******************* Not sure if this is correct
+		other.display(this.instances.get(0));
 	}
 	/**
 	 * Adds a new Icon onto this GUIPage

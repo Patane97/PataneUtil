@@ -1,5 +1,6 @@
 package com.Patane.util.general;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,10 +25,6 @@ public class GeneralUtil {
 			}
 		}, Math.round(time*20));
 	}
-	public static double random(double min, double max) {
-		return min + Math.random() * (max - min);
-	}
-	
 	/**
 	 * Gets all online players that are not hidden from given player
 	 * @param player Player to check everyone elses hidden status on
@@ -58,16 +55,27 @@ public class GeneralUtil {
 		return living;
 	}
 	
+	/**
+	 * Creates a MapParsable object through a list of strings for values.
+	 * The order of values should be the same order of Parsable fields, as if using the {@link MapParsable#getFields(Class<? extends MapParsable>)} command
+	 * 
+	 * @param <T>
+	 * @param clazz Class extending MapParsable to create an object from.
+	 * @param values Values for each field required of the class. The order of values is the same as the Classes Parsable fields.
+	 * @return A MapParsable object based on the Class given.
+	 * @throws NullPointerException If a required parsable value is missing.
+	 * @throws IllegalArgumentException If a required parsable value is invalid in some way.
+	 * @throws InvocationTargetException If there is a different error with creating the MapParsable object.
+	 */
 	public static <T extends MapParsable> T createMapParsable(Class<? extends T> clazz, String... values) throws NullPointerException, IllegalArgumentException, InvocationTargetException {
 		// HashMap of each field with its corresponding value from the YML file.
 		Map<String, String> fieldValues = new HashMap<String, String>();
+		// Grab the fields in correct order
+		Field[] fields = MapParsable.getFields(clazz);
 		
-		for(int i=0 ; i<clazz.getFields().length ; i++) {
-			String name = clazz.getFields()[i].getName();
-			if(values.length > i)
-				fieldValues.put(name, values[i]);
-//			else
-//				throw new NullPointerException("&ePlease provide a"+(StringsUtil.isVowel(name.charAt(0)) ? "n " : " ")+name+" for &7"+clazz.getSimpleName()+"&e.");
+		// Loop through each field name and grab the value in the same order
+		for(int i=0 ; i<fields.length ; i++) {
+			fieldValues.put(fields[i].getName(), values[i]);
 		}
 		
 		// Creating T object ready to be created using Java Reflection and returned.
@@ -99,4 +107,5 @@ public class GeneralUtil {
 		}
 		return object;
 	}
+	
 }

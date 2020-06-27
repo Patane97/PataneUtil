@@ -1,8 +1,6 @@
 package com.Patane.util.ingame;
 
 
-import java.util.HashMap;
-
 import org.bukkit.inventory.ItemStack;
 
 import com.Patane.util.NBT.NBTEditor;
@@ -24,45 +22,34 @@ public class ItemEncoder {
 	public static ItemStack addTag(ItemStack item, String name, String value) {
 		name = generatePrefix() + name;
 		item = NBTEditor.set(item, value, name);
-		Messenger.debug("Adding tag '"+name+"' with value '"+value+"' to item with name '"+item.getItemMeta().getDisplayName()+"'.");
+		Messenger.debug(String.format("Adding tag %s with value %s to item with name %s.", name, value, item.getItemMeta().getDisplayName()));
 		return item;
 	}
 	
 	public static ItemStack delTag(ItemStack item, String name) {
 		name = generatePrefix() + name;
 		item = NBTEditor.set(item, null, name);
-		Messenger.debug("Removing tag '"+name+"' from item with name '"+item.getItemMeta().getDisplayName()+"'.");
+		Messenger.debug(String.format("Removing tag %s from item with name %s.", name, item.getItemMeta().getDisplayName()));
 		return item;
 	}
 	public static boolean hasTag(ItemStack item, String name) {
-		if(getTag(item, name) != null)
+		if(getString(item, name) != null)
 			return true;
 		return false;
 	}
-	public static Object getTag(ItemStack item, String name) {
-		name = generatePrefix() + name;
-		return NBTEditor.getItemTag(item, name);
-	}
-	public static <T> T getTag(ItemStack item, String name, Class<T> clazz) {
-		try {
-			return clazz.cast(getTag(item, name));
-		} catch (ClassCastException e) {
-			Messenger.warning("Unable to cast value for tag '"+name+"' to class '"+clazz.getSimpleName()+"'");
-			return null;
-		}
-	}
+//	public static Object getTag(ItemStack item, String name) {
+//		name = generatePrefix() + name;
+//		return NBTEditor.getItemTag(item, name);
+//	}
+//	public static <T> T getTag(ItemStack item, String name, Class<T> clazz) {
+//		try {
+//			return clazz.cast(getTag(item, name));
+//		} catch (ClassCastException e) {
+//			Messenger.warning("Unable to cast value for tag '"+name+"' to class '"+clazz.getSimpleName()+"'");
+//			return null;
+//		}
+//	}
 	public static String getString(ItemStack item, String name) {
-		return getTag(item, name, String.class);
-	}
-	public static HashMap<String, Object> getTag(ItemStack item) {
-		@SuppressWarnings("unchecked")
-		HashMap<String, Object> map = (HashMap<String, Object>) NBTEditor.getItemTag(item);
-		HashMap<String, Object> finalMap = new HashMap<String, Object>();
-		for(String name : map.keySet()) {
-			if(name.contains(generatePrefix())) {
-				finalMap.put(name, map.get(name));
-			}	
-		}
-		return finalMap;
+		return NBTEditor.getString(item, generatePrefix()+name);
 	}
 }

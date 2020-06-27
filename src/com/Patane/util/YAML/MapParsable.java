@@ -2,20 +2,27 @@ package com.Patane.util.YAML;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.Patane.util.annotations.FieldDescriber;
+import org.bukkit.Color;
+import org.bukkit.util.Vector;
+
+import com.Patane.util.annotations.ParseField;
 import com.Patane.util.general.Chat;
 import com.Patane.util.general.ChatHoverable;
 import com.Patane.util.general.ChatStringable;
 import com.Patane.util.general.Check;
+import com.Patane.util.general.Messenger;
 import com.Patane.util.general.StringsUtil;
 import com.Patane.util.general.StringsUtil.LambdaStrings;
 
@@ -80,10 +87,18 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 	private Map<String, Object> prepareFieldMap() {
 		Map<String, Object> fieldMap = new LinkedHashMap<String, Object>();
 		// Loop through each field
-		for(Field field : this.getClass().getFields()) {
+		for(Field field : getFields(this.getClass())) {
 			try {
-				// Save field name and its value as an object
-				fieldMap.put(field.getName(), field.get(this));
+				// If the field is unaccessable
+				// then temporarily set it to accessable, grab the data, then set to unaccessable again.
+				if(!field.isAccessible()) {
+					field.setAccessible(true);
+					fieldMap.put(field.getName(), field.get(this));
+//					field.setAccessible(false);
+				}
+				// Otherwise, simply grab the data
+				else
+					fieldMap.put(field.getName(), field.get(this));
 			} catch (IllegalArgumentException | IllegalAccessException e) {
 				e.printStackTrace();
 			}
@@ -100,10 +115,10 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 		for(String fieldName : fieldMap.keySet()) {
 			// If the value is null, set its string to Missing and continue to next field 
 			if(fieldMap.get(fieldName) == null) {
-				customValueStrings.put(fieldName, "&8Null");
+				customValueStrings.put(fieldName, "&8Empty");
 				continue;
 			}
-				
+			
 			// If there is a custom filter for this value
 			if(customValueConverter.containsKey(fieldName))
 				// Putting fieldName, followed by the fieldmap value converted to a string
@@ -129,21 +144,26 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 		return valueStrings;
 	}
 	
-	public Map<String, Object> getDifferentFields(MapParsable other) {
+	/**
+	 * Compares fields to another MapParsable object and returns all field names that are different
+	 * @param other Other MapParsable to compare fields to
+	 * @return A String Set of all field names from this MapParsable that are different to the Other MapParsable
+	 */
+	public Set<String> getDifferentFields(MapParsable other) {
 		
 		// If the two objects dont have the same name, then their fields will always be different
 		if(!className().equals(other.className()))
-			return fieldMap;
+			return fieldMap.keySet();
 		
 		Map<String, Object> otherFields = other.getFieldMap();
 		
-		Map<String, Object> differentFields = new TreeMap<String, Object>();
+		Set<String> differentFieldNames = new HashSet<String>();
 		
 		for(String field : fieldMap.keySet()) {
 			if(!fieldMap.get(field).equals(otherFields.get(field)))
-				differentFields.put(field, fieldMap.get(field));
+				differentFieldNames.add(field);
 		}
-		return differentFields;
+		return differentFieldNames;
 	}
 	
 	public static List<String> getSuggestion(Field field) {
@@ -156,6 +176,75 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 		// Return field name in brackets
 		return Arrays.asList("<"+field.getName()+">");
 	}
+	
+	// *** doesnt account for indexes used (or if null, not used) by MapParsable fields!
+	@SuppressWarnings("unchecked")
+	public static List<String> getSuggestion(Class<? extends MapParsable> clazz, int index) {
+		Field[] fields = getFields(clazz);
+		if(index < 0 || index >= fields.length) {
+			// *** remove?
+			Messenger.debug("Out of Array!");
+			return Arrays.asList();
+		}
+		Class<?> fieldClass = fields[index].getType();
+		if(MapParsable.class.isAssignableFrom(fieldClass))
+			// *** index here shouldnt be 0...
+			return getSuggestion((Class<? extends MapParsable>) fieldClass, 0);
+		
+		if(fieldClass.isEnum()) {
+			Class<? extends Enum<?>> enumClass = (Class<? extends Enum<?>>) fieldClass;
+			return Arrays.asList(StringsUtil.enumValueStrings(enumClass));
+		}
+		// Return field name in brackets
+		return Arrays.asList("<"+fields[index].getName()+">");
+	}
+	
+	/**
+	 * Retrieves the fields of a MapParsable class with the following conditions:
+	 * <p><ul>
+	 * <li>Only Fields with @ParseField annotations will be retrieved.
+	 * <li>Private fields in any super-classes will be ignored, but Protected and Public will be retrieved.
+	 * <li>Fields are ordered with the super-class closest to MapParsable.class first followed by all sub-classes. Order of fields within class determine their order in this Array.
+	 * </ul><p>
+	 * 
+	 * @param clazz Class extending MapParsable to retrieve fields from.
+	 * @return An ordered Array of all Fields with the @ParseField annotation available to this class.
+	 */
+	public static Field[] getFields(Class<? extends MapParsable> clazz) {
+		List<Field> fieldsList = new ArrayList<Field>();
+		// Used to determine whether to allow private fields or not
+		boolean firstClass = true;
+		// As anyClass can change into super classes, its easier to cast it as ANY class, not just one that extends MapParsable
+		Class<?> anyClass = clazz;
+		
+		// Whilst anyClass it not MapParsable, grab all available fields
+		while(anyClass != MapParsable.class) {
+			// Saving ALL fields from the given class (public, protected and private)
+			Field[] fields = anyClass.getDeclaredFields();
+			// Looping through fields backwards to get correct order for fields
+			for(int i=fields.length - 1 ; i >= 0 ; i--) {
+				// If it has @Parsefield annotation AND
+				// If this is the firstClass (where we include privates)
+				// OR this isnt the firstClass but its not a private field (ie Public or Protected),
+				// then add it to the list.
+				if(fields[i].isAnnotationPresent(ParseField.class) && (firstClass || !Modifier.isPrivate(fields[i].getModifiers()))) {
+					fieldsList.add(fields[i]);
+				}
+			}
+			firstClass = false;
+			anyClass = anyClass.getSuperclass();
+		}
+		// Order of the list is currently backwards, so we flip it!
+		Collections.reverse(fieldsList);
+		
+//		Messenger.debug("==> Listing Fields ("+clazz.getSimpleName()+")");
+//		for(Field field : fieldsList)
+//			Messenger.debug(String.format("> %s %s",field.getName(), (Modifier.isPrivate(field.getModifiers()) ? "[p]" : "")));
+//		Messenger.debug("<== End");
+		
+		// Return the fieldList as an Array.
+		return fieldsList.toArray(new Field[0]);
+	}
 	/* ================================================================================
 	 * Value Getters
 	 * ================================================================================
@@ -163,7 +252,7 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 	protected String getString(Map<String, String> fields, String name, String defaultValue) {
 		try{
 			return getString(fields, name);
-		} catch(IllegalArgumentException e) {
+		} catch(IllegalArgumentException|NullPointerException e) {
 			return defaultValue;
 		}
 	}
@@ -180,17 +269,17 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 	protected int getInt(Map<String, String> fields, String name, int defaultValue) {
 		try{
 			return getInt(fields, name);
-		} catch(IllegalArgumentException e) {
+		} catch(IllegalArgumentException|NullPointerException e) {
 			return defaultValue;
 		}
 	}
 	protected int getInt(Map<String, String> fields, String name) {
 		String value = fields.get(name);
+		if(value == null)
+			throw new NullPointerException("&7"+className()+"&e requires a value for &7"+name+"&e. This must be a number.");
 		int result;
 		try{
 			result = Integer.parseInt(value);
-		} catch (NullPointerException e) {
-			throw new NullPointerException("&7"+className()+"&e requires a value for &7"+name+"&e. This must be a number.");
 		} catch (NumberFormatException e) {
 			throw new IllegalArgumentException("&7"+value+"&e is not a valid value for &7"+name+"&e. It must be a number.");
 		}
@@ -199,14 +288,14 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 	protected double getDouble(Map<String, String> fields, String name, double defaultValue) {
 		try{
 			return getDouble(fields, name);
-		} catch(IllegalArgumentException e) {
+		} catch(IllegalArgumentException|NullPointerException e) {
 			return defaultValue;
 		}
 	}
-	protected double getDouble(Map<String, String> fields, String name) throws IllegalArgumentException{
+	protected double getDouble(Map<String, String> fields, String name) throws IllegalArgumentException {
 		String value = fields.get(name);
 		double result;
-		try{
+		try {
 			result = Double.parseDouble(value);
 		} catch (NullPointerException e) {
 			throw new NullPointerException("&7"+className()+"&e requires a value for &7"+name+"&e. This must be a number.");
@@ -215,15 +304,35 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 		}
 		return result;
 	}
-	protected <T extends Enum<T>> T getDamageCause(Class<T> clazz, Map<String, String> fields, String name, T defaultValue) {
+	protected boolean getBoolean(Map<String, String> fields, String name, boolean defaultValue) {
 		try{
-			return getEnumValue(clazz, fields, name);
-		} catch(IllegalArgumentException e) {
+			return getBoolean(fields, name);
+		} catch(IllegalArgumentException|NullPointerException e) {
 			return defaultValue;
 		}
 	}
-	protected <T extends Enum<T>> T getEnumValue(Class<T> clazz, Map<String, String> fields, String name) {
+	protected boolean getBoolean(Map<String, String> fields, String name) throws IllegalArgumentException {
 		String value = fields.get(name);
+		boolean result;
+		try {
+			result = StringsUtil.parseBoolean(value);
+		} catch (NullPointerException e) {
+			throw new NullPointerException(String.format("&7%s&e requires a value for &7%s&e. This must be true or false.", className(), name));
+		} catch (NumberFormatException e) {
+			throw new IllegalArgumentException(String.format("&7%s&e is not a valid value for &7%s&e. It must be true or false.", className(), name));
+		}
+		return result;
+	}
+	
+	protected <T extends Enum<T>> T getEnumValue(Class<T> clazz, Map<String, String> fields, String name, T defaultValue) {
+		try{
+			return getEnumValue(clazz, fields, name);
+		} catch(IllegalArgumentException|NullPointerException e) {
+			return defaultValue;
+		}
+	}
+	protected <T extends Enum<T>> T getEnumValue(Class<T> clazz, Map<String, String> fields, String name) throws IllegalArgumentException {
+		String value = StringsUtil.normalize(fields.get(name));
 		T result;
 		if(value == null)
 			throw new NullPointerException("&7"+className()+"&e requires a value for &7"+name+"&e. This must be a type of &7"+clazz.getSimpleName()+"&e.");
@@ -235,6 +344,130 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 		}
 		return result;
 	}
+	
+	protected <T extends MapParsable> T getMapParsable(Class<T> clazz, Map<String, String> fields, String name, T defaultValue) {
+		try{
+			return getMapParsable(clazz, fields, name);
+		} catch(IllegalArgumentException|NullPointerException e) {
+			return defaultValue;
+		}
+	}
+	
+	protected <T extends MapParsable> T getMapParsable(Class<T> clazz, Map<String, String> fields, String name) throws IllegalArgumentException {
+		String value = fields.get(name);
+		T result;
+		try {
+			result = MapParsable.fromString(clazz, value);
+		} catch (InvocationTargetException e) {
+			throw new IllegalArgumentException(String.format("&cFailed to create &7%s&c: %s", name, e.getCause().getMessage()));
+		} catch (NullPointerException e) {
+			throw new NullPointerException(String.format("&7%s&e requires a &7%s&e. This must be a MapParsable object.", className(), name));
+		}
+		return result;
+	}
+	
+	protected Color getColor(Map<String, String> fields, String name, Color defaultColor) {
+		try{
+			return getColor(fields, name);
+		} catch(IllegalArgumentException|NullPointerException e) {
+			return defaultColor;
+		}
+	}
+	
+	protected Color getColor(Map<String, String> fields, String name) {
+		String rawString = getString(fields, name);
+		String[] colorStrings = rawString.split(",");
+		if(colorStrings.length != 3)
+			throw new IllegalArgumentException(String.format("&7%s&e is not a valid format for &7%s&e's &7%s&e value. It must be three numbers separated by commas (eg. 1,2,3)", rawString, className(), name));
+		
+		int r,g,b;
+		try{
+			r = Integer.parseInt(colorStrings[0].replaceAll(" ", ""));
+			if(r < 0 || r > 255)
+				throw new NumberFormatException();
+		} catch (NullPointerException e) {
+			throw new NullPointerException("&7"+className()+"&e requires a red value for &7"+name+"&e. This must be a number between 0 and 255.");
+		} catch (NumberFormatException e) {
+			throw new IllegalArgumentException("&7"+colorStrings[0]+"&e is not a valid red value for &7"+name+"&e. It must be a number between 0 and 255.");
+		} catch (ArrayIndexOutOfBoundsException e) {
+			throw new NullPointerException("&7"+className()+"&e is missing the red value for &7"+name+"&e. This must be a number between 0 and 255.");
+		}
+
+		try{
+			g = Integer.parseInt(colorStrings[1].replaceAll(" ", ""));
+			if(g < 0 || g > 255)
+				throw new NumberFormatException();
+		} catch (NullPointerException e) {
+			throw new NullPointerException("&7"+className()+"&e requires a green value for &7"+name+"&e. This must be a number between 0 and 255.");
+		} catch (NumberFormatException e) {
+			throw new IllegalArgumentException("&7"+colorStrings[1]+"&e is not a valid green value for &7"+name+"&e. It must be a number between 0 and 255.");
+		} catch (ArrayIndexOutOfBoundsException e) {
+			throw new NullPointerException("&7"+className()+"&e is missing the green value for &7"+name+"&e. This must be a number between 0 and 255.");
+		}
+		
+		try{
+			b = Integer.parseInt(colorStrings[2].replaceAll(" ", ""));
+			if(b < 0 || b > 255)
+				throw new NumberFormatException();
+		} catch (NullPointerException e) {
+			throw new NullPointerException("&7"+className()+"&e requires a blue value for &7"+name+"&e. This must be a number between 0 and 255.");
+		} catch (NumberFormatException e) {
+			throw new IllegalArgumentException("&7"+colorStrings[2]+"&e is not a valid blue value for &7"+name+"&e. It must be a number between 0 and 255.");
+		} catch (ArrayIndexOutOfBoundsException e) {
+			throw new NullPointerException("&7"+className()+"&e is missing the blue value for &7"+name+"&e. This must be a number between 0 and 255.");
+		}
+		
+		return Color.fromRGB(r, g, b);
+	}
+	
+	protected Vector getVector(Map<String, String> fields, String name, Vector defaultVector) {
+		try{
+			return getVector(fields, name);
+		} catch(IllegalArgumentException|NullPointerException e) {
+			return defaultVector;
+		}
+	}
+	
+	protected Vector getVector(Map<String, String> fields, String name) {
+		String rawString = getString(fields, name);
+		String[] vectorStrings = rawString.split(",");
+		if(vectorStrings.length != 3)
+			throw new IllegalArgumentException(String.format("&7%s&e is not a valid format for &7%s&e's &7%s&e value. It must be three numbers separated by commas (eg. 1,2,3)", rawString, className(), name));
+		
+		float x,y,z;
+		try{
+			x = Float.parseFloat(vectorStrings[0].replaceAll(" ", ""));
+		} catch (NullPointerException e) {
+			throw new NullPointerException("&7"+className()+"&e requires an x value for &7"+name+"&e. This must be a number.");
+		} catch (NumberFormatException e) {
+			throw new IllegalArgumentException("&7"+vectorStrings[0]+"&e is not a valid x value for &7"+name+"&e. It must be a number.");
+		} catch (ArrayIndexOutOfBoundsException e) {
+			throw new NullPointerException("&7"+className()+"&e is missing the x value for &7"+name+"&e. This must be a number.");
+		}
+
+		try{
+			y = Float.parseFloat(vectorStrings[1].replaceAll(" ", ""));
+		} catch (NullPointerException e) {
+			throw new NullPointerException("&7"+className()+"&e requires a y value for &7"+name+"&e. This must be a number.");
+		} catch (NumberFormatException e) {
+			throw new IllegalArgumentException("&7"+vectorStrings[1]+"&e is not a valid y value for &7"+name+"&e. It must be a number.");
+		} catch (ArrayIndexOutOfBoundsException e) {
+			throw new NullPointerException("&7"+className()+"&e is missing the y value for &7"+name+"&e. This must be a number.");
+		}
+		
+		try{
+			z = Float.parseFloat(vectorStrings[2].replaceAll(" ", ""));
+		} catch (NullPointerException e) {
+			throw new NullPointerException("&7"+className()+"&e requires a z value for &7"+name+"&e. This must be a number.");
+		} catch (NumberFormatException e) {
+			throw new IllegalArgumentException("&7"+vectorStrings[2]+"&e is not a valid z value for &7"+name+"&e. It must be a number.");
+		} catch (ArrayIndexOutOfBoundsException e) {
+			throw new NullPointerException("&7"+className()+"&e is missing the z value for &7"+name+"&e. This must be a number.");
+		}
+		
+		return new Vector(x,y,z);
+	}
+	
 	/* ================================================================================
 	 * ChatStringable & ChatHoverable Methods
 	 * ================================================================================
@@ -334,9 +567,9 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 	protected String getFieldDesc(String fieldName) {
 		try {
 			Field field = this.getClass().getField(fieldName);
-			FieldDescriber fb = field.getAnnotation(FieldDescriber.class);
+			ParseField fb = field.getAnnotation(ParseField.class);
 			if(fb == null)
-				throw new NoClassDefFoundError(String.format("%s in %s is missing the @FieldDescriber annotation.", fieldName, className()));
+				throw new NoClassDefFoundError(String.format("%s in %s is missing the @ParseField annotation.", fieldName, className()));
 			return fb.desc();
 		} catch (NoSuchFieldException | SecurityException | NoClassDefFoundError e) {
 			e.printStackTrace();
@@ -350,7 +583,6 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 	 * ================================================================================
 	 */
 	
-	@Deprecated
 	@Override
 	public String toString() {
 		String mapParsableString = "{";
@@ -362,19 +594,22 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 		mapParsableString += "}";
 		return mapParsableString;
 	}
-
-	@Deprecated
+	
 	/**
-	 * Creates a MapParsable object from a string
-	 * @param <T>
-	 * @param clazz
-	 * @param mapParsableString
-	 * @return
-	 * @throws InvocationTargetException
+	 * Creates a MapParsable object from a string in the format of {(field1,value1),(field2,value2)}
+	 * @param <T> MapParsable object
+	 * @param clazz Clazz extending from MapParsable
+	 * @param mapParsableString String to create object with. Must be in format of {(field1,value1),(field2,value2)}
+	 * @return A MapParsable object with given values
+	 * @throws InvocationTargetException When the MapParsable fails to construct. This could be due to many factors, but primarily is a field not being applied properly.
 	 */
 	public static <T extends MapParsable> T fromString(Class<? extends T> clazz, String mapParsableString) throws InvocationTargetException {
 		Map<String, String> fieldValues = new LinkedHashMap<String, String>();
 		
+		// *** I believe the whole pattern fails then theres a MapParsable within a MapParsable here.
+		//								   \/										\/
+		//     eg. {(field1,value1),(field2,{(field2.1,value2.1),(field2.2,value2.2)})}
+		//
 		// Finds and groups any values encased in brackets. Eg, 'field1,value1' | 'field2,value2' from {(field1,value1),(field2,value2)}
 		Pattern whole = Pattern.compile("\\((.+?,(?:\\{.*?\\}|[^{}])*?)\\)");
 		// Seperates the two strings from the above group. Eg, 'field1' | 'value1' from field1,value1
@@ -387,16 +622,19 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 		
 		// Loop through each found group. In this case, it is each group of field+value
 		while(wholeMatcher.find()) {
+			String test = wholeMatcher.group(1);
 			// Match the individual values from the found group
-			individualMatcher = individual.matcher(wholeMatcher.group(1));
-			// Save these captured field+value into fieldStrings
-			fieldValues.put(individualMatcher.group(1), individualMatcher.group(2));
+			individualMatcher = individual.matcher(test);
+			if(individualMatcher.find()) {
+				// Save these captured field+value into fieldStrings
+				fieldValues.put(individualMatcher.group(1), individualMatcher.group(2));
+			}
 		}
 		// Creating T object ready to be created using Java Reflection and returned.
 		// If there are any problems creating object, null will be returned.
 		T object = null;
-		try{
-			try{
+		try {
+			try {
 				// Attempts to create a new instance of the T object using the FieldValues.
 				object = clazz.getConstructor(Map.class).newInstance(fieldValues);
 			} 
@@ -411,7 +649,7 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 		catch (InvocationTargetException e) {
 			throw e;
 		}
-		// All possible exceptions simply printing the stack trace.
+		// All other possible exceptions simply printing the stack trace.
 		catch (Exception e) {
 			e.printStackTrace();
 		}

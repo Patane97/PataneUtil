@@ -7,10 +7,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
 
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.util.Vector;
 import org.yaml.snakeyaml.error.YAMLException;
 
 import com.Patane.util.YAML.ConfigHandler;
@@ -19,6 +21,7 @@ import com.Patane.util.YAML.TypeParsable;
 import com.Patane.util.general.Check;
 import com.Patane.util.general.Messenger;
 import com.Patane.util.general.StringsUtil;
+import com.sun.prism.paint.Color;
 
 public abstract class YAMLFile extends YAMLParser{
 	protected ConfigHandler configHandler;
@@ -250,9 +253,11 @@ public abstract class YAMLFile extends YAMLParser{
 		}
 		return null;
 	}
-	/*
-	 ************************* Value Getters *************************
+	/* ================================================================================
+	 * Value Getters
+	 * ================================================================================
 	 */
+	
 	/**
 	 * Gets a string for a specific String within a specific ConfigurationSection.
 	 * Equivalent to 'a.getString(string)' but properly handles nulls.
@@ -368,9 +373,11 @@ public abstract class YAMLFile extends YAMLParser{
 			value = getBoolean(string, b);
 		return value;
 	}
-	/*
-	 ************************* Other Getters *************************
+	/* ================================================================================
+	 * Other Getters
+	 * ================================================================================
 	 */
+	
 	/**
 	 * Uses Java Reflection to Construct a MapParsable class from a YML file.
 	 * @param section Section to grab information from in YML.
@@ -382,67 +389,68 @@ public abstract class YAMLFile extends YAMLParser{
 	 * @throws ClassNotFoundException If the Class given is null.
 	 * @throws NullPointerException If any values required to create the object are missing
 	 * @throws IllegalArgumentException If any values required to create the object are invalid
-	 */public static <T extends MapParsable> T getMapParsable(@Nonnull ConfigurationSection section, ConfigurationSection defaultSection, @Nonnull Class<? extends T> clazz, String... ignoreFieldsArray) throws YAMLException, ClassNotFoundException, NullPointerException, IllegalArgumentException{
-			// Throws YAMLException if section is null or not a section.
-			Check.notNull(section);
-			
-			// Creates name from the last ConfigSection path item.
-			String name = extractLast(section);
-			
-			// Throws ClassNotFoundException if clazz is null.
-			Check.notNull(clazz, "Class required for '"+name+"' is missing.");
-			
-			// Creating the fields, invalidFields and ignoreField ArrayLists. Used to sort keys and fields in the YML.
-			List<String> fields = new ArrayList<String>();
-			List<String> invalidFields = new ArrayList<String>();
-			List<String> ignoreFields = Arrays.asList(ignoreFieldsArray);
-			
-			// Saves each public field in clazz into 'fields' ArrayList.
-			for(Field field : clazz.getFields())
-				fields.add(field.getName());
-			
-			// HashMap of each field with its corresponding value from the YML file.
-			Map<String, String> fieldValues = new HashMap<String, String>();
-			
-			
-			// Loops through each field within the clazz
-			for(String field : fields) {
-				// If the field is not to be ignored.
-				if(!ignoreFields.contains(field)) {
-					@SuppressWarnings("unused")
-					ConfigurationSection possibleSection;
-					if((possibleSection = YAMLFile.getSection(section, field)) != null) {
-						// IS POSSIBLY A MAPPARSABLE?
-						// *** NEED TO PROPERLY IMPLEMENT
-						//     if this 'getMapParsable' finds a configuration section, it should check
-						//     if the config section has the same name as a value. If so, check if that value is a
-						//     map parsable. If it is a map parsable, save the section as a string (method below)
-						// *** Also implement above for 'setting' map parsable below
+	 */
+	public static <T extends MapParsable> T getMapParsable(@Nonnull ConfigurationSection section, ConfigurationSection defaultSection, @Nonnull Class<? extends T> clazz, String... ignoreFieldsArray) throws YAMLException, ClassNotFoundException, NullPointerException, IllegalArgumentException{
+		// Throws YAMLException if section is null or not a section.
+		Check.notNull(section);
+		
+		// Creates name from the last ConfigSection path item.
+		String name = extractLast(section);
+		
+		// Throws ClassNotFoundException if clazz is null.
+		Check.notNull(clazz, "Class required for '"+name+"' is missing.");
+		
+		// Creating the fields, invalidFields and ignoreField ArrayLists. Used to sort keys and fields in the YML.
+		List<Field> fields = new ArrayList<Field>();
+		List<Field> invalidFields = new ArrayList<Field>();
+		
+		List<String> ignoreFields = Arrays.asList(ignoreFieldsArray);
+		
+		// Saves each public field in clazz into 'fields' ArrayList.
+		fields = Arrays.asList(MapParsable.getFields(clazz));
+		
+		// HashMap of each field with its corresponding value from the YML file.
+		Map<String, String> fieldValues = new HashMap<String, String>();
+
+		// Loops through each field within the clazz
+		for(Field field : fields) {
+			// If the field is not to be ignored.
+			if(!ignoreFields.contains(field.getName())) {
+				ConfigurationSection possibleSection;
+				if((possibleSection = YAMLFile.getSection(section, field.getName())) != null) {
+					
+					// Checks if this field is a MapParsable
+					if(MapParsable.class.isAssignableFrom(field.getType())) {
+						// If it should, we try to find a section instead of just a value
+						ConfigurationSection possibleDefaultSection = YAMLFile.getSection(defaultSection, field.getName());
+						// We convert that section into a single string appropriate for MapParsable.fromString()
+						fieldValues.put(field.getName(), sectionToString(possibleSection, possibleDefaultSection));
+						// Continue to the next field
 						continue;
 					}
-					// The value is obtained from the header section. If this is null, it is obtained from the defaultSection.
-					String value = getString(field, section, defaultSection);
-					
-					// If the value is not present on either sections, then it is an invalidField.
-					if(value == null)
-						invalidFields.add(value);
-					// Otherwise all is good. It is added to the fieldValues.
-					else
-						fieldValues.put(field, value);
 				}
+				// The value is obtained from the header section. If this is null, it is obtained from the defaultSection.
+				String value = getString(field.getName(), section, defaultSection);
+
+				// If the value is not present on either sections, then it is an invalidField.
+				if(value == null)
+					invalidFields.add(field);
+				// Otherwise all is good. It is added to the fieldValues.
+				else
+					fieldValues.put(field.getName(), value);
 			}
-			
-			// Creating T object ready to be created using Java Reflection and returned.
-			// If there are any problems creating object, null will be returned.
-			T object = null;
-			
-			try {
-				object = getFromClass(clazz, fieldValues);
-			} catch (IllegalAccessException | InvocationTargetException | SecurityException | InstantiationException | NoSuchMethodException e) {
-				e.printStackTrace();
-			}
-			
-			return object;
+		}
+		// Creating T object ready to be created using Java Reflection and returned.
+		// If there are any problems creating object, null will be returned.
+		T object = null;
+		
+		try {
+			object = getFromClass(clazz, fieldValues);
+		} catch (IllegalAccessException | InvocationTargetException | SecurityException | InstantiationException | NoSuchMethodException e) {
+			e.printStackTrace();
+		}
+		
+		return object;
 
 	}
 	
@@ -460,7 +468,6 @@ public abstract class YAMLFile extends YAMLParser{
 			if(getSection(section, sectionField) != null) {
 				start += "("+sectionField+","+sectionToString(getSection(section, sectionField), getSection(defaultSection, sectionField))+")";
 			}
-				// do soemthing
 			start += "("+sectionField+","+getString(sectionField, section, defaultSection)+")";
 		}
 		start += "}";
@@ -498,6 +505,7 @@ public abstract class YAMLFile extends YAMLParser{
 		public static void setMapParsable(@Nonnull ConfigurationSection section, ConfigurationSection defaultSection, @Nonnull MapParsable object, MapParsable defaultObject) throws YAMLException{
 			// Throws YAMLException if section is null or not a section.
 			Check.notNull(section);
+			Check.notNull(object);
 			
 			if(defaultSection == null) {
 				defaultSection = section;
@@ -515,26 +523,64 @@ public abstract class YAMLFile extends YAMLParser{
 					section.set("type", object.className());
 			}
 			
-			// Saves each field/value within object that is different to defaultObject.
-			Map<String, Object> fields = object.getDifferentFields(defaultObject);
-			// Saves each field/value within defaultObject that is different to object.
-			Map<String, Object> defaultFields = defaultObject.getFieldMap();
+			// Saves all object field names that are not present or different within defaultObject
+			Set<String> differentFields = object.getDifferentFields(defaultObject);
 			
-			// Loops through fields and sets each field/value
-			for(String field : fields.keySet()) {
-				// If the value is a number, add only that. Otherwise, convert it to a string first.
-				section.set(field, (fields.get(field) instanceof Number ? fields.get(field) : fields.get(field).toString()));
+			// Grabbing the main objects fields and values
+			Map<String, Object> fieldMap = object.getFieldMap();
 			
+			// Loop through the raw fields of the main object. This is necessary to compare its raw types
+			for(Field field : MapParsable.getFields(object.getClass())) {
+				// Grab the fields name for later use
+				String fieldName = field.getName();
+				
+				ConfigurationSection settingIn;
+				
+				// If this field is not present in or different to the field within defaultObject,
+				// then set it in section, not defaultSection
+				if(differentFields.contains(fieldName))
+					settingIn = section;
+				// Otherwise, set it in defaultSection
+				else
+					settingIn = defaultSection;
+				
+				// This is why we needed the Raw field.
+				// If the Field is of type MapParsable, then we dont want to treat it as a value,
+				// but as a configurationSection of its own. Therefore, we run this same method again!
+				if(MapParsable.class.isAssignableFrom(field.getType())) {
+					setMapParsable(settingIn.createSection(fieldName), null, (MapParsable) fieldMap.get(fieldName), null);
+				}
+				// Otherwise, simply convert the value to a YAML friendly format and set it.
+				else {
+					settingIn.set(fieldName, yamlFriendly(fieldMap.get(fieldName)));
+				}
 			}
-			// Loops through defaultFields and sets each field/value
-			for(String field : defaultFields.keySet()) {
-				// If the value is a number, add only that. Otherwise, convert it to a string first.
-				defaultSection.set(field, (defaultFields.get(field) instanceof Number ? defaultFields.get(field) : defaultFields.get(field).toString()));
 			
-			}
-			// Clears the section if it is empty
+			// If the section is empty by the end of this, remove it!
 			if(section.getKeys(false).isEmpty())
 				section.getParent().set(extractLast(section), null);
+		}
+		
+		private static Object yamlFriendly(Object object) {
+			if(object == null)
+				return object;
+			if(object instanceof Number)
+				return object;
+			if(object instanceof Enum)
+				// *** Do something special here. Maybe to lower case and ' ' to '_'?
+				return object.toString();
+			if(object instanceof Color) {
+				Color color = (Color) object;
+				return String.format("%d, %d, %d", color.getRed(), color.getGreen(), color.getBlue());
+			}
+			if(object instanceof Vector) {
+				Vector vector = (Vector) object;
+				return String.format("%.1f, %.1f, %.1f", vector.getX(), vector.getY(), vector.getZ());
+			}
+			return object.toString();
+		}
+		protected static String getDuplicateName(String name, int a) {
+			return (a > 0 ? String.format("%s(%d)", name, a) : name);
 		}
 	/**
 	 * Searches a given Enum class for a given String.
@@ -596,5 +642,5 @@ public abstract class YAMLFile extends YAMLParser{
 			e.printStackTrace();
 		}
 		return majorObject;
-	}
+	}	
 }

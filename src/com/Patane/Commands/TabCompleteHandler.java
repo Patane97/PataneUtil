@@ -50,8 +50,6 @@ public class TabCompleteHandler implements TabCompleter {
 	/*
 	 * ================================================================================
 	 * Listener to handle tabSaver not filling with players who have left mid-command or players who have already executed the command
-	 * 
-	 *  *** Currently does not account for people typing a command and then closing their chat before execution. Maybe do this when they START typing a command?
 	 * ================================================================================
 	 */
 	public static class TabCompleteListener extends BaseListener {

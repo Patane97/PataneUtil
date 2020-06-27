@@ -1,166 +1,320 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="3acb695e-805c-4d3e-a7fa-46e7b4ea5e96" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/general/Chat.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/Patane/util/general/Chat.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/ingame/Commands.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/Patane/util/ingame/Commands.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/ingame/ItemEncoder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/Patane/util/ingame/ItemEncoder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/ingame/ItemsUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/Patane/util/ingame/ItemsUtil.java" afterDir="false" />
+    <list default="true" id="478348d8-8d1f-4c2d-86d8-31ed68d09018" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/../Brewery/Brewery.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Brewery/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifyRemoveParticles.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/CustomEffects/Formation.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dictionaries/Stephen.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_github_fierioziy_ParticleNativeAPI_2_0_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_code_gson_gson_2_8_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_guava_guava_21_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__commons_lang_commons_lang_2_6.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__net_md_5_bungeecord_chat_1_15_SNAPSHOT.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_spigotmc_spigot_api_1_15_2_R0_1_SNAPSHOT.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_yaml_snakeyaml_1_25.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/Patane/util/ingame/LocationsUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/.settings/org.eclipse.core.resources.prefs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Brewery.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Brewery.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Collections/BrEffectCollection.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Collections/BrEffectCollection.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Collections/BrItemCollection.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Collections/BrItemCollection.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/BrCommandHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/BrCommandHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/primary/createCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/primary/createCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/primary/editCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/primary/editCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/primary/giveCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/primary/giveCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/primary/helpCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/primary/helpCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/primary/infoCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/primary/infoCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/primary/listCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/primary/listCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/primary/reloadCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/primary/reloadCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/primary/removeCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/primary/removeCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/createEffect.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/createEffect.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/createItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/createItem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/editEffect.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/editEffect.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/editItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/editItem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectRemove.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectRemove.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectRemoveFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectRemoveFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectRemoveModifier.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectRemoveModifier.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectRemoveParticles.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectRemoveParticles.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectRemovePotions.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectRemovePotions.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectRemoveRadius.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectRemoveRadius.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectRemoveSounds.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectRemoveSounds.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectRemoveTag.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectRemoveTag.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectRemoveTrigger.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectRemoveTrigger.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectSet.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectSet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectSetFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectSetFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectSetFilterAdd.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectSetFilterAdd.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectSetFilterRemove.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectSetFilterRemove.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectSetIgnoreuser.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectSetIgnoreuser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectSetModifier.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectSetModifier.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectSetParticles.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectSetParticles.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectSetPotions.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectSetPotions.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectSetPotionsAdd.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectSetPotionsAdd.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectSetPotionsRemove.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectSetPotionsRemove.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectSetRadius.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectSetRadius.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectSetSounds.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectSetSounds.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectSetTag.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectSetTag.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectSetTrigger.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/effect/editEffectSetTrigger.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/editItemCooldown.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/editItemCooldown.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/editItemEffects.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/editItemEffects.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/editItemItemstack.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/editItemItemstack.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/editItemType.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/editItemType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsAdd.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsAdd.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModify.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModify.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifyRemove.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifyRemove.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifyRemoveFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifyRemoveFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifyRemoveModifier.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifyRemoveModifier.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifyRemoveParticles.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifyRemovePotions.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifyRemovePotions.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifyRemoveRadius.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifyRemoveRadius.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifyRemoveSounds.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifyRemoveSounds.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifyRemoveTag.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifyRemoveTag.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifyRemoveTrigger.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifyRemoveTrigger.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifySet.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifySet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifySetFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifySetFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifySetFilterAdd.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifySetFilterAdd.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifySetFilterRemove.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifySetFilterRemove.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifySetIgnoreuser.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifySetIgnoreuser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifySetModifier.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifySetModifier.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifySetParticles.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifySetParticles.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifySetPotions.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifySetPotions.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifySetPotionsAdd.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifySetPotionsAdd.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifySetPotionsRemove.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifySetPotionsRemove.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifySetRadius.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifySetRadius.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifySetSounds.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifySetSounds.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifySetTag.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifySetTag.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifySetTrigger.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsModifySetTrigger.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsRemove.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/effects/editItemEffectsRemove.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/itemstack/editItemItemstackAttributes.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/itemstack/editItemItemstackAttributes.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/itemstack/editItemItemstackAttributesAdd.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/itemstack/editItemItemstackAttributesAdd.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/itemstack/editItemItemstackAttributesRemove.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/itemstack/editItemItemstackAttributesRemove.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/itemstack/editItemItemstackEnchantments.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/itemstack/editItemItemstackEnchantments.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/itemstack/editItemItemstackEnchantmentsAdd.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/itemstack/editItemItemstackEnchantmentsAdd.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/itemstack/editItemItemstackEnchantmentsRemove.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/itemstack/editItemItemstackEnchantmentsRemove.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/itemstack/editItemItemstackFlags.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/itemstack/editItemItemstackFlags.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/itemstack/editItemItemstackFlagsAdd.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/itemstack/editItemItemstackFlagsAdd.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/itemstack/editItemItemstackFlagsRemove.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/itemstack/editItemItemstackFlagsRemove.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/itemstack/editItemItemstackLore.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/itemstack/editItemItemstackLore.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/itemstack/editItemItemstackLoreDelete.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/itemstack/editItemItemstackLoreDelete.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/itemstack/editItemItemstackLoreSet.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/itemstack/editItemItemstackLoreSet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/edit/item/itemstack/editItemItemstackName.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/edit/item/itemstack/editItemItemstackName.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/infoEffect.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/infoEffect.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/infoItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/infoItem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/listEffects.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/listEffects.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/listItems.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/listItems.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/removeEffect.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/removeEffect.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Commands/secondary/removeItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Commands/secondary/removeItem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Cooldowns/CooldownHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Cooldowns/CooldownHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Cooldowns/CooldownTracker.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Cooldowns/CooldownTracker.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/CustomEffects/BrEffect.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/CustomEffects/BrEffect.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/CustomEffects/BrEffectYML.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/CustomEffects/BrEffectYML.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/CustomEffects/Filter.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/CustomEffects/Filter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/CustomEffects/Formation.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/CustomEffects/Modifier.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/CustomEffects/Modifier.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/CustomEffects/Trigger.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/CustomEffects/Trigger.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/CustomEffects/modifiers/Damage.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/CustomEffects/modifiers/Damage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/CustomEffects/modifiers/Effect.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/CustomEffects/modifiers/Effect.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/CustomEffects/modifiers/Feed.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/CustomEffects/modifiers/Feed.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/CustomEffects/modifiers/Force.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/CustomEffects/modifiers/Force.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/CustomEffects/modifiers/Heal.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/CustomEffects/modifiers/Heal.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/CustomEffects/modifiers/Ignite.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/CustomEffects/modifiers/Ignite.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/CustomEffects/modifiers/Kill.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/CustomEffects/modifiers/Kill.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/CustomEffects/modifiers/None.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/CustomEffects/modifiers/None.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/CustomEffects/modifiers/Polymorph.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/CustomEffects/modifiers/Polymorph.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/CustomEffects/modifiers/Smite.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/CustomEffects/modifiers/Smite.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/CustomEffects/triggers/Instant.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/CustomEffects/triggers/Instant.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/CustomEffects/triggers/Lingering.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/CustomEffects/triggers/Lingering.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/CustomEffects/triggers/Sticky.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/CustomEffects/triggers/Sticky.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/CustomItems/BrItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/CustomItems/BrItem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/CustomItems/BrItemYML.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/CustomItems/BrItemYML.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Editing/EditSession.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Editing/EditingInfo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Handlers/BrMetaDataHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Handlers/BrMetaDataHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Handlers/ModifierHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Handlers/ModifierHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Handlers/TriggerHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Handlers/TriggerHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Listeners/GenericPacketAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Listeners/GenericPacketAdapter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Listeners/GlobalListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Listeners/GlobalListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Sequencer/Sequencer.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Sequencer/Sequencer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/Sequencer/SequencesYML.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/Sequencer/SequencesYML.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Brewery/src/com/Patane/Brewery/YAML/BreweryYAML.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Brewery/src/main/java/com/Patane/Brewery/YAML/BreweryYAML.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PataneUtil.iml" beforeDir="false" afterPath="$PROJECT_DIR$/PataneUtil.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/Commands/CommandHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/Commands/CommandHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/Commands/CommandInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/Commands/CommandInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/Commands/CommandSuggester.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/Commands/PatCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/Commands/PatCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/Commands/TabCompleteHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/Commands/TabCompleteHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/GUI/GUIAction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/GUI/GUIAction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/GUI/GUIClick.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/GUI/GUIClick.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/GUI/GUIIcon.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/GUI/GUIIcon.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/GUI/GUIInstance.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/GUI/GUIInstance.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/GUI/GUIListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/GUI/GUIListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/GUI/GUIPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/GUI/GUIPage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/handlers/ErrorHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/handlers/ErrorHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/handlers/MetaDataHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/handlers/MetaDataHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/handlers/PatHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/handlers/PatHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/handlers/PlayerDataHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/handlers/PlayerDataHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/listeners/BaseListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/listeners/BaseListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/runnables/PatRunnable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/runnables/PatRunnable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/runnables/PatTimedRunnable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/runnables/PatTimedRunnable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/runnables/TimedMetaDataTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/runnables/TimedMetaDataTask.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/NBT/NBTEditor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/util/NBT/NBTEditor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/YAML/ClassDescribable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/util/YAML/ClassDescribable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/YAML/Config.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/util/YAML/Config.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/YAML/ConfigHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/util/YAML/ConfigHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/YAML/MapParsable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/util/YAML/MapParsable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/YAML/TypeParsable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/util/YAML/TypeParsable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/YAML/types/YAMLData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/util/YAML/types/YAMLData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/YAML/types/YAMLEditable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/util/YAML/types/YAMLEditable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/YAML/types/YAMLFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/util/YAML/types/YAMLFile.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/YAML/types/YAMLParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/util/YAML/types/YAMLParser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/annotations/ClassDescriber.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/util/annotations/ClassDescriber.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/annotations/FieldDescriber.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/util/annotations/FieldDescriber.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/annotations/TypeDescriber.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/util/annotations/TypeDescriber.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/collections/ChatCollectable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/util/collections/ChatCollectable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/collections/ClassesCollection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/util/collections/ClassesCollection.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/collections/PatCollectable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/util/collections/PatCollectable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/collections/PatCollection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/util/collections/PatCollection.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/general/Chat.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/util/general/Chat.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/general/ChatHoverable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/util/general/ChatHoverable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/general/ChatStringable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/util/general/ChatStringable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/general/Check.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/util/general/Check.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/general/GeneralUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/util/general/GeneralUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/general/Messenger.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/util/general/Messenger.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/general/StringsUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/util/general/StringsUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/ingame/Commands.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/util/ingame/Commands.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/ingame/Focus.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/util/ingame/Focus.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/ingame/InventoriesUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/util/ingame/InventoriesUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/ingame/ItemEncoder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/util/ingame/ItemEncoder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/ingame/ItemsUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/util/ingame/ItemsUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/ingame/LocationsUtil.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/ingame/OldItemEncoder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/ingame/newItemEncoder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/Patane/util/main/PataneUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/Patane/util/main/PataneUtil.java" afterDir="false" />
     </list>
-    <ignored path="$PROJECT_DIR$/bin/" />
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="FileEditorManager">
-    <leaf>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/com/Patane/handlers/ErrorHandler.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="136">
-              <caret line="9" column="18" lean-forward="true" selection-start-line="9" selection-start-column="18" selection-end-line="9" selection-end-column="18" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
-  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="138" />
-    <option name="y" value="18" />
-    <option name="width" value="1401" />
-    <option name="height" value="972" />
-  </component>
-  <component name="ProjectView">
-    <navigator proportions="" version="1">
-      <flattenPackages ProjectPane="false" />
-      <hideEmptyPackages ProjectPane="true" />
-      <foldersAlwaysOnTop value="true" />
-    </navigator>
-    <panes>
-      <pane id="PackagesPane" />
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="PataneUtil" type="b2602c69:ProjectViewProjectNode" />
-              <item name="PataneUtil" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="PataneUtil" type="b2602c69:ProjectViewProjectNode" />
-              <item name="PataneUtil" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="PataneUtil" type="b2602c69:ProjectViewProjectNode" />
-              <item name="PataneUtil" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="Patane" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="PataneUtil" type="b2602c69:ProjectViewProjectNode" />
-              <item name="PataneUtil" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="Patane" type="462c0819:PsiDirectoryNode" />
-              <item name="handlers" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-      <pane id="Scope" />
-    </panes>
+  <component name="ProjectId" id="1dLSIUQBXJGUBtGXGsnAzRTzoZw" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
-    <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1546083188232" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
-    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
-  </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../Brewery" />
+    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.0" />
   </component>
   <component name="SvnConfiguration">
     <configuration />
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="3acb695e-805c-4d3e-a7fa-46e7b4ea5e96" name="Default Changelist" comment="" />
-      <created>1543903053002</created>
+      <changelist id="478348d8-8d1f-4c2d-86d8-31ed68d09018" name="Default Changelist" comment="" />
+      <created>1592202800203</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1543903053002</updated>
-      <workItem from="1543903057584" duration="18000" />
-      <workItem from="1545823955737" duration="109000" />
-      <workItem from="1545824489766" duration="598000" />
-      <workItem from="1545829025448" duration="1479000" />
-      <workItem from="1545992445007" duration="595000" />
-      <workItem from="1546082818593" duration="388000" />
+      <updated>1592202800203</updated>
     </task>
     <servers />
   </component>
-  <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="3187000" />
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
-  <component name="ToolWindowManager">
-    <frame x="-7" y="-7" width="2575" height="1415" extended-state="6" />
-    <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.21272366" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info id="Image Layers" order="2" />
-      <window_info id="Designer" order="3" />
-      <window_info id="UI Designer" order="4" />
-      <window_info id="Capture Tool" order="5" />
-      <window_info id="Favorites" order="6" side_tool="true" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" order="8" />
-      <window_info anchor="bottom" id="Database Changes" order="9" />
-      <window_info anchor="bottom" id="Terminal" order="10" />
-      <window_info anchor="bottom" id="Event Log" order="11" side_tool="true" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" id="Palette" order="3" />
-      <window_info anchor="right" id="Theme Preview" order="4" />
-      <window_info anchor="right" id="Maven" order="5" />
-      <window_info anchor="right" id="Capture Analysis" order="6" />
-      <window_info anchor="right" id="Palette&#9;" order="7" />
-      <window_info anchor="right" id="Database" order="8" />
-    </layout>
-  </component>
-  <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="1" />
-  </component>
-  <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/com/Patane/handlers/ErrorHandler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="9" column="18" lean-forward="true" selection-start-line="9" selection-start-column="18" selection-end-line="9" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
+  <component name="WindowStateProjectService">
+    <state x="906" y="378" key="#Inspections" timestamp="1592203316934">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="906" y="378" key="#Inspections/0.0.2560.1400/2560.-251.1050.1640@0.0.2560.1400" timestamp="1592203316934" />
+    <state x="760" y="274" key="#Project_Structure" timestamp="1592211985404">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="760" y="274" key="#Project_Structure/0.0.2560.1400/2560.-251.1050.1640@0.0.2560.1400" timestamp="1592211985404" />
+    <state x="734" y="355" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1592203868845">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="734" y="355" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.2560.1400/2560.-251.1050.1640@0.0.2560.1400" timestamp="1592203868845" />
+    <state x="1085" y="416" key="#com.intellij.ide.util.MemberChooser" timestamp="1592203486404">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="1085" y="416" key="#com.intellij.ide.util.MemberChooser/0.0.2560.1400/2560.-251.1050.1640@0.0.2560.1400" timestamp="1592203486404" />
+    <state x="1003" y="389" key="#com.intellij.ide.util.frameworkSupport.AddFrameworkSupportDialog" timestamp="1592203998716">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="1003" y="389" key="#com.intellij.ide.util.frameworkSupport.AddFrameworkSupportDialog/0.0.2560.1400/2560.-251.1050.1640@0.0.2560.1400" timestamp="1592203998716" />
+    <state x="1060" y="455" key="FileChooserDialogImpl" timestamp="1592203053187">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="1060" y="455" key="FileChooserDialogImpl/0.0.2560.1400/2560.-251.1050.1640@0.0.2560.1400" timestamp="1592203053187" />
+    <state width="2517" height="401" key="GridCell.Tab.0.bottom" timestamp="1592212067663">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state width="2517" height="401" key="GridCell.Tab.0.bottom/0.0.2560.1400/2560.-251.1050.1640@0.0.2560.1400" timestamp="1592212067663" />
+    <state width="2517" height="401" key="GridCell.Tab.0.center" timestamp="1592212067663">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state width="2517" height="401" key="GridCell.Tab.0.center/0.0.2560.1400/2560.-251.1050.1640@0.0.2560.1400" timestamp="1592212067663" />
+    <state width="2517" height="401" key="GridCell.Tab.0.left" timestamp="1592212067663">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state width="2517" height="401" key="GridCell.Tab.0.left/0.0.2560.1400/2560.-251.1050.1640@0.0.2560.1400" timestamp="1592212067663" />
+    <state width="2517" height="401" key="GridCell.Tab.0.right" timestamp="1592212067663">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state width="2517" height="401" key="GridCell.Tab.0.right/0.0.2560.1400/2560.-251.1050.1640@0.0.2560.1400" timestamp="1592212067663" />
+    <state x="810" y="355" key="Maven.ArtifactSearchDialog" timestamp="1592211605438">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="810" y="355" key="Maven.ArtifactSearchDialog/0.0.2560.1400/2560.-251.1050.1640@0.0.2560.1400" timestamp="1592211605438" />
+    <state x="945" y="460" key="NewModule_or_Project.wizard" timestamp="1592203061922">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="945" y="460" key="NewModule_or_Project.wizard/0.0.2560.1400/2560.-251.1050.1640@0.0.2560.1400" timestamp="1592203061922" />
+    <state x="917" y="361" key="new project wizard" timestamp="1592203758020">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="917" y="361" key="new project wizard/0.0.2560.1400/2560.-251.1050.1640@0.0.2560.1400" timestamp="1592203758020" />
   </component>
 </project>

@@ -12,7 +12,7 @@ import com.Patane.util.general.StringsUtil.LambdaStrings;
 
 import net.md_5.bungee.api.chat.TextComponent;
 
-public abstract class TypeParsable extends MapParsable{
+public abstract class TypeParsable extends MapParsable {
 	
 	public TypeParsable() {
 		super();
@@ -67,21 +67,27 @@ public abstract class TypeParsable extends MapParsable{
 		
 		TextComponent current;
 		
-		// Creating the "TypeName: ClassName" line by having two TextComponents right after another:
-		// 1st one has "TypeName:" with typen desc as hover
-		current = StringsUtil.hoverText(Chat.indent(indentCount)+alternateLayout.build(typeName(), className())
-				, "&f&l"+typeName()
-				+ "\n&7"+typeDesc()
-				+ "\n"+Chat.INDENT+"&f&l\u2193"
-				+ "\n&f&l"+className()
-				+ "\n&7"+classDesc());
-		componentList.add(current);
-		
 		// If deep, we need to show all the types values
-		if(deep)
+		if(deep) {
+			// Creating the "TypeName: ClassName" line by having two TextComponents right after another:
+			// 1st one has "TypeName:" with typen desc as hover
+			current = StringsUtil.hoverText(Chat.indent(indentCount)+alternateLayout.build(typeName(), className())
+					, "&f&l"+typeName()
+					+ "\n&7"+typeDesc()
+					+ "\n"+Chat.INDENT+"&f&l\u2193"
+					+ "\n&f&l"+className()
+					+ "\n&7"+classDesc());
+		
+			componentList.add(current);
+			
 			// Super toChatHover will list all the details and hover for each value
 			componentList.addAll(Arrays.asList(super.toChatHover(indentCount+1, deep, deepLayout)));
-		
+		}
+		else {
+			current = StringsUtil.hoverText(Chat.indent(indentCount)+alternateLayout.build(typeName(), className())
+			, toChatString(0, true, alternateLayout));
+			componentList.add(current);
+		}
 		// Return the info
 		return componentList.toArray(new TextComponent[0]);
 	}

@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -91,7 +93,9 @@ public class StringsUtil {
 		return ("AEIOUaeiou".indexOf(c) >= 0 ? true : false);
 	}
 	
-	public static Boolean parseBoolean(String string) throws IllegalArgumentException{
+	public static boolean parseBoolean(String string) throws IllegalArgumentException {
+		if(string == null)
+			throw new NullPointerException();
 		if(string.equalsIgnoreCase("true"))
 			return true;
 		else if(string.equalsIgnoreCase("false"))
@@ -100,12 +104,24 @@ public class StringsUtil {
 	}
 	
 	public static String normalize(String string) {
+		if(string == null)
+			return null;
 		return string.replace(" ", "_").toUpperCase();
 	}
 	public static String generateChatTitle(String title) {
 		return "&2=====[&a "+title+" &2]=====";
 	}
 	
+	public static String firstGroup(String string, String groupedRegex) {
+		Pattern pattern = Pattern.compile(groupedRegex);
+		Matcher match = pattern.matcher(string);
+		
+		// If it has a match
+		if(match.find())
+			return match.group();
+		
+		return string;
+	}
 	/**
 	 * Groups any strings with the 'containing' string within strings with 'groupWith'
 	 */
@@ -303,8 +319,13 @@ public class StringsUtil {
 		return valueChatStrings;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static String[] getFieldNames(Class<?> clazz) {
-		Field[] fields = clazz.getFields();
+		Field[] fields;
+		if(MapParsable.class.isAssignableFrom(clazz))
+			fields = MapParsable.getFields((Class<? extends MapParsable>) clazz);
+		else
+			fields = clazz.getFields();
 		String[] fieldNames = new String[fields.length];
 		
 		for(int i=0 ; i<fieldNames.length ; i++)
@@ -379,6 +400,8 @@ public class StringsUtil {
 		 */
 	
 	public static String toChatString(int indentCount, boolean deep, LambdaStrings layout, PotionEffect... potionEffects) {
+		layout = (layout == null ? s -> "&2"+s[0]+"&2: &7"+s[1] : layout);
+		
 		String chatString = "";
 		for(PotionEffect potionEffect : potionEffects) {
 			if(!chatString.isEmpty())
@@ -565,6 +588,8 @@ public class StringsUtil {
 		for(ChatStringable stringable : stringables) {
 			if(stringable != stringables[0])
 				chatString += Chat.gap(gapCount);
+			if(chatString != "")
+				chatString += "\n";
 			chatString += loopLayout.build(stringable.toChatString(indentCount, deep, stringableLayout));
 		}
 		return chatString;
@@ -697,6 +722,14 @@ public class StringsUtil {
 	public static <T extends Enum<?>> String[] enumValueStrings(Class<T> clazz) {
 		return enumValueStrings(clazz.getEnumConstants());
 	}
+	/**
+	 * Creates an Enum from string
+	 * @param <T>
+	 * @param string Name of Enum
+	 * @param clazz Enum class to construct from
+	 * @return The enum generated
+	 * @throws IllegalArgumentException If the Enum cannot be found using the given String
+	 */
 	public static <T extends Enum<T>> T constructEnum(@NotNull String string, @NotNull Class<T> clazz) throws IllegalArgumentException {
 		try {
 			Check.notNull(clazz, "Class required for getEnumFromString is missing.");
@@ -723,6 +756,13 @@ public class StringsUtil {
 	/* ================================================================================
 	 * Creates an Enum from String safely (By handling any exceptions, printing them and returning null if it fails)
 	 * ================================================================================
+	 */
+	/**
+	 * Creates an Enum from string, without throwing an IllegalArgumentException if the enum cannot be found.
+	 * @param <T>
+	 * @param string Name of Enum
+	 * @param clazz Enum class to construct from
+	 * @return The enum generated, or null if there was an issue
 	 */
 	public static <T extends Enum<T>> T constructSafeEnum(@NotNull String string, @NotNull Class<T> clazz) {
 

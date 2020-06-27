@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../Brewery/Brewery.iml" filepath="$PROJECT_DIR$/../Brewery/Brewery.iml" />
       <module fileurl="file://$PROJECT_DIR$/PataneUtil.iml" filepath="$PROJECT_DIR$/PataneUtil.iml" />
     </modules>
   </component>
