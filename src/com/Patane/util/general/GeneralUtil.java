@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import com.Patane.util.YAML.MapParsable;
+import com.Patane.util.ingame.Commands;
 import com.Patane.util.main.PataneUtil;
 
 public class GeneralUtil {
@@ -75,7 +76,22 @@ public class GeneralUtil {
 		
 		// Loop through each field name and grab the value in the same order
 		for(int i=0 ; i<fields.length ; i++) {
-			fieldValues.put(fields[i].getName(), values[i]);
+			// *** CURRENTLY WORKING ON THIS!!!
+			if(MapParsable.class.isAssignableFrom(fields[i].getType())) {
+				if(values[i].equalsIgnoreCase("None") && MapParsable.isNullable(clazz, fields[i].getName())) {
+					fieldValues.put(fields[i].getName(), null);
+					continue;
+				}
+				@SuppressWarnings("unchecked")
+				Class<? extends MapParsable> mapClass = (Class<? extends MapParsable>) fields[i].getType();
+				int fieldCount = MapParsable.getFields(mapClass).length;
+				String[] mapArgs = Commands.grabArgs(values, i, i+fieldCount);
+				String classAsString = intoString(mapClass, mapArgs);
+				fieldValues.put(fields[i].getName(), classAsString);
+				i += fieldCount-1;
+			}
+			else
+				fieldValues.put(fields[i].getName(), values[i]);
 		}
 		
 		// Creating T object ready to be created using Java Reflection and returned.
@@ -108,4 +124,14 @@ public class GeneralUtil {
 		return object;
 	}
 	
+	public static String intoString(Class<? extends MapParsable> clazz, String... values) {
+		String returning = "";
+		Field[] fields = MapParsable.getFields(clazz);
+		for(int i=0 ; i<values.length ; i++) {
+			if(!returning.equals(""))
+				returning += ",";
+			returning += String.format("(%s,%s)", fields[i].getName(), values[i]);
+		}
+		return String.format("{%s}", returning);
+	}
 }
