@@ -17,9 +17,9 @@ import com.Patane.util.general.StringsUtil.LambdaStrings;
 import net.md_5.bungee.api.chat.TextComponent;
 
 @ClassDescriber(
-		name="DIRECTIONAL",
-		desc="Directional Particle")
-public class DIRECTIONAL extends OTHER {
+		name="Directional Particle",
+		desc="A Particle that can be spawned with a velocity and speed")
+public class DIRECTIONAL extends STANDARD {
 	@ParseField(desc="Direction to move particles in the X, Y, Z axis in relation to the world.")
 	protected Vector direction;
 	@ParseField(desc="Speed to move particles in their specified direction.")
@@ -44,7 +44,7 @@ public class DIRECTIONAL extends OTHER {
 		
 		// If direction is not provided at all, then make the particles simply appear with no direction or velocity.
 		if(directionString == null) {
-			// *** Allow offset from OTHER to be implemented if directionString is null
+			// *** Allow offset from STANDARD to be implemented if directionString is null
 			direction = new Vector(0, 0, 0);
 			speed = 0;
 			amount = 0;

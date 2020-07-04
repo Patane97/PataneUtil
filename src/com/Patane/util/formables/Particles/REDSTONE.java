@@ -20,20 +20,19 @@ import com.Patane.util.general.StringsUtil.LambdaStrings;
 import net.md_5.bungee.api.chat.TextComponent;
 
 @ClassDescriber(
-		name="REDSTONE",
-		desc="Redstone Particle")
+		name="REDSTONE Particle",
+		desc="A Redstone particle that can be spawned with a color and size")
 public class REDSTONE extends SpecialParticle {
 	@ParseField(desc="Color of the particle measured in Red, Green, Blue values from 0 to 255.")
 	protected Color color;
 	@ParseField(desc="Size of the particle.")
 	protected int size;
 	
-
-	protected Particle particle = Particle.REDSTONE;
 	protected DustOptions dustOption;
 	
 	public REDSTONE(Map<String, String> fields) {
 		super(fields);
+		particle = Particle.REDSTONE;
 		this.dustOption = new DustOptions(color, size);
 	}
 

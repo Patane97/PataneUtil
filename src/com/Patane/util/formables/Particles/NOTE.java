@@ -19,18 +19,17 @@ import com.Patane.util.general.StringsUtil.LambdaStrings;
 import net.md_5.bungee.api.chat.TextComponent;
 
 @ClassDescriber(
-		name="NOTE",
-		desc="Note Particle")
+		name="NOTE Particle",
+		desc="A note particle that can be spawned in up to 24 different colors")
 public class NOTE extends SpecialParticle {
 	@ParseField(desc="Note particle used based on its color. This must be between 0 and 24.")
 	protected double note;
 	
-	
-	protected Particle particle = Particle.NOTE;
 	protected double convertedNote;
 
 	public NOTE(Map<String, String> fields) {
 		super(fields);
+		particle = Particle.NOTE;
 		convertedNote = note/24D;
 	}
 

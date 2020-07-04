@@ -3,6 +3,8 @@ package com.Patane.util.general;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
@@ -138,7 +140,21 @@ public class StringsUtil {
 		return newStrings;
 		
 	}
-
+	
+	public static <T> List<String> listCount(List<T> list) {
+		List<String> count = new ArrayList<String>();
+		for(int i=1 ; i<=list.size() ; i++)
+			count.add(Integer.toString(i));
+		return count;
+	}
+	
+	public static <T> List<String> listCount(List<T> list, int iStart) {
+		List<String> count = new ArrayList<String>();
+		for(int i=iStart ; i<=iStart+list.size()-1 ; i++)
+			count.add(Integer.toString(i));
+		return count;
+	}
+	
 	/* ================================================================================
 	 * String Formatting
 	 * ================================================================================
@@ -593,6 +609,21 @@ public class StringsUtil {
 			chatString += loopLayout.build(stringable.toChatString(indentCount, deep, stringableLayout));
 		}
 		return chatString;
+	}
+	
+	public static <T> Map<T, Integer> saveIncrements(Iterable<T> iterableObject, Comparator<T> comparator) {
+		Map<T, Integer> objectMap = new LinkedHashMap<T, Integer>();
+		int increment = 0;
+		for(T object : iterableObject) {
+			increment = 0;
+			for(T addedObject : objectMap.keySet()) {
+				if(comparator.compare(object, addedObject) == 0)
+					increment ++;
+			}
+			objectMap.put(object, increment);
+		}
+		
+		return objectMap;
 	}
 	
 	/* ================================================================================

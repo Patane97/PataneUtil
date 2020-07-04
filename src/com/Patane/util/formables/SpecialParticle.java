@@ -13,12 +13,13 @@ import org.bukkit.Particle;
 import com.Patane.util.YAML.MapParsable;
 import com.Patane.util.annotations.ParseField;
 import com.Patane.util.general.Chat;
+import com.Patane.util.general.CustomChatName;
 import com.Patane.util.general.StringsUtil;
 import com.Patane.util.general.StringsUtil.LambdaStrings;
 
 import net.md_5.bungee.api.chat.TextComponent;
 
-public abstract class SpecialParticle extends MapParsable {
+public abstract class SpecialParticle extends MapParsable implements CustomChatName{
 	@ParseField(desc="How to form the particles based on the radius.")
 	public Formation formation;
 	@ParseField(desc="How many particles are spawned per block.")
@@ -29,6 +30,7 @@ public abstract class SpecialParticle extends MapParsable {
 	
 
 	protected Particle particle;
+	protected String displayName;
 
 	public SpecialParticle(Map<String, String> fields) {
 		super(fields);
@@ -60,6 +62,18 @@ public abstract class SpecialParticle extends MapParsable {
 	}
 	
 	@Override
+	public String getChatName() {
+		if(displayName == null)
+			displayName = particle.toString();
+		return displayName;
+	}
+	
+	@Override
+	public void formatChatName(String format) {
+		displayName = String.format(format, particle.toString());
+	}
+	
+	@Override
 	public LambdaStrings layout() {
 		return s -> "&2"+s[0]+"&2: &7"+s[1];
 	}
@@ -78,16 +92,15 @@ public abstract class SpecialParticle extends MapParsable {
 	public String toChatString(int indentCount, boolean deep, LambdaStrings alternateLayout) {
 		alternateLayout = (alternateLayout == null ? layout() : alternateLayout);
 		if(!deep)
-			return Chat.indent(indentCount)+alternateLayout.build("&7"+className()+"&2", "&7Active");
-		String particleInfo = Chat.indent(indentCount) + alternateLayout.build("&7"+className()+"&2", "");
+			return Chat.indent(indentCount)+alternateLayout.build("&7"+getChatName()+"&2");
+		String particleInfo = Chat.indent(indentCount) + alternateLayout.build("&7"+getChatName()+"&2", "");
 		
 		particleInfo += "\n"+Chat.indent(indentCount+1) + alternateLayout.build("formation", formation.toString());
-
-		particleInfo += "\n"+Chat.indent(indentCount+1) + alternateLayout.build("intensity", Integer.toString(intensity));
 		
+		particleInfo += "\n"+Chat.indent(indentCount+1) + alternateLayout.build("intensity", Integer.toString(intensity));
 		if(hasRadius())
 			particleInfo += "\n"+radius.toChatString(indentCount+1, deep, alternateLayout);
-				
+		
 		return particleInfo;
 	}
 	
@@ -102,12 +115,12 @@ public abstract class SpecialParticle extends MapParsable {
 		TextComponent current;
 		
 		if(!deep) {
-			current = StringsUtil.hoverText(Chat.indent(indentCount) + alternateLayout.build("&7"+className()+"&2", "&7Active")
+			current = StringsUtil.hoverText(Chat.indent(indentCount) + alternateLayout.build("&7"+getChatName()+"&2", "&7Active")
 					, toChatString(0, true, alternateLayout));
 		}
 		else {
 			// Main
-			current = StringsUtil.hoverText(Chat.indent(indentCount) + alternateLayout.build("&7"+className()+"&2", "")
+			current = StringsUtil.hoverText(Chat.indent(indentCount) + alternateLayout.build("&7"+getChatName()+"&2", "")
 					, "&f&l"+className()
 					+ "\n&7"+classDesc());
 			componentList.add(current);

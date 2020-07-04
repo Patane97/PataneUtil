@@ -18,8 +18,8 @@ import com.Patane.util.general.StringsUtil.LambdaStrings;
 import net.md_5.bungee.api.chat.TextComponent;
 
 @ClassDescriber(
-		name="BLOCK",
-		desc="Block related Particle")
+		name="Block Particle",
+		desc="A Directional Particle that displays a form of block texture")
 public class BLOCK extends DIRECTIONAL {
 	@ParseField(desc="Block to use for block particle.")
 	protected BlockData block;

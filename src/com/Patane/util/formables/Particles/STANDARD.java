@@ -13,13 +13,13 @@ import com.Patane.util.general.Chat;
 import com.Patane.util.general.StringsUtil.LambdaStrings;
 
 @ClassDescriber(
-		name="OTHER",
-		desc="Other Particle")
-public class OTHER extends SpecialParticle {
+		name="STANDARD Particle",
+		desc="A Standard particle that can be offset from a central location")
+public class STANDARD extends SpecialParticle {
 	@ParseField(desc="Offset the particles position in the X, Y, Z axis in relation to the target location.")
 	private Vector offset;
 	
-	public OTHER(Map<String, String> fields) {
+	public STANDARD(Map<String, String> fields) {
 		super(fields);
 	}
 	

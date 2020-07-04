@@ -6,6 +6,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -71,14 +72,6 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 	 */
 	protected void valueConverts() {}
 	protected void valueSuggestions() {}
-
-	public boolean equals(MapParsable o) {
-		if(this == o)
-			return true;
-		if(o == null || getClass() != o.getClass())
-			return false;
-		return fieldMap.equals(o.fieldMap);
-	}
 	
 	/* ================================================================================
 	 * Preparing values
@@ -91,18 +84,11 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 	private Map<String, Object> prepareFieldMap() {
 		Map<String, Object> fieldMap = new LinkedHashMap<String, Object>();
 		// Loop through each field
-		for(Field field : getFields(this.getClass())) {
+		for(Field field : getFields()) {
 			try {
-				// If the field is unaccessable
-				// then temporarily set it to accessable, grab the data, then set to unaccessable again.
-				if(!field.isAccessible()) {
-					field.setAccessible(true);
-					fieldMap.put(field.getName(), field.get(this));
-//					field.setAccessible(false);
-				}
-				// Otherwise, simply grab the data
-				else
-					fieldMap.put(field.getName(), field.get(this));
+				// Set field to accessable. This will stay accessable as it need to be accessed in other methods too.
+				field.setAccessible(true);
+				fieldMap.put(field.getName(), field.get(this));
 			} catch (IllegalArgumentException | IllegalAccessException e) {
 				e.printStackTrace();
 			}
@@ -148,6 +134,37 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 		return valueStrings;
 	}
 	
+	public boolean equalFieldMap(MapParsable other) {
+		if(!this.getClass().equals(other.getClass()))
+			return false;
+		Object field;
+		Object otherField;
+		
+		for(String fieldName : fieldMap.keySet()) {
+			field = fieldMap.get(fieldName);
+			otherField = other.getFieldMap().get(fieldName);
+			
+			// If the field is null, simply check if the other field ISNT null...
+			if(field == null) {
+				// ...If so, then its a different field.
+				if(otherField != null)
+					return false;
+			}
+			// Otherwise, compare the non-null field to otherField (which can be null in this case)
+			else if(!field.equals(otherField)) {
+				// If both fields are MapParsables, then check that their fieldMaps are equal
+				if(MapParsable.class.isAssignableFrom(field.getClass()) && otherField != null && MapParsable.class.isAssignableFrom(otherField.getClass())) {
+					if(!((MapParsable) field).equalFieldMap((MapParsable) otherField))
+						return false;
+				}
+				// Otherwise, the fields are definitely not equal
+				else
+					return false;
+			}
+		}
+		return true;
+	}
+	
 	/**
 	 * Compares fields to another MapParsable object and returns all field names that are different
 	 * @param other Other MapParsable to compare fields to
@@ -156,189 +173,36 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 	public Set<String> getDifferentFields(MapParsable other) {
 		
 		// If the two objects dont have the same name, then their fields will always be different
-		if(!className().equals(other.className()))
+		if(!this.getClass().equals(other.getClass()))
 			return fieldMap.keySet();
 		
-		Map<String, Object> otherFields = other.getFieldMap();
-		
 		Set<String> differentFieldNames = new HashSet<String>();
+		Object field;
+		Object otherField;
 		
-		for(String field : fieldMap.keySet()) {
-			if(!fieldMap.get(field).equals(otherFields.get(field)))
-				differentFieldNames.add(field);
+		for(String fieldName : fieldMap.keySet()) {
+			field = fieldMap.get(fieldName);
+			otherField = other.getFieldMap().get(fieldName);
+			
+			// If the field is null, simply check if the other field ISNT null...
+			if(field == null) {
+				// ...If so, then its a different field.
+				if(otherField != null)
+					differentFieldNames.add(fieldName);
+			}
+			// Otherwise, compare the non-null field to otherField (which can be null in this case)
+			else if(!field.equals(otherField)) {
+				// If both fields are MapParsables, then check that their fieldMaps are equal
+				if(MapParsable.class.isAssignableFrom(field.getClass()) && MapParsable.class.isAssignableFrom(otherField.getClass())) {
+					if(!((MapParsable) field).equalFieldMap((MapParsable) otherField))
+						differentFieldNames.add(fieldName);
+				}
+				// Otherwise, the fields are definitely not equal
+				else
+					differentFieldNames.add(fieldName);
+			}
 		}
 		return differentFieldNames;
-	}
-	
-	public static List<String> getSuggestion(Field field) {
-		// If field is of type Enum, return the list of enum strings instead of the field name
-		if(field.getType().isEnum()) {
-			@SuppressWarnings("unchecked")
-			Class<? extends Enum<?>> enumClass = (Class<? extends Enum<?>>) field.getType();
-			return Arrays.asList(StringsUtil.enumValueStrings(enumClass));
-		}
-		// Return field name in brackets
-		return Arrays.asList("<"+field.getName()+">");
-	}
-	
-	// *** doesnt account for indexes used (or if null, not used) by MapParsable fields!
-	@SuppressWarnings("unchecked")
-	@Deprecated
-	public static List<String> getSuggestion(Class<? extends MapParsable> clazz, int index) {
-		Field[] fields = getFields(clazz);
-		if(index < 0 || index >= fields.length) {
-			// *** remove?
-			Messenger.debug("Out of Array!");
-			return Arrays.asList();
-		}
-		Class<?> fieldClass = fields[index].getType();
-		if(MapParsable.class.isAssignableFrom(fieldClass))
-			// *** index here shouldnt be 0...
-			return getSuggestion((Class<? extends MapParsable>) fieldClass, 0);
-		
-		if(fieldClass.isEnum()) {
-			Class<? extends Enum<?>> enumClass = (Class<? extends Enum<?>>) fieldClass;
-			return Arrays.asList(StringsUtil.enumValueStrings(enumClass));
-		}
-		// Return field name in brackets
-		return Arrays.asList("<"+fields[index].getName()+">");
-	}
-	
-	public static List<String> getSuggestion(Class<? extends MapParsable> clazz, String... args) {
-		try {
-			return checkSuggestions(clazz, args);
-		} 
-		// This will catch when the user is looking outside the scope of the given class
-		catch(ArrayIndexOutOfBoundsException e) {
-			return Arrays.asList(); 
-		}
-	}
-	@SuppressWarnings("unchecked")
-	private static List<String> checkSuggestions(Class<? extends MapParsable> clazz, String... args) throws ArrayIndexOutOfBoundsException {
-		// Starting an empty Suggestions
-		List<String> suggestions = new ArrayList<String>();
-		
-		// Grabbing ordered fields for clazz
-		Field[] fields = getFields(clazz);
-		
-		// isNullable will be a boolean check for if the latest looked at field has the @Nullable annotation
-		boolean isNullable = false;
-		
-		for(int argsIndex=0, fieldIndex=0 ; argsIndex<args.length ; argsIndex++, fieldIndex++) {
-			
-			// Grabbing the field class. This will throw a 'ArrayIndexOutOfBoundsException' if the args are larger than the amount of fields given.
-			Class<?> fieldClass = fields[fieldIndex].getType();
-			
-			// Checking if the current field has the @Nullable annotation. This is used later for 'None' suggestions
-			isNullable = isNullable(clazz, fields[fieldIndex].getName());
-			
-			// If the field is an enum
-			if(fieldClass.isEnum()) {
-				// Suggesting all possible enums available within its class
-				Class<? extends Enum<?>> enumClass = (Class<? extends Enum<?>>) fieldClass;
-				suggestions = new ArrayList<String>(Arrays.asList(StringsUtil.enumValueStrings(enumClass)));
-			}
-			// If the field is a MapParsable, we do some specific things
-			else if(MapParsable.class.isAssignableFrom(fieldClass)) {
-				// Grabbing a MapParsable version of the class. The unchecked warning is Suppressed above this method
-				Class<? extends MapParsable> mapClass = (Class<? extends MapParsable>) fieldClass;
-				try {
-					// atFirstField is true if the latest argument (the one being suggested) is the first field of mapClass.
-					// How its done:
-					// Once a first field is given, it will immediately be sent through the checkSuggestions below, with all following arguments.
-					// Because of this, the argsIndex will always be the first field as it does not increment in THIS method.
-					// Therefore, all we must check is if the argsIndex is the latest argument given. If so, we are indeed atFirstField.
-					boolean atFirstField = argsIndex == args.length-1;
-					
-					// If this is nullable, we are not at the first field AND the first field is "None", then this MapParsable field will be treated as NULL
-					// Therefore, the following arguments are not meant for this MapParsable field. We continue through the loop.
-					if(isNullable && !atFirstField && args[argsIndex].equalsIgnoreCase("None"))
-						continue;
-					
-					// Run this method through the MapParsable fields class, grabbing args from this current argument onwards
-					suggestions = checkSuggestions(mapClass, Commands.grabArgs(args, argsIndex, args.length));
-					
-					// If this is nullable, we ARE at the first field and suggestions does not currently contain "None", then add None as an option.
-					// This is because if the user wants this MapParsable field to actually be NULL, then they put None in this field, thus we suggest it as an option.
-					if(isNullable && atFirstField && !suggestions.contains("None"))
-						// We add the nullable string. In this case, it is 'None'
-						suggestions.add("None");
-					
-					// Return the suggestions given from the above method
-					return suggestions;
-				} catch (ArrayIndexOutOfBoundsException e) {
-					// If this exception has happened, then we are past this MapParsable field.
-					// We need to skip over the fields that would have been supplied for the MapParsable Field and get back to clazz's fields
-					int offsetFields = getFields(mapClass).length-1;
-					// Ideally, MapParsables SHOULD have fields in them. If this one doesn't, print message suggesting this gets changed.
-					// *** Maybe put this check in MapParsable creation?
-					if(offsetFields < 0) {
-						Messenger.severe(String.format("%s for %s has no @ParseField fields. If this is intended, maybe use Enum or TypeParsable instead of MapParsable?", mapClass.getSimpleName(), clazz.getSimpleName()));
-						offsetFields = 0;
-					}
-					
-					// Add the offset to the argsIndex
-					argsIndex += offsetFields;
-				}
-			}
-			// *** Could possible add TypeParsable here?
-			// If it is any other type of method, then simply print its name in <NAME> formation.
-			else
-				suggestions = new ArrayList<String>(Arrays.asList(String.format("<%s>", fields[fieldIndex].getName())));
-
-		}
-		// If the latest field we are on is @Nullable, then add 'None' to its suggested options
-		if(isNullable)
-			suggestions.add("None");
-		
-		// Return suggestions
-		return suggestions;
-	}
-	/**
-	 * Retrieves the fields of a MapParsable class with the following conditions:
-	 * <p><ul>
-	 * <li>Only Fields with @ParseField annotations will be retrieved.
-	 * <li>Private fields in any super-classes will be ignored, but Protected and Public will be retrieved.
-	 * <li>Fields are ordered with the super-class closest to MapParsable.class first followed by all sub-classes. Order of fields within class determine their order in this Array.
-	 * </ul><p>
-	 * 
-	 * @param clazz Class extending MapParsable to retrieve fields from.
-	 * @return An ordered Array of all Fields with the @ParseField annotation available to this class.
-	 */
-	public static Field[] getFields(Class<? extends MapParsable> clazz) {
-		List<Field> fieldsList = new ArrayList<Field>();
-		// Used to determine whether to allow private fields or not
-		boolean firstClass = true;
-		// As anyClass can change into super classes, its easier to cast it as ANY class, not just one that extends MapParsable
-		Class<?> anyClass = clazz;
-		
-		// Whilst anyClass it not MapParsable, grab all available fields
-		while(anyClass != MapParsable.class) {
-			// Saving ALL fields from the given class (public, protected and private)
-			Field[] fields = anyClass.getDeclaredFields();
-			// Looping through fields backwards to get correct order for fields
-			for(int i=fields.length - 1 ; i >= 0 ; i--) {
-				// If it has @Parsefield annotation AND
-				// If this is the firstClass (where we include privates)
-				// OR this isnt the firstClass but its not a private field (ie Public or Protected),
-				// then add it to the list.
-				if(fields[i].isAnnotationPresent(ParseField.class) && (firstClass || !Modifier.isPrivate(fields[i].getModifiers()))) {
-					fieldsList.add(fields[i]);
-				}
-			}
-			firstClass = false;
-			anyClass = anyClass.getSuperclass();
-		}
-		// Order of the list is currently backwards, so we flip it!
-		Collections.reverse(fieldsList);
-		
-//		Messenger.debug("==> Listing Fields ("+clazz.getSimpleName()+")");
-//		for(Field field : fieldsList)
-//			Messenger.debug(String.format("> %s %s",field.getName(), (Modifier.isPrivate(field.getModifiers()) ? "[p]" : "")));
-//		Messenger.debug("<== End");
-		
-		// Return the fieldList as an Array.
-		return fieldsList.toArray(new Field[0]);
 	}
 	/* ================================================================================
 	 * Value Getters
@@ -586,7 +450,7 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 	 * @return A chat-friendly string showing the fields and values of this MapParsable.
 	 */
 	public String toChatString(int indentCount, boolean deep, LambdaStrings alternateLayout) {
-		// USEFUL SECTION TO COPY TO OTHER TOCHATSTRINGS!
+		// USEFUL SECTION TO COPY TO STANDARD TOCHATSTRINGS!
 		// If alternatelayout is null, then keep deepLayout as null as it means deeper ChatStringables use their default layout as well
 		LambdaStrings deepLayout = alternateLayout;
 		// If the alternateLayout is null, we want to use the default layout for itself
@@ -617,7 +481,7 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 	}
 	
 	public TextComponent[] toChatHover(int indentCount, boolean deep, LambdaStrings alternateLayout) {
-		// USEFUL SECTION TO COPY TO OTHER TOCHATSTRINGS!
+		// USEFUL SECTION TO COPY TO STANDARD TOCHATSTRINGS!
 		// If alternatelayout is null, then keep deepLayout as null as it means deeper ChatStringables use their default layout as well
 		LambdaStrings deepLayout = alternateLayout;
 		// If the alternateLayout is null, we want to use the default layout for itself
@@ -651,75 +515,322 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 	}
 
 	/* ================================================================================
-	 * Field description grabbing
+	 * Field Info-Grabbing Methods
 	 * ================================================================================
 	 */
+	
 	/**
-	 * Grabs the description for a field of this class if provided
-	 * @param fieldName Name of the field to get
-	 * @return the description of the given fieldname or 'Missing Description' along with a printed stack trace for the error.
+	 * Using Java Reflections, retrieves the fields of this MapParsable with the following conditions:
+	 * <p><ul>
+	 * <li>Only Fields with @ParseField annotations will be retrieved.
+	 * <li>Private fields in any super-classes will be ignored, but Protected and Public will be retrieved.
+	 * <li>Fields are ordered with the super-class closest to MapParsable.class first followed by all sub-classes. Order of fields within class determine their order in this Array.
+	 * </ul><p>
+	 * 
+	 * @return An ordered Array of all Fields with the @ParseField annotation available to this object.
 	 */
+	protected Field[] getFields() {
+		return getFields(this.getClass());
+	}
+	/**
+	 * Using Java Reflections, retrieves the fields of a MapParsable class with the following conditions:
+	 * <p><ul>
+	 * <li>Only Fields with @ParseField annotations will be retrieved.
+	 * <li>Private fields in any super-classes will be ignored, but Protected and Public will be retrieved.
+	 * <li>Fields are ordered with the super-class closest to MapParsable.class first followed by all sub-classes. Order of fields within class determine their order in this Array.
+	 * </ul><p>
+	 * 
+	 * @param clazz Class extending MapParsable to retrieve fields from.
+	 * @return An ordered Array of all Fields with the @ParseField annotation available to this class.
+	 */
+	public static Field[] getFields(Class<? extends MapParsable> clazz) {
+		List<Field> fieldsList = new ArrayList<Field>();
+		// Used to determine whether to allow private fields or not
+		boolean firstClass = true;
+		// As anyClass can change into super classes, its easier to cast it as ANY class, not just one that extends MapParsable
+		Class<?> anyClass = clazz;
+		
+		// Whilst anyClass it not MapParsable, grab all available fields
+		while(anyClass != MapParsable.class) {
+			// Saving ALL fields from the given class (public, protected and private)
+			Field[] fields = anyClass.getDeclaredFields();
+			// Looping through fields backwards to get correct order for fields
+			for(int i=fields.length - 1 ; i >= 0 ; i--) {
+				// If it has @Parsefield annotation AND
+				// If this is the firstClass (where we include privates)
+				// OR this isnt the firstClass but its not a private field (ie Public or Protected),
+				// then add it to the list.
+				if(fields[i].isAnnotationPresent(ParseField.class) && (firstClass || !Modifier.isPrivate(fields[i].getModifiers()))) {
+					fieldsList.add(fields[i]);
+				}
+			}
+			firstClass = false;
+			anyClass = anyClass.getSuperclass();
+		}
+		// Order of the list is currently backwards, so we flip it!
+		Collections.reverse(fieldsList);
+		
+		// Return the fieldList as an Array.
+		return fieldsList.toArray(new Field[0]);
+	}
+
+	/**
+	 * Using Java Reflections, retrieves a field from this MapParsable with the following conditions:
+	 * <p><ul>
+	 * <li>Has the same name as fieldName.
+	 * <li>Has @ParseField annotation.
+	 * <li>If its not a Private field in any super-classes.
+ 	 * </ul><p>
+	 * @param fieldName Name of the field being retrieved.
+	 * @return The field with the given name within the given MapParsable class, or Null if none is found.
+	 */
+	protected Field getField(String fieldName) {
+		return getField(this.getClass(), fieldName);
+	}
+	
+	/**
+	 * Using Java Reflections, retrieves a field from a MapParsable class with the following conditions:
+	 * <p><ul>
+	 * <li>Has the same name as fieldName.
+	 * <li>Has @ParseField annotation.
+	 * <li>If its not a Private field in any super-classes.
+ 	 * </ul><p>
+	 * @param clazz Class extending MapParsable to retrieve fields from.
+	 * @param fieldName Name of the field being retrieved.
+	 * @return The field with the given name within the given MapParsable class, or Null if none is found.
+	 */
+	public static Field getField(Class<? extends MapParsable> clazz, String fieldName) {
+		// Used to determine whether to allow private fields or not
+		boolean firstClass = true;
+		// As anyClass can change into super classes, its easier to cast it as ANY class, not just one that extends MapParsable
+		Class<?> anyClass = clazz;
+		
+		// Whilst anyClass it not MapParsable, grab all available fields
+		while(anyClass != MapParsable.class) {
+			// Saving ALL fields from the given class (public, protected and private)
+			Field[] fields = anyClass.getDeclaredFields();
+			// Looping through fields backwards to get correct order for fields
+			for(int i=fields.length - 1 ; i >= 0 ; i--) {
+				// If it has @Parsefield annotation AND
+				// If this is the firstClass (where we include privates)
+				// OR this isnt the firstClass but its not a private field (ie Public or Protected),
+				// then add it to the list.
+				if(fields[i].getName().equals(fieldName) && fields[i].isAnnotationPresent(ParseField.class) && (firstClass || !Modifier.isPrivate(fields[i].getModifiers()))) {
+					return fields[i];
+				}
+			}
+			firstClass = false;
+			anyClass = anyClass.getSuperclass();
+		}
+		return null;
+	}
+	
 	protected String getFieldDesc(String fieldName) {
 		return getFieldDesc(this.getClass(), fieldName);
 	}
 	
 	public static String getFieldDesc(Class<? extends MapParsable> clazz, String fieldName) {
 		try {
-			// *** MapParsable.getField(clazz, fieldName) needs to be created efficiently and used here!
-			for(Field field : MapParsable.getFields(clazz)) {
-				if(field.getName().equals(fieldName)) {
-					ParseField pf = field.getAnnotation(ParseField.class);
-					if(pf == null)
-						throw new NoClassDefFoundError(String.format("%s in %s is missing the @ParseField annotation.", fieldName, clazz.getSimpleName()));
-					return pf.desc();
-				}
-			}
-			throw new NoSuchFieldException(String.format("%s is not a field within %s.", fieldName, clazz.getSimpleName()));
+			Field field = MapParsable.getField(clazz, fieldName);
+			if(field == null)
+				throw new NoSuchFieldException(String.format("%s is not a field within %s.", fieldName, clazz.getSimpleName()));
+
+			ParseField pf = field.getAnnotation(ParseField.class);
+			if(pf == null) 
+				throw new NoClassDefFoundError(String.format("%s in %s is missing the @ParseField annotation.", fieldName, clazz.getSimpleName()));
+			
+			return pf.desc();
+			
 		} catch (NoSuchFieldException | SecurityException | NoClassDefFoundError e) {
 			e.printStackTrace();
 			return "Missing Description.";
 		}
 	}
+	
 	protected boolean isNullable(String fieldName) {
 		return isNullable(this.getClass(), fieldName);
 	}
 	
-	/**
-	 * Checks whether this field is nullable or not.
-	 * @param fieldName Name of the field to check
-	 * @return Whether the field has the @Nullable annotation or not. Will return false if this field cannot be found or accessed.
-	 */
 	public static boolean isNullable(Class<? extends MapParsable> clazz, String fieldName) {
 		try {
-			// *** MapParsable.getField(clazz, fieldName) needs to be created efficiently and used here!
-			for(Field field : MapParsable.getFields(clazz)) {
-				if(field.getName().equals(fieldName))
-					return field.isAnnotationPresent(Nullable.class);
-			}
-			throw new NoSuchFieldException(String.format("%s is not a field within %s.", fieldName, clazz.getSimpleName()));
+			Field field = MapParsable.getField(clazz, fieldName);
+			if(field == null)
+				throw new NoSuchFieldException(String.format("%s is not a field within %s.", fieldName, clazz.getSimpleName()));
+			
+			return field.isAnnotationPresent(Nullable.class);
+			
 		} catch (NoSuchFieldException | SecurityException e) {
 			e.printStackTrace();
 			return false;
 		}
 		
 	}
-	
+
 	/* ================================================================================
-	 * LEGACY CODE. Useful, but not being used anymore
-	 * To & From string for MapParsable generation
+	 * Tab-Complete Suggestion Methods
 	 * ================================================================================
 	 */
 	
+	@Deprecated
+	public static List<String> getSuggestion(Field field) {
+		// If field is of type Enum, return the list of enum strings instead of the field name
+		if(field.getType().isEnum()) {
+			@SuppressWarnings("unchecked")
+			Class<? extends Enum<?>> enumClass = (Class<? extends Enum<?>>) field.getType();
+			return Arrays.asList(StringsUtil.enumValueStrings(enumClass));
+		}
+		// Return field name in brackets
+		return Arrays.asList("<"+field.getName()+">");
+	}
+	
+	// *** doesnt account for indexes used (or if null, not used) by MapParsable fields!
+	@SuppressWarnings("unchecked")
+	@Deprecated
+	public static List<String> getSuggestion(Class<? extends MapParsable> clazz, int index) {
+		Field[] fields = getFields(clazz);
+		if(index < 0 || index >= fields.length) {
+			// *** remove?
+			Messenger.debug("Out of Array!");
+			return Arrays.asList();
+		}
+		Class<?> fieldClass = fields[index].getType();
+		if(MapParsable.class.isAssignableFrom(fieldClass))
+			// *** index here shouldnt be 0...
+			return getSuggestion((Class<? extends MapParsable>) fieldClass, 0);
+		
+		if(fieldClass.isEnum()) {
+			Class<? extends Enum<?>> enumClass = (Class<? extends Enum<?>>) fieldClass;
+			return Arrays.asList(StringsUtil.enumValueStrings(enumClass));
+		}
+		// Return field name in brackets
+		return Arrays.asList("<"+fields[index].getName()+">");
+	}
+	
+	public static List<String> getSuggestion(Class<? extends MapParsable> clazz, String... args) {
+		try {
+			return checkSuggestions(clazz, args);
+		} 
+		// This will catch when the user is looking outside the scope of the given class
+		catch(ArrayIndexOutOfBoundsException e) {
+			return Arrays.asList(); 
+		}
+	}
+	private static List<String> checkSuggestions(Class<? extends MapParsable> clazz, String... args) throws ArrayIndexOutOfBoundsException {
+		// Starting an empty Suggestions
+		List<String> suggestions = new ArrayList<String>();
+		
+		// Grabbing ordered fields for clazz
+		Field[] fields = getFields(clazz);
+		
+		// isNullable will be a boolean check for if the latest looked at field has the @Nullable annotation
+		boolean isNullable = false;
+		
+		for(int argsIndex=0, fieldIndex=0 ; argsIndex<args.length ; argsIndex++, fieldIndex++) {
+			
+			// Grabbing the field class. This will throw a 'ArrayIndexOutOfBoundsException' if the args are larger than the amount of fields given.
+			Class<?> fieldClass = fields[fieldIndex].getType();
+			
+			// Checking if the current field has the @Nullable annotation. This is used later for 'None' suggestions
+			isNullable = isNullable(clazz, fields[fieldIndex].getName());
+			
+			// If the field is an enum
+			if(fieldClass.isEnum()) {
+				// Suggesting all possible enums available within its class
+				@SuppressWarnings("unchecked")
+				Class<? extends Enum<?>> enumClass = (Class<? extends Enum<?>>) fieldClass;
+				suggestions = new ArrayList<String>(Arrays.asList(StringsUtil.enumValueStrings(enumClass)));
+			}
+			// If the field is a MapParsable, we do some specific things
+			else if(MapParsable.class.isAssignableFrom(fieldClass)) {
+				// Grabbing a MapParsable version of the class. The unchecked warning is Suppressed above this method
+				@SuppressWarnings("unchecked")
+				Class<? extends MapParsable> mapClass = (Class<? extends MapParsable>) fieldClass;
+				try {
+					// atFirstField is true if the latest argument (the one being suggested) is the first field of mapClass.
+					// How its done:
+					// Once a first field is given, it will immediately be sent through the checkSuggestions below, with all following arguments.
+					// Because of this, the argsIndex will always be the first field as it does not increment in THIS method.
+					// Therefore, all we must check is if the argsIndex is the latest argument given. If so, we are indeed atFirstField.
+					boolean atFirstField = argsIndex == args.length-1;
+					
+					// If this is nullable, we are not at the first field AND the first field is "None", then this MapParsable field will be treated as NULL
+					// Therefore, the following arguments are not meant for this MapParsable field. We continue through the loop.
+					if(isNullable && !atFirstField && args[argsIndex].equalsIgnoreCase("None"))
+						continue;
+					
+					// Run this method through the MapParsable fields class, grabbing args from this current argument onwards
+					suggestions = checkSuggestions(mapClass, Commands.grabArgs(args, argsIndex, args.length));
+					
+					// If this is nullable, we ARE at the first field and suggestions does not currently contain "None", then add None as an option.
+					// This is because if the user wants this MapParsable field to actually be NULL, then they put None in this field, thus we suggest it as an option.
+					if(isNullable && atFirstField && !suggestions.contains("None"))
+						// We add the nullable string. In this case, it is 'None'
+						suggestions.add("None");
+					
+					// Return the suggestions given from the above method
+					return suggestions;
+				} catch (ArrayIndexOutOfBoundsException e) {
+					// If this exception has happened, then we are past this MapParsable field.
+					// We need to skip over the fields that would have been supplied for the MapParsable Field and get back to clazz's fields
+					int offsetFields = getFields(mapClass).length-1;
+					// Ideally, MapParsables SHOULD have fields in them. If this one doesn't, print message suggesting this gets changed.
+					// *** Maybe put this check in MapParsable creation?
+					if(offsetFields < 0) {
+						Messenger.severe(String.format("%s for %s has no @ParseField fields. If this is intended, maybe use Enum or TypeParsable instead of MapParsable?", mapClass.getSimpleName(), clazz.getSimpleName()));
+						offsetFields = 0;
+					}
+					
+					// Add the offset to the argsIndex
+					argsIndex += offsetFields;
+				}
+			}
+			// *** Could possible add TypeParsable here?
+			// If it is any other type of method, then simply print its name in <NAME> formation.
+			else
+				suggestions = new ArrayList<String>(Arrays.asList(String.format("<%s>", fields[fieldIndex].getName())));
+
+		}
+		// If the latest field we are on is @Nullable, then add 'None' to its suggested options
+		if(isNullable)
+			suggestions.add("None");
+		
+		// Return suggestions
+		return suggestions;
+	}
+	
+	
+	/* ================================================================================
+	 * MapParsable String Manipulation
+	 * ================================================================================
+	 */
+	
+	// Note: If either formats change, BOTH patterns must be updated & tested
+	final private static String INNER_FORMAT = "(%s,%s)";
+	final private static String INNER_PATTERN = "(.*?),(?:(\\{.*\\}|[^{}]*))";
+	final private static String OUTER_FORMAT = "{%s}";
+	final private static String OUTER_PATTERN = "\\((.+?,(?:\\{.*?\\}|[^{}])*?)\\)";
+	
+	public static String intoStringFormat(Class<? extends MapParsable> clazz, String... values) {
+		String stringFormat = "";
+		Field[] fields = MapParsable.getFields(clazz);
+		for(int i=0 ; i<values.length ; i++) {
+			if(!stringFormat.equals(""))
+				stringFormat += ",";
+			stringFormat += String.format(INNER_FORMAT, fields[i].getName(), values[i]);
+		}
+		return String.format(OUTER_FORMAT, stringFormat);
+	}
 	@Override
 	public String toString() {
-		String mapParsableString = "{";
+		String stringFormat = "";
 		// fieldMap is used here as valueStrings are tailored to look good for viewing.
 		// valueStrings does not contain raw values, whilst fieldMap does
 		for(String fieldName : fieldMap.keySet()) {
-			mapParsableString += "("+fieldName+","+fieldMap.get(fieldName)+")";
+			if(!stringFormat.equals(""))
+				stringFormat += ",";
+			stringFormat += String.format(INNER_FORMAT, fieldName, fieldMap.get(fieldName).toString());
 		}
-		mapParsableString += "}";
-		return mapParsableString;
+		return String.format(OUTER_FORMAT, stringFormat);
 	}
 	
 	/**
@@ -738,9 +849,9 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 		//     eg. {(field1,value1),(field2,{(field2.1,value2.1),(field2.2,value2.2)})}
 		//
 		// Finds and groups any values encased in brackets. Eg, 'field1,value1' | 'field2,value2' from {(field1,value1),(field2,value2)}
-		Pattern whole = Pattern.compile("\\((.+?,(?:\\{.*?\\}|[^{}])*?)\\)");
+		Pattern whole = Pattern.compile(OUTER_PATTERN);
 		// Seperates the two strings from the above group. Eg, 'field1' | 'value1' from field1,value1
-		Pattern individual = Pattern.compile("(.*?),(?:(\\{.*\\}|[^{}]*))");
+		Pattern individual = Pattern.compile(INNER_PATTERN);
 		
 		// Match to the map parsable string
 		Matcher wholeMatcher = whole.matcher(mapParsableString);
@@ -783,7 +894,101 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 		
 		return object;
 	}
-
+	
+	/* ================================================================================
+	 * Static MapParsable Creator via String values
+	 * ================================================================================
+	 */
+	
+	/**
+	 * Creates a MapParsable object through a list of strings for values.
+	 * The order of values should be the same order of Parsable fields, as if using the {@link MapParsable#getFields(Class<? extends MapParsable>)} command
+	 * 
+	 * @param <T>
+	 * @param clazz Class extending MapParsable to create an object from.
+	 * @param values Values for each field required of the class. The order of values is the same as the Classes Parsable fields.
+	 * @return A MapParsable object based on the Class given.
+	 * @throws NullPointerException If a required parsable value is missing.
+	 * @throws IllegalArgumentException If a required parsable value is invalid in some way.
+	 * @throws InvocationTargetException If there is a different error with creating the MapParsable object.
+	 */
+	public static <T extends MapParsable> T create(Class<? extends T> clazz, String... values) throws NullPointerException, IllegalArgumentException, InvocationTargetException {
+		// HashMap of each field with its corresponding value from the YML file.
+		Map<String, String> fieldValues = new HashMap<String, String>();
+		// Grab the fields in correct order
+		Field[] fields = MapParsable.getFields(clazz);
+		
+		// Looping through fields and values. These are seperate incremates as the fields will always be 0-fields.length,
+		// whilst values is not just 0-values.length. Some values can be skipped when a MapParsable field is found.
+		for(int valueIndex=0, fieldIndex=0 ; valueIndex<values.length ; valueIndex++, fieldIndex++) {
+			// If the field we are looking at is a MapParsable, then the next few values MAY be for that
+			if(MapParsable.class.isAssignableFrom(fields[fieldIndex].getType())) {
+				// If the value is "None" and this MapParsable is nullable, then we will save it as null and continue to the next field/value
+				if(values[valueIndex].equalsIgnoreCase("None") && MapParsable.isNullable(clazz, fields[fieldIndex].getName())) {
+					fieldValues.put(fields[fieldIndex].getName(), null);
+					continue;
+				}
+				@SuppressWarnings("unchecked")
+				// Casting to MapParsable (checked above), we get the mapClass
+				Class<? extends MapParsable> mapClass = (Class<? extends MapParsable>) fields[fieldIndex].getType();
+				
+				// *** This could be made into a more optimized method, as stated below
+				// And grab the field count.
+				int fieldCount = MapParsable.getFields(mapClass).length;
+				
+				// *** This unfortunately does not account for MapParsables WITHIN this new MapParsable. Find a way to do this.
+				//     Need to consider that some of these MapParsables within the MapParsables Can also be Null, therefore the
+				//     fieldCount might not be a static number, but more a dynamic number based on the actual args (values) given!
+				//
+				//     -> One method to account for MapParsables within MapParsables (IGNORING possible @Nullables) is making a
+				//        method to get a DEEP field count which checks the fields of each MapParsables and MapParsables within it.
+				// Grabbing all the arguments needed for this mapClass from values
+				String[] mapArgs = Commands.grabArgs(values, valueIndex, valueIndex+fieldCount);
+				
+				// Convert this MapParsable into its string format
+				String classAsString = MapParsable.intoStringFormat(mapClass, mapArgs);
+				
+				// Put this fieldname and the stringed mapparsable object
+				fieldValues.put(fields[fieldIndex].getName(), classAsString);
+				
+				// Skip the next few values as they were just used to create this mapparsable field
+				valueIndex += fieldCount-1;
+			}
+			// If its just a regular field, then simply put field name and string value
+			else
+				fieldValues.put(fields[fieldIndex].getName(), values[valueIndex]);
+		}
+		
+		// Creating T object ready to be created using Java Reflection and returned.
+		// If there are any problems creating object, null will be returned.
+		T object = null;
+		try{
+			try{
+				// Attempts to create a new instance of the T object using the FieldValues.
+				object = clazz.getConstructor(Map.class).newInstance(fieldValues);
+			} 
+			// This means that there is no constructor with values needed for the T object.
+			// Therefore, the constructor must be an empty, default constructor.
+			catch (NoSuchMethodException e) {
+				// Attempts to create a new instance of the T object using the default constructor.
+				object = clazz.getConstructor().newInstance();
+			}
+		}
+		// If the object has an exception in its initilizer, then this triggers.
+		catch (InvocationTargetException e) {
+			if(e.getCause() instanceof IllegalArgumentException)
+				throw (IllegalArgumentException) e.getCause();
+			if(e.getCause() instanceof NullPointerException)
+				throw (NullPointerException) e.getCause();
+			throw e;
+		}
+		// All possible exceptions simply printing the stack trace.
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return object;
+	}
+	
 	/* ================================================================================
 	 * Lambda interface for custom string conversion
 	 * ================================================================================

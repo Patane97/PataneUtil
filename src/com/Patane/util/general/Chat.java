@@ -57,6 +57,7 @@ public enum Chat {
     public static String replace(String s, ChatColor color1, ChatColor color2) {
     	return s.replaceAll("&"+color1.getChar(), "&"+color2.getChar());
     }
+    // *** Make this more efficient by either using Regex OR looping through each character once
     public static String darken(String s) {
     	s.replaceAll("&9", "&1");
     	s.replaceAll("&a", "&2");
@@ -69,7 +70,8 @@ public enum Chat {
     	s.replaceAll("&f", "&7");
     	return s;
     }
-    
+
+    // *** Make this more efficient by either using Regex OR looping through each character once
     public static String brighten(String s) {
     	s.replaceAll("&1", "&9");
     	s.replaceAll("&2", "&a");

@@ -11,6 +11,7 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 
+import org.bukkit.Color;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.util.Vector;
 import org.yaml.snakeyaml.error.YAMLException;
@@ -21,7 +22,6 @@ import com.Patane.util.YAML.TypeParsable;
 import com.Patane.util.general.Check;
 import com.Patane.util.general.Messenger;
 import com.Patane.util.general.StringsUtil;
-import com.sun.prism.paint.Color;
 
 public abstract class YAMLFile extends YAMLParser{
 	protected ConfigHandler configHandler;
@@ -548,7 +548,12 @@ public abstract class YAMLFile extends YAMLParser{
 				// If the Field is of type MapParsable, then we dont want to treat it as a value,
 				// but as a configurationSection of its own. Therefore, we run this same method again!
 				if(MapParsable.class.isAssignableFrom(field.getType())) {
-					setMapParsable(settingIn.createSection(fieldName), null, (MapParsable) fieldMap.get(fieldName), null);
+					// If its not null, save it
+					if(fieldMap.get(fieldName) != null)
+						setMapParsable(settingIn.createSection(fieldName), null, (MapParsable) fieldMap.get(fieldName), null);
+					// Otherwise, clear the section
+					else
+						settingIn.set(fieldName, null);
 				}
 				// Otherwise, simply convert the value to a YAML friendly format and set it.
 				else {

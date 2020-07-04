@@ -19,17 +19,15 @@ import com.Patane.util.general.StringsUtil.LambdaStrings;
 import net.md_5.bungee.api.chat.TextComponent;
 
 @ClassDescriber(
-		name="ITEM_CRACK",
-		desc="Itemstack related Particle")
+		name="ITEM_CRACK particle",
+		desc="A Directional Particle that displays a cracked item texture")
 public class ITEM_CRACK extends DIRECTIONAL {
 	@ParseField(desc="Item to use for cracked item particle.")
 	protected ItemStack item;
 	
-	
-	protected Particle particle = Particle.ITEM_CRACK;
-	
 	public ITEM_CRACK(Map<String, String> fields) {
 		super(fields);
+		particle = Particle.ITEM_CRACK;
 	}
 
 	@Override

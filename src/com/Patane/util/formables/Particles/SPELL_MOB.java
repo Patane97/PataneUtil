@@ -19,14 +19,12 @@ import com.Patane.util.general.StringsUtil.LambdaStrings;
 import net.md_5.bungee.api.chat.TextComponent;
 
 @ClassDescriber(
-		name="SPELL_MOB",
-		desc="Spell Mob Particle")
+		name="SPELL_MOB particle",
+		desc="A Spell Mob particle that can be spawned with a color")
 public class SPELL_MOB extends SpecialParticle {
 	@ParseField(desc="Color of the particle measured in Red, Green, Blue values from 0 to 255.")
 	protected Color color;
 	
-	
-	protected Particle particle = Particle.SPELL_MOB;
 	protected double[] convertedColor = new double[3];
 
 	public SPELL_MOB(Map<String, String> fields) {
@@ -34,6 +32,7 @@ public class SPELL_MOB extends SpecialParticle {
 		convertedColor[0] = color.getRed()/255D;
 		convertedColor[1] = color.getGreen()/255D;
 		convertedColor[2] = color.getBlue()/255D;
+		particle = Particle.SPELL_MOB;
 	}
 
 	@Override

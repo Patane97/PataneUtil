@@ -12,7 +12,7 @@ import com.Patane.util.formables.Particles.BLOCK;
 import com.Patane.util.formables.Particles.DIRECTIONAL;
 import com.Patane.util.formables.Particles.ITEM_CRACK;
 import com.Patane.util.formables.Particles.NOTE;
-import com.Patane.util.formables.Particles.OTHER;
+import com.Patane.util.formables.Particles.STANDARD;
 import com.Patane.util.formables.Particles.REDSTONE;
 import com.Patane.util.formables.Particles.SPELL_MOB;
 import com.Patane.util.formables.Particles.SPELL_MOB_AMBIENT;
@@ -32,7 +32,7 @@ public class ParticleHandler implements PatHandler {
 		if(isBlock(particleName))
 			return BLOCK.class;
 		if(isParticle(particleName))
-			return OTHER.class;
+			return STANDARD.class;
 		return null;
 	}
 	

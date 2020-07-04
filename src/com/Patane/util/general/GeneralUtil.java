@@ -1,19 +1,16 @@
 package com.Patane.util.general;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.function.Predicate;
+
+import javax.annotation.Nullable;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import com.Patane.util.YAML.MapParsable;
-import com.Patane.util.ingame.Commands;
 import com.Patane.util.main.PataneUtil;
 
 public class GeneralUtil {
@@ -55,83 +52,73 @@ public class GeneralUtil {
 				living.add((LivingEntity) entity);
 		return living;
 	}
-	
+
 	/**
-	 * Creates a MapParsable object through a list of strings for values.
-	 * The order of values should be the same order of Parsable fields, as if using the {@link MapParsable#getFields(Class<? extends MapParsable>)} command
+	 * Returns an object in the increment position of the given list
+	 * @param <T> The Type of object you are trying to get
+	 * @param list Original list of T objects
+	 * @param increment Increment to get within trimmed list. If this is null, it will return the element if only a single element is given.
+	 * @return A T Object that is in the increment position
 	 * 
-	 * @param <T>
-	 * @param clazz Class extending MapParsable to create an object from.
-	 * @param values Values for each field required of the class. The order of values is the same as the Classes Parsable fields.
-	 * @return A MapParsable object based on the Class given.
-	 * @throws NullPointerException If a required parsable value is missing.
-	 * @throws IllegalArgumentException If a required parsable value is invalid in some way.
-	 * @throws InvocationTargetException If there is a different error with creating the MapParsable object.
+	 * @throws NullPointerException If there were no available results.
+	 * @throws IllegalStateException If the increment was null and more than one element was given. If this happens, an increment IS required.
+	 * @throws ArrayIndexOutOfBoundsException If the increment is larger than the amount of T objects.
 	 */
-	public static <T extends MapParsable> T createMapParsable(Class<? extends T> clazz, String... values) throws NullPointerException, IllegalArgumentException, InvocationTargetException {
-		// HashMap of each field with its corresponding value from the YML file.
-		Map<String, String> fieldValues = new HashMap<String, String>();
-		// Grab the fields in correct order
-		Field[] fields = MapParsable.getFields(clazz);
+	public static <T> T getIncremented(List<T> list, Integer increment) throws NullPointerException, IllegalStateException, ArrayIndexOutOfBoundsException {
+		if(list.isEmpty())
+			throw new NullPointerException();
 		
-		// Loop through each field name and grab the value in the same order
-		for(int i=0 ; i<fields.length ; i++) {
-			// *** CURRENTLY WORKING ON THIS!!!
-			if(MapParsable.class.isAssignableFrom(fields[i].getType())) {
-				if(values[i].equalsIgnoreCase("None") && MapParsable.isNullable(clazz, fields[i].getName())) {
-					fieldValues.put(fields[i].getName(), null);
-					continue;
-				}
-				@SuppressWarnings("unchecked")
-				Class<? extends MapParsable> mapClass = (Class<? extends MapParsable>) fields[i].getType();
-				int fieldCount = MapParsable.getFields(mapClass).length;
-				String[] mapArgs = Commands.grabArgs(values, i, i+fieldCount);
-				String classAsString = intoString(mapClass, mapArgs);
-				fieldValues.put(fields[i].getName(), classAsString);
-				i += fieldCount-1;
-			}
-			else
-				fieldValues.put(fields[i].getName(), values[i]);
+		if(increment == null) {
+			increment = 0;
+			if(list.size() > 1)
+				throw new IllegalStateException();
 		}
 		
-		// Creating T object ready to be created using Java Reflection and returned.
-		// If there are any problems creating object, null will be returned.
-		T object = null;
-		try{
-			try{
-				// Attempts to create a new instance of the T object using the FieldValues.
-				object = clazz.getConstructor(Map.class).newInstance(fieldValues);
-			} 
-			// This means that there is no constructor with values needed for the T object.
-			// Therefore, the constructor must be an empty, default constructor.
-			catch (NoSuchMethodException e) {
-				// Attempts to create a new instance of the T object using the default constructor.
-				object = clazz.getConstructor().newInstance();
-			}
+		if(increment > list.size()-1)
+			throw new ArrayIndexOutOfBoundsException();
+		
+		return list.get(increment);
+	}
+	/**
+	 * Trims a given list using a given predicate, and returns an object in the increment position of this trimmed list.
+	 * @param <T> The Type of object you are trying to get
+	 * @param list Original list of T objects
+	 * @param increment Increment to get within trimmed list. If this is null, it will return the element if only a single element is found.
+	 * @param predicate Predicate in which each T element of the original list will be passed and filtered through
+	 * @return A T Object that fits the increment & predicate.
+	 * 
+	 * @throws NullPointerException If there were no available results.
+	 * @throws IllegalStateException If the increment was null and more than one element was found that fits the predicate. If this happens, an increment IS required.
+	 * @throws ArrayIndexOutOfBoundsException If the increment is larger than the amount of T objects found that fits the predicate.
+	 */
+	public static <T> T getIncremented(List<T> list, @Nullable Integer increment, Predicate<T> predicate) throws NullPointerException, IllegalStateException, ArrayIndexOutOfBoundsException {
+		List<T> trimmedList = new ArrayList<T>();
+		list.forEach(e -> {
+			if(predicate.test(e))
+				trimmedList.add(e);
+		});
+		if(trimmedList.isEmpty())
+			throw new NullPointerException();
+		
+		if(increment == null) {
+			increment = 0;
+			if(trimmedList.size() > 1)
+				throw new IllegalStateException();
 		}
-		// If the object has an exception in its initilizer, then this triggers.
-		catch (InvocationTargetException e) {
-			if(e.getCause() instanceof IllegalArgumentException)
-				throw (IllegalArgumentException) e.getCause();
-			if(e.getCause() instanceof NullPointerException)
-				throw (NullPointerException) e.getCause();
-			throw e;
-		}
-		// All possible exceptions simply printing the stack trace.
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		return object;
+		
+		if(increment > trimmedList.size()-1)
+			throw new ArrayIndexOutOfBoundsException();
+		
+		return trimmedList.get(increment);
 	}
 	
-	public static String intoString(Class<? extends MapParsable> clazz, String... values) {
-		String returning = "";
-		Field[] fields = MapParsable.getFields(clazz);
-		for(int i=0 ; i<values.length ; i++) {
-			if(!returning.equals(""))
-				returning += ",";
-			returning += String.format("(%s,%s)", fields[i].getName(), values[i]);
-		}
-		return String.format("{%s}", returning);
+	public static <T> int size(List<T> list, Predicate<T> predicate) {
+		int count = 0;
+		for(T e : list)
+			if(predicate.test(e))
+				count++;
+		
+		return count;
 	}
+	
 }
