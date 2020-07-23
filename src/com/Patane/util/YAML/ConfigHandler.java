@@ -81,7 +81,7 @@ public class ConfigHandler {
 			return true;
 		} catch (IOException e) {
 			Messenger.severe("Failed to save "+fileName+":");
-			e.printStackTrace();
+			Messenger.printStackTrace(e);
 		}
 		return false;
 	}

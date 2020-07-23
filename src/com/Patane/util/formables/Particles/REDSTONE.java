@@ -26,7 +26,7 @@ public class REDSTONE extends SpecialParticle {
 	@ParseField(desc="Color of the particle measured in Red, Green, Blue values from 0 to 255.")
 	protected Color color;
 	@ParseField(desc="Size of the particle.")
-	protected int size;
+	protected float size;
 	
 	protected DustOptions dustOption;
 	
@@ -40,7 +40,7 @@ public class REDSTONE extends SpecialParticle {
 	protected void populateFields(Map<String, String> fields) {
 		super.populateFields(fields); 
 		color = getColor(fields, "color");
-		size = getInt(fields, "size");
+		size = (float) getDouble(fields, "size");
 	}
 	
 	@Override
@@ -65,7 +65,7 @@ public class REDSTONE extends SpecialParticle {
 		
 		particleInfo += "\n"+Chat.indent(indentCount+1) + alternateLayout.build("color", String.format("&c%d&7, &a%d&7, &9%d", color.getRed(), color.getGreen(), color.getBlue()));
 		
-		particleInfo += "\n"+Chat.indent(indentCount+1) + alternateLayout.build("size", Integer.toString(size));
+		particleInfo += "\n"+Chat.indent(indentCount+1) + alternateLayout.build("size", Float.toString(size));
 		
 		return particleInfo;
 	}
@@ -91,7 +91,7 @@ public class REDSTONE extends SpecialParticle {
 					+ "\n&7"+getFieldDesc("color"));
 			componentList.add(current);
 			
-			current = StringsUtil.hoverText("\n"+Chat.indent(indentCount+1) + alternateLayout.build("size", Integer.toString(size))
+			current = StringsUtil.hoverText("\n"+Chat.indent(indentCount+1) + alternateLayout.build("size", Float.toString(size))
 					, "&f&lsize"
 					+ "\n&7"+getFieldDesc("size"));
 		}

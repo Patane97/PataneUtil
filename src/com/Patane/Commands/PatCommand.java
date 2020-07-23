@@ -32,12 +32,36 @@ public abstract class PatCommand {
 			Messenger.send(sender, "&eThis command requires more arguments.");
 			return false;
 		}
+		
+		String childArg = args[childIndex];
+		boolean help = false;
+		
+		// If the last character in it is '?'
+		if(childArg.charAt(childArg.length()-1) == '?') {
+			// removes the '?' at end
+			childArg = childArg.substring(0, childArg.length()-1);
+			help = true;
+		}
+		
 		// Find child command
-		CommandPackage child = CommandHandler.getChildPackage(this.getClass(), args[childIndex]);
+		CommandPackage child = CommandHandler.getChildPackage(this.getClass(), childArg);
 		if(child == null) {
 			// Respond based on the layout given through failResponse
-			Messenger.send(sender, failResponse.build(args[childIndex]));
+			Messenger.send(sender, failResponse.build(childArg));
 			return false;
+		}
+		
+		if(help) {
+			//*** Can make this look better. Get Daniel and Shannons opinion
+			Messenger.send(sender, String.format("&2===[ &f&lCommand Help &2]==="
+												+"\n&2>  &7'&f%s&7'"
+											  	+"\n&2>  &7%s"
+												+"\n&2>"
+												+"\n&2>  &7&o%s",
+											  	child.info().name(),
+											  	child.info().description(),
+											  	child.info().usage()));
+			return true;
 		}
 		
 		// Handle child command with specific arguments & objects

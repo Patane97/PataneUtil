@@ -12,7 +12,12 @@ import com.Patane.runnables.TimedMetaDataTask;
 import com.Patane.util.general.Messenger;
 import com.Patane.util.main.PataneUtil;
 
-public class MetaDataHandler implements PatHandler{
+@Deprecated
+public class TrackedMetaData {
+	
+	// This collects all LivingEntities given metadata from this handler.
+	// String = Meta Data Name
+	// List<LivingEntity> = living entities which have this Meta Data Name.
 	protected static HashMap<String, List<LivingEntity>> collection = new HashMap<String, List<LivingEntity>>();
 	
 	/**
@@ -49,6 +54,7 @@ public class MetaDataHandler implements PatHandler{
 			return collection.get(metaName).add(entity);
 		}
 	}
+	
 	/**
 	 * Adds a metadata and value each given entity, then adds them to the collection.
 	 * If the metaName already exists, then the entity is added to its List.
@@ -70,6 +76,7 @@ public class MetaDataHandler implements PatHandler{
 		return result;
 	}
 
+	
 	/**
 	 * Adds a metadata and value to a given entity, then adds them to the collection for a limited duration.
 	 * @param entity Entity which has the metadata.
@@ -182,6 +189,7 @@ public class MetaDataHandler implements PatHandler{
 				return true;
 			}
 		}
+		
 		return false;
 	}
 	/**
@@ -198,4 +206,5 @@ public class MetaDataHandler implements PatHandler{
 		}
 		return null;
 	}
+	
 }

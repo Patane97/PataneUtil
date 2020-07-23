@@ -75,7 +75,7 @@ public class Config {
 	    	configuration = YamlConfiguration.loadConfiguration(file);
     	} catch (Exception e) {
         	Messenger.severe("Failed to load " + fileName + " ...");
-            e.printStackTrace();
+            Messenger.printStackTrace(e);
     	}
     }
     public void save() {
@@ -84,7 +84,7 @@ public class Config {
         		Messenger.info("Saving " + fileName + "...");
             configuration.save(new File(plugin.getDataFolder()+filePath, fileName));
         } catch (Exception e) {
-            e.printStackTrace();
+            Messenger.printStackTrace(e);
         	Messenger.severe("Failed to save " + fileName + ". Data may be lost on this file ...");
         }
     }
@@ -115,13 +115,13 @@ public class Config {
 //            }
 //        } catch (Exception e) {
 //        	Messenger.severe("Failed to create or load " + fileName + " ...");
-//            e.printStackTrace();
+//            Messenger.printStackTrace(e);
 //        } finally {
 //            try {
 //				save(file);
 //			} catch (Exception e) {
 //	        	Messenger.severe("Failed to initially save " + fileName + ". Data may be lost on this file ...");
-//				e.printStackTrace();
+//				Messenger.printStackTrace(e);
 //			}
 //        }
 //    }

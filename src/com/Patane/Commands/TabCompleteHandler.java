@@ -114,7 +114,7 @@ public class TabCompleteHandler implements TabCompleter {
 				
 				// If the command does exist, go through handleTabComplete appropriately and return the suggestions
 				suggestions = handleTabComplete(sender, commandPackage.command(), preparedArgs);
-				
+								
 				// Save the new args length and suggestions
 				tabSaver.put(sender, new tabInfo(args.length, suggestions));
 			}

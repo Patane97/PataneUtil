@@ -20,7 +20,7 @@ public abstract class BaseListener implements Listener{
 			Messenger.debug("Registered "+this.getClass().getSimpleName() + " [" + this.hashCode() + "]");
 		} catch (Exception e) {
 			Messenger.debug("Failed to register "+this.getClass().getSimpleName() + " [" + this.hashCode() + "]");
-			e.printStackTrace();
+			Messenger.printStackTrace(e);
 		}
 	}
 	/**

@@ -26,9 +26,9 @@ import net.md_5.bungee.api.chat.TextComponent;
 		desc="Determines the shape and size of a zone.")
 public class Radius extends MapParsable {
 	@ParseField(desc="Shape of the zone.")
-	public RadiusType type;
+	private RadiusType type;
 	@ParseField(desc="Distance from the centre to the shapes edge.")
-	public float amount;
+	private float amount;
 
 	public Radius() {
 		super();
@@ -46,6 +46,14 @@ public class Radius extends MapParsable {
 	protected void populateFields(Map<String, String> fields) {
 		type = this.getEnumValue(RadiusType.class, fields, "type");
 		amount = (float) this.getDouble(fields, "amount");
+	}
+	
+	public RadiusType getType() {
+		return type;
+	}
+	
+	public float getAmount() {
+		return amount;
 	}
 	
 	@Override

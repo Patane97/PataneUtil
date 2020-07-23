@@ -38,7 +38,10 @@ public class ParticleHandler implements PatHandler {
 	
 	public static void registerAll() {
 		particles = new HashMap<String, Class< ? extends SpecialParticle>>();
-		
+
+		register(STANDARD.class);
+		register(DIRECTIONAL.class);
+		register(BLOCK.class);
 		register(REDSTONE.class);
 		register(NOTE.class);
 		register(SPELL_MOB.class);

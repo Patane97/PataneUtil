@@ -31,7 +31,7 @@ public class ClassesCollection <T extends ClassDescribable>{
 		try {
 			items.put(info.name(), clazz.newInstance());
 		} catch (InstantiationException | IllegalAccessException e) {
-			e.printStackTrace();
+			Messenger.printStackTrace(e);
 		}
 
 	}

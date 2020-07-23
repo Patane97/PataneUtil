@@ -447,7 +447,7 @@ public abstract class YAMLFile extends YAMLParser{
 		try {
 			object = getFromClass(clazz, fieldValues);
 		} catch (IllegalAccessException | InvocationTargetException | SecurityException | InstantiationException | NoSuchMethodException e) {
-			e.printStackTrace();
+			Messenger.printStackTrace(e);
 		}
 		
 		return object;
@@ -613,7 +613,7 @@ public abstract class YAMLFile extends YAMLParser{
 				return object;
 			} catch (IllegalArgumentException f) {}
 			Messenger.warning("'"+string+"' is not a valid "+clazz.getSimpleName()+". Please check your spelling:");
-			e.printStackTrace();
+			Messenger.printStackTrace(e);
 		}
 
 		return object;
@@ -644,7 +644,7 @@ public abstract class YAMLFile extends YAMLParser{
 			}
 		} catch(IllegalArgumentException | IllegalAccessException e) {
 			Messenger.severe("Failed to merge two objects.");
-			e.printStackTrace();
+			Messenger.printStackTrace(e);
 		}
 		return majorObject;
 	}	

@@ -14,12 +14,12 @@ public enum Formation {
 	FLAT_RADIUS("Flat Radius", "Forms a flat radius around the target location.", Focus.BLOCK, 
 			(particle, location, intensity, radius) -> {
 				// Cannot simply go through 'Radius' methods for this as the height needs to be at 1!
-				switch(radius.type) {
+				switch(radius.getType()) {
 					case CUBE:
-						RadiusUtil.forEachLocationInGridCube(location, radius.amount, 1, radius.amount, l -> runFlatRadius(particle, l, intensity));
+						RadiusUtil.forEachLocationInGridCube(location, radius.getAmount(), 1, radius.getAmount(), l -> runFlatRadius(particle, l, intensity));
 						break;
 					case SPHERE:
-						RadiusUtil.forEachLocationInGridCylinder(location, radius.amount, 1, l -> runFlatRadius(particle, l, intensity));
+						RadiusUtil.forEachLocationInGridCylinder(location, radius.getAmount(), 1, l -> runFlatRadius(particle, l, intensity));
 						break;
 				}
 			}
@@ -27,12 +27,12 @@ public enum Formation {
 	RADIUS("Radius", "Forms a full radius around the target location.", Focus.BLOCK, 
 			(particle, location, intensity, radius) -> {
 				// Cannot simply go through 'Radius' methods for this as the height needs to be at 1!
-				switch(radius.type) {
+				switch(radius.getType()) {
 					case CUBE:
-						RadiusUtil.forEachLocationInGridCube(location, radius.amount, radius.amount, radius.amount, l -> runRadius(particle, l, intensity));
+						RadiusUtil.forEachLocationInGridCube(location, radius.getAmount(), radius.getAmount(), radius.getAmount(), l -> runRadius(particle, l, intensity));
 						break;
 					case SPHERE:
-						RadiusUtil.forEachLocationInGridSphere(location, radius.amount, l -> runRadius(particle, l, intensity));
+						RadiusUtil.forEachLocationInGridSphere(location, radius.getAmount(), l -> runRadius(particle, l, intensity));
 						break;
 				}
 			}
@@ -40,12 +40,12 @@ public enum Formation {
 	
 	FACE_UP("Face Up", "Forms on the upward-face of every block within the radius from the target location.", Focus.BLOCK, 
 			(particle, location, intensity, radius) -> {
-				switch(radius.type) {
+				switch(radius.getType()) {
 					case CUBE:
-						RadiusUtil.forEachBlockInCube(location, radius.amount, radius.amount, radius.amount, false, b -> runFaceUp(particle, b, intensity));
+						RadiusUtil.forEachBlockInCube(location, radius.getAmount(), radius.getAmount(), radius.getAmount(), false, b -> runFaceUp(particle, b, intensity));
 						break;
 					case SPHERE:
-						RadiusUtil.forEachBlockInSphere(location, radius.amount,false, b -> runFaceUp(particle, b, intensity));
+						RadiusUtil.forEachBlockInSphere(location, radius.getAmount(),false, b -> runFaceUp(particle, b, intensity));
 						break;
 				}
 			}
@@ -89,7 +89,6 @@ public enum Formation {
 		// If no radius was given, simply create an empty one so things dont bug out
 		if(radius == null)
 			radius = new Radius(RadiusType.CUBE, 0);
-		
 		form.execute(particle, location, intensity, radius);
 	}
 	protected static interface Form {

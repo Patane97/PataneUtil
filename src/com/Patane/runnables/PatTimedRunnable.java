@@ -1,5 +1,7 @@
 package com.Patane.runnables;
 
+import com.Patane.util.general.Messenger;
+
 public abstract class PatTimedRunnable extends PatRunnable{
 	private float duration;
 	private float rate;
@@ -25,7 +27,7 @@ public abstract class PatTimedRunnable extends PatRunnable{
 	public float ticksLeft() {
 		return ticksLeft;
 	}
-	public abstract void task();
+	public abstract void task(); 
 	public abstract void complete();
 	
 	@Override
@@ -34,7 +36,7 @@ public abstract class PatTimedRunnable extends PatRunnable{
 			try {
 				complete();
 			} catch(Exception e) {
-				e.printStackTrace();
+				Messenger.printStackTrace(e);
 			}
 			this.cancel();
 			return;
@@ -42,7 +44,7 @@ public abstract class PatTimedRunnable extends PatRunnable{
 		try {
 			task();
 		} catch(Exception e) {
-			e.printStackTrace();
+			Messenger.printStackTrace(e);
 		}
 		ticksLeft -= rate;
 	}

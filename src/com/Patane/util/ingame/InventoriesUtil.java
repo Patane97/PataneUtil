@@ -1,6 +1,11 @@
 package com.Patane.util.ingame;
 
+import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import com.Patane.util.general.Check;
@@ -56,6 +61,64 @@ public class InventoriesUtil {
 				return i;
 		}
 		throw new NullPointerException("Failed to find any instances of the specified item within an inventory");
+	}
+	
+	/**
+	 * Gets the arrow that would be used if the living entity is holding a bow
+	 * @param livingEntity The LivingEntity to check.
+	 * @return The Arrow itemstack of the entity is holding a bow or null if none exists.
+	 */
+	public static ItemStack getTargettedArrowStack(LivingEntity livingEntity) {
+		EntityEquipment equipment = livingEntity.getEquipment();
+		ItemStack offHand = equipment.getItemInOffHand();
+		
+		// If the offhand is an arrow, use that.
+		if(isArrowMaterial(offHand.getType()))
+			return offHand;
+		
+		// If the offhand is not an arrow, we first must check if the entity has an inventory
+		else if(livingEntity instanceof InventoryHolder) {
+			// Grab the inventory of the livingShooter.
+			Inventory inventory = ((InventoryHolder) livingEntity).getInventory();
+			// Loop through the inventory
+			for(ItemStack current : inventory.getContents()) {
+				// If the itemstack is an arrow, then it is the one that will be used.
+				if(current != null && isArrowMaterial(current.getType()))
+					return current;
+			}
+		}
+		return null;
+	}
+	
+	public static boolean isArrowEntityType(EntityType type) {
+		switch(type) {
+			case ARROW:
+			case SPECTRAL_ARROW:
+				return true;
+			default:
+				return false;
+		}
+	}
+	
+	public static boolean isArrowMaterial(Material material) {
+		switch(material) {
+			case ARROW:
+			case SPECTRAL_ARROW:
+			case TIPPED_ARROW:
+				return true;
+			default:
+				return false;
+		}
+	}
+
+	public static boolean isBowMaterial(Material material) {
+		switch(material) {
+			case BOW:
+			case CROSSBOW:
+				return true;
+			default:
+				return false;
+	}
 	}
 	
 	// ***old.getTitle() not working after 1.14

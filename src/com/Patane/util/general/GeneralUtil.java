@@ -119,6 +119,5 @@ public class GeneralUtil {
 				count++;
 		
 		return count;
-	}
-	
+	}	
 }

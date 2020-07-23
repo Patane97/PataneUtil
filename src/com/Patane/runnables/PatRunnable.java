@@ -2,10 +2,11 @@ package com.Patane.runnables;
 
 import com.Patane.util.main.PataneUtil;
 
-public abstract class PatRunnable implements Runnable{
+public abstract class PatRunnable implements Runnable {	
 	private final int scheduleID;
 	
 	public PatRunnable(float delay, float period) {
+		// TODO: Does delay and period need to be converted from seconds to ticks??
 		scheduleID = PataneUtil.getInstance().getServer().getScheduler().scheduleSyncRepeatingTask(PataneUtil.getInstance(), this, (long) delay, (long) period);
 	}
 	

@@ -90,7 +90,7 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 				field.setAccessible(true);
 				fieldMap.put(field.getName(), field.get(this));
 			} catch (IllegalArgumentException | IllegalAccessException e) {
-				e.printStackTrace();
+				Messenger.printStackTrace(e);
 			}
 		}
 		// Return fieldMap
@@ -221,7 +221,7 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 		try{
 			result = Check.notNull(value);
 		} catch (NullPointerException e) {
-			throw new NullPointerException("&7"+className()+"&e requires a value for &7"+name+"&e.");
+			throw new NullPointerException(String.format("&7%s&e requires a value for &7%s&e.", className(), name));
 		}
 		return result;
 	}
@@ -235,12 +235,12 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 	protected int getInt(Map<String, String> fields, String name) {
 		String value = fields.get(name);
 		if(value == null)
-			throw new NullPointerException("&7"+className()+"&e requires a value for &7"+name+"&e. This must be a number.");
+			throw new NullPointerException(String.format("&7%s&e requires a value for &7%s&e. This must be a number.", className(), name));
 		int result;
 		try{
 			result = Integer.parseInt(value);
 		} catch (NumberFormatException e) {
-			throw new IllegalArgumentException("&7"+value+"&e is not a valid value for &7"+name+"&e. It must be a number.");
+			throw new IllegalArgumentException(String.format("&7%s&e is not a valid value for &7%s&e. It must be a number.", value, name));
 		}
 		return result;
 	}
@@ -257,9 +257,9 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 		try {
 			result = Double.parseDouble(value);
 		} catch (NullPointerException e) {
-			throw new NullPointerException("&7"+className()+"&e requires a value for &7"+name+"&e. This must be a number.");
+			throw new NullPointerException(String.format("&7%s&e requires a value for &7%s&e. This must be a number.", className(), name));
 		} catch (NumberFormatException e) {
-			throw new IllegalArgumentException("&7"+value+"&e is not a valid value for &7"+name+"&e. It must be a number.");
+			throw new IllegalArgumentException(String.format("&7%s&e is not a valid value for &7%s&e. It must be a number.", value, name));
 		}
 		return result;
 	}
@@ -294,12 +294,12 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 		String value = StringsUtil.normalize(fields.get(name));
 		T result;
 		if(value == null)
-			throw new NullPointerException("&7"+className()+"&e requires a value for &7"+name+"&e. This must be a type of &7"+clazz.getSimpleName()+"&e.");
+			throw new NullPointerException(String.format("&7%s&e requires a value for &7%s&e. This must be a type of &7%s&e.", className(), name, clazz.getSimpleName()));
 		try {
 			result = T.valueOf(clazz, value);
 		}
 		catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException("&7"+value+"&e is not a valid value for &7"+name+"&e. It must be a type of &7"+clazz.getSimpleName()+"&e.");
+			throw new IllegalArgumentException(String.format("&7%s&e is not a valid value for &7%s&e. It must be a type of &7%s&e.", value, name, clazz.getSimpleName()));
 		}
 		return result;
 	}
@@ -318,7 +318,8 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 		try {
 			result = MapParsable.fromString(clazz, value);
 		} catch (InvocationTargetException e) {
-			throw new IllegalArgumentException(String.format("&cFailed to create &7%s&c: %s", name, e.getCause().getMessage()));
+			// The message here is very likely to be in the format of one of the above, therefore is safe to send directly to the player.
+			throw new IllegalArgumentException(e.getCause().getMessage());
 		} catch (NullPointerException e) {
 			throw new NullPointerException(String.format("&7%s&e requires a &7%s&e. This must be a MapParsable object.", className(), name));
 		}
@@ -345,11 +346,11 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 			if(r < 0 || r > 255)
 				throw new NumberFormatException();
 		} catch (NullPointerException e) {
-			throw new NullPointerException("&7"+className()+"&e requires a red value for &7"+name+"&e. This must be a number between 0 and 255.");
+			throw new NullPointerException(String.format("&7%s&e requires a red value for &7%s&e. This must be a number between 0 and 255.", className(), name));
 		} catch (NumberFormatException e) {
-			throw new IllegalArgumentException("&7"+colorStrings[0]+"&e is not a valid red value for &7"+name+"&e. It must be a number between 0 and 255.");
+			throw new IllegalArgumentException(String.format("&7%s&e is not a valid red value for &7%s&e. It must be a number between 0 and 255.", colorStrings[0], name));
 		} catch (ArrayIndexOutOfBoundsException e) {
-			throw new NullPointerException("&7"+className()+"&e is missing the red value for &7"+name+"&e. This must be a number between 0 and 255.");
+			throw new NullPointerException(String.format("&7%s&e is missing the red value for &7%s&e. This must be a number between 0 and 255.", className(), name));
 		}
 
 		try{
@@ -357,11 +358,11 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 			if(g < 0 || g > 255)
 				throw new NumberFormatException();
 		} catch (NullPointerException e) {
-			throw new NullPointerException("&7"+className()+"&e requires a green value for &7"+name+"&e. This must be a number between 0 and 255.");
+			throw new NullPointerException(String.format("&7%s&e requires a green value for &7%s&e. This must be a number between 0 and 255.", className(), name));
 		} catch (NumberFormatException e) {
-			throw new IllegalArgumentException("&7"+colorStrings[1]+"&e is not a valid green value for &7"+name+"&e. It must be a number between 0 and 255.");
+			throw new IllegalArgumentException(String.format("&7%s&e is not a valid green value for &7%s&e. It must be a number between 0 and 255.", colorStrings[1], name));
 		} catch (ArrayIndexOutOfBoundsException e) {
-			throw new NullPointerException("&7"+className()+"&e is missing the green value for &7"+name+"&e. This must be a number between 0 and 255.");
+			throw new NullPointerException(String.format("&7%s&e is missing the green value for &7%s&e. This must be a number between 0 and 255.", className(), name));
 		}
 		
 		try{
@@ -369,11 +370,11 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 			if(b < 0 || b > 255)
 				throw new NumberFormatException();
 		} catch (NullPointerException e) {
-			throw new NullPointerException("&7"+className()+"&e requires a blue value for &7"+name+"&e. This must be a number between 0 and 255.");
+			throw new NullPointerException(String.format("&7%s&e requires a blue value for &7%s&e. This must be a number between 0 and 255.", className(), name));
 		} catch (NumberFormatException e) {
-			throw new IllegalArgumentException("&7"+colorStrings[2]+"&e is not a valid blue value for &7"+name+"&e. It must be a number between 0 and 255.");
+			throw new IllegalArgumentException(String.format("&7%s&e is not a valid blue value for &7%s&e. It must be a number between 0 and 255.", colorStrings[2], name));
 		} catch (ArrayIndexOutOfBoundsException e) {
-			throw new NullPointerException("&7"+className()+"&e is missing the blue value for &7"+name+"&e. This must be a number between 0 and 255.");
+			throw new NullPointerException(String.format("&7%s&e is missing the blue value for &7%s&e. This must be a number between 0 and 255.", className(), name));
 		}
 		
 		return Color.fromRGB(r, g, b);
@@ -397,31 +398,31 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 		try{
 			x = Float.parseFloat(vectorStrings[0].replaceAll(" ", ""));
 		} catch (NullPointerException e) {
-			throw new NullPointerException("&7"+className()+"&e requires an x value for &7"+name+"&e. This must be a number.");
+			throw new NullPointerException(String.format("&7%s&e requires an x value for &7%s&e. This must be a number.", className(), name));
 		} catch (NumberFormatException e) {
-			throw new IllegalArgumentException("&7"+vectorStrings[0]+"&e is not a valid x value for &7"+name+"&e. It must be a number.");
+			throw new IllegalArgumentException(String.format("&7%s&e is not a valid x value for &7%s&e. It must be a number.", vectorStrings[0], name));
 		} catch (ArrayIndexOutOfBoundsException e) {
-			throw new NullPointerException("&7"+className()+"&e is missing the x value for &7"+name+"&e. This must be a number.");
+			throw new NullPointerException(String.format("&7%s&e is missing the x value for &7%s&e. This must be a number.", className(), name));
 		}
 
 		try{
 			y = Float.parseFloat(vectorStrings[1].replaceAll(" ", ""));
 		} catch (NullPointerException e) {
-			throw new NullPointerException("&7"+className()+"&e requires a y value for &7"+name+"&e. This must be a number.");
+			throw new NullPointerException(String.format("&7%s&e requires an y value for &7%s&e. This must be a number.", className(), name));
 		} catch (NumberFormatException e) {
-			throw new IllegalArgumentException("&7"+vectorStrings[1]+"&e is not a valid y value for &7"+name+"&e. It must be a number.");
+			throw new IllegalArgumentException(String.format("&7%s&e is not a valid y value for &7%s&e. It must be a number.", vectorStrings[1], name));
 		} catch (ArrayIndexOutOfBoundsException e) {
-			throw new NullPointerException("&7"+className()+"&e is missing the y value for &7"+name+"&e. This must be a number.");
+			throw new NullPointerException(String.format("&7%s&e is missing the y value for &7%s&e. This must be a number.", className(), name));
 		}
 		
 		try{
 			z = Float.parseFloat(vectorStrings[2].replaceAll(" ", ""));
 		} catch (NullPointerException e) {
-			throw new NullPointerException("&7"+className()+"&e requires a z value for &7"+name+"&e. This must be a number.");
+			throw new NullPointerException(String.format("&7%s&e requires an z value for &7%s&e. This must be a number.", className(), name));
 		} catch (NumberFormatException e) {
-			throw new IllegalArgumentException("&7"+vectorStrings[2]+"&e is not a valid z value for &7"+name+"&e. It must be a number.");
+			throw new IllegalArgumentException(String.format("&7%s&e is not a valid z value for &7%s&e. It must be a number.", vectorStrings[2], name));
 		} catch (ArrayIndexOutOfBoundsException e) {
-			throw new NullPointerException("&7"+className()+"&e is missing the z value for &7"+name+"&e. This must be a number.");
+			throw new NullPointerException(String.format("&7%s&e is missing the z value for &7%s&e. This must be a number.", className(), name));
 		}
 		
 		return new Vector(x,y,z);
@@ -633,7 +634,7 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 		try {
 			Field field = MapParsable.getField(clazz, fieldName);
 			if(field == null)
-				throw new NoSuchFieldException(String.format("%s is not a field within %s.", fieldName, clazz.getSimpleName()));
+				throw new NoSuchFieldException(String.format("&7%s&e is not a field within &7%s&e.", fieldName, clazz.getSimpleName()));
 
 			ParseField pf = field.getAnnotation(ParseField.class);
 			if(pf == null) 
@@ -642,7 +643,8 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 			return pf.desc();
 			
 		} catch (NoSuchFieldException | SecurityException | NoClassDefFoundError e) {
-			e.printStackTrace();
+			Messenger.printStackTrace(e);
+//			Messenger.printStackTrace(e);
 			return "Missing Description.";
 		}
 	}
@@ -660,7 +662,7 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 			return field.isAnnotationPresent(Nullable.class);
 			
 		} catch (NoSuchFieldException | SecurityException e) {
-			e.printStackTrace();
+			Messenger.printStackTrace(e);
 			return false;
 		}
 		
@@ -669,43 +671,7 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 	/* ================================================================================
 	 * Tab-Complete Suggestion Methods
 	 * ================================================================================
-	 */
-	
-	@Deprecated
-	public static List<String> getSuggestion(Field field) {
-		// If field is of type Enum, return the list of enum strings instead of the field name
-		if(field.getType().isEnum()) {
-			@SuppressWarnings("unchecked")
-			Class<? extends Enum<?>> enumClass = (Class<? extends Enum<?>>) field.getType();
-			return Arrays.asList(StringsUtil.enumValueStrings(enumClass));
-		}
-		// Return field name in brackets
-		return Arrays.asList("<"+field.getName()+">");
-	}
-	
-	// *** doesnt account for indexes used (or if null, not used) by MapParsable fields!
-	@SuppressWarnings("unchecked")
-	@Deprecated
-	public static List<String> getSuggestion(Class<? extends MapParsable> clazz, int index) {
-		Field[] fields = getFields(clazz);
-		if(index < 0 || index >= fields.length) {
-			// *** remove?
-			Messenger.debug("Out of Array!");
-			return Arrays.asList();
-		}
-		Class<?> fieldClass = fields[index].getType();
-		if(MapParsable.class.isAssignableFrom(fieldClass))
-			// *** index here shouldnt be 0...
-			return getSuggestion((Class<? extends MapParsable>) fieldClass, 0);
-		
-		if(fieldClass.isEnum()) {
-			Class<? extends Enum<?>> enumClass = (Class<? extends Enum<?>>) fieldClass;
-			return Arrays.asList(StringsUtil.enumValueStrings(enumClass));
-		}
-		// Return field name in brackets
-		return Arrays.asList("<"+fields[index].getName()+">");
-	}
-	
+	 */	
 	public static List<String> getSuggestion(Class<? extends MapParsable> clazz, String... args) {
 		try {
 			return checkSuggestions(clazz, args);
@@ -738,7 +704,7 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 				// Suggesting all possible enums available within its class
 				@SuppressWarnings("unchecked")
 				Class<? extends Enum<?>> enumClass = (Class<? extends Enum<?>>) fieldClass;
-				suggestions = new ArrayList<String>(Arrays.asList(StringsUtil.enumValueStrings(enumClass)));
+				suggestions = StringsUtil.replaceAll(new ArrayList<String>(Arrays.asList(StringsUtil.enumValueStrings(enumClass))), " ", "_");
 			}
 			// If the field is a MapParsable, we do some specific things
 			else if(MapParsable.class.isAssignableFrom(fieldClass)) {
@@ -889,7 +855,7 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 		}
 		// All other possible exceptions simply printing the stack trace.
 		catch (Exception e) {
-			e.printStackTrace();
+			Messenger.printStackTrace(e);
 		}
 		
 		return object;
@@ -984,7 +950,7 @@ public abstract class MapParsable extends ClassDescribable implements ChatString
 		}
 		// All possible exceptions simply printing the stack trace.
 		catch (Exception e) {
-			e.printStackTrace();
+			Messenger.printStackTrace(e);
 		}
 		return object;
 	}

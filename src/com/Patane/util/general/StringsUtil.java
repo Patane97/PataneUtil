@@ -94,6 +94,15 @@ public class StringsUtil {
 	public static boolean isVowel(char c) {
 		return ("AEIOUaeiou".indexOf(c) >= 0 ? true : false);
 	}
+
+	public static boolean isEncased(String string) {
+		if(string.charAt(0) ==  '\'' && string.charAt(string.length()-1) == '\'')
+			return true;
+		if(string.charAt(0) ==  '"' && string.charAt(string.length()-1) == '"')
+			return true;
+		
+		return false;
+	}
 	
 	public static boolean parseBoolean(String string) throws IllegalArgumentException {
 		if(string == null)
@@ -153,6 +162,13 @@ public class StringsUtil {
 		for(int i=iStart ; i<=iStart+list.size()-1 ; i++)
 			count.add(Integer.toString(i));
 		return count;
+	}
+	
+	public static List<String> replaceAll(List<String> list, String regex, String replacement) {
+		for(int i=0 ; i<list.size() ; i++)
+			list.set(i, list.get(i).replaceAll(regex, replacement));
+		
+		return list;
 	}
 	
 	/* ================================================================================
@@ -766,7 +782,7 @@ public class StringsUtil {
 			Check.notNull(clazz, "Class required for getEnumFromString is missing.");
 			Check.notNull(string, "String has no value for '"+clazz.getSimpleName()+"' Enum.");
 		} catch(Exception e) {
-			e.printStackTrace();
+			Messenger.printStackTrace(e);
 			return null;
 		}
 		
@@ -801,7 +817,7 @@ public class StringsUtil {
 			Check.notNull(clazz, "Class required for getEnumFromString is missing.");
 			Check.notNull(string, "String has no value for '"+clazz.getSimpleName()+"' Enum.");
 		} catch(Exception e) {
-			e.printStackTrace();
+			Messenger.printStackTrace(e);
 			return null;
 		}
 		// Initilizing as null to return null in the case of an IllegalArgumentException.
@@ -818,7 +834,7 @@ public class StringsUtil {
 				return object;
 			} catch (IllegalArgumentException f) {
 				Messenger.warning("'"+string+"' is not a valid "+clazz.getSimpleName()+".");
-				e.printStackTrace();
+				Messenger.printStackTrace(e);
 			}
 		}
 

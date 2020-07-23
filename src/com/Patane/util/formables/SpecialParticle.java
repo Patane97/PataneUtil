@@ -64,7 +64,7 @@ public abstract class SpecialParticle extends MapParsable implements CustomChatN
 	@Override
 	public String getChatName() {
 		if(displayName == null)
-			displayName = particle.toString();
+			displayName = "&7"+particle.toString();
 		return displayName;
 	}
 	
@@ -92,8 +92,8 @@ public abstract class SpecialParticle extends MapParsable implements CustomChatN
 	public String toChatString(int indentCount, boolean deep, LambdaStrings alternateLayout) {
 		alternateLayout = (alternateLayout == null ? layout() : alternateLayout);
 		if(!deep)
-			return Chat.indent(indentCount)+alternateLayout.build("&7"+getChatName()+"&2");
-		String particleInfo = Chat.indent(indentCount) + alternateLayout.build("&7"+getChatName()+"&2", "");
+			return Chat.indent(indentCount)+alternateLayout.build(getChatName()+"&2");
+		String particleInfo = Chat.indent(indentCount) + alternateLayout.build(getChatName()+"&2", "");
 		
 		particleInfo += "\n"+Chat.indent(indentCount+1) + alternateLayout.build("formation", formation.toString());
 		
@@ -115,12 +115,12 @@ public abstract class SpecialParticle extends MapParsable implements CustomChatN
 		TextComponent current;
 		
 		if(!deep) {
-			current = StringsUtil.hoverText(Chat.indent(indentCount) + alternateLayout.build("&7"+getChatName()+"&2", "&7Active")
+			current = StringsUtil.hoverText(Chat.indent(indentCount) + alternateLayout.build(getChatName()+"&2", "&7Active")
 					, toChatString(0, true, alternateLayout));
 		}
 		else {
 			// Main
-			current = StringsUtil.hoverText(Chat.indent(indentCount) + alternateLayout.build("&7"+getChatName()+"&2", "")
+			current = StringsUtil.hoverText(Chat.indent(indentCount) + alternateLayout.build(getChatName()+"&2", "")
 					, "&f&l"+className()
 					+ "\n&7"+classDesc());
 			componentList.add(current);

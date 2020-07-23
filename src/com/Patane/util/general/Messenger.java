@@ -2,6 +2,8 @@ package com.Patane.util.general;
 
 import java.util.logging.Logger;
 
+import javax.annotation.Nonnull;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -75,16 +77,23 @@ public class Messenger {
 		Bukkit.broadcastMessage(Chat.PREFIX_SMALL + ChatColor.translateAlternateColorCodes('&', msg));
 	}
 	public static void info(String msg) {
-		logger.info(ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', msg)));
+		logger.info(stripColorCodes(msg));
 	}
 
 	public static void warning(String msg) {
-		logger.warning(ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', msg)));
+		logger.warning(stripColorCodes(msg));
 	}
 
 	public static void severe(String msg) {
-		logger.severe(ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', msg)));
+		logger.severe(stripColorCodes(msg));
 	}
+	
+	public static String stripColorCodes(String msg) {
+		if(msg == null)
+			return null;
+		return msg.replaceAll("&.", "");
+	}
+	
 	public static void send(Msg type, String msg) {
 		switch(type) {
 		case BROADCAST:
@@ -120,6 +129,33 @@ public class Messenger {
 			send(sender, msg);
 		}
 	}
+	
+	/**
+	 * Prints the given Throwable's stack trace, removing any Chat color codes from the message.
+	 * If there is a problem with stripping the colours, this will simply print the original throwable, showing all colour codes within it.
+	 * 
+	 * @param throwable The throwable to printstacktrace.
+	 */
+	public static void printStackTrace(@Nonnull Throwable throwable) {
+		if(throwable.getMessage() == null || !throwable.getMessage().contains("&"))
+			throwable.printStackTrace();
+		
+		Throwable strippedThrowable;
+		try {
+			strippedThrowable = throwable.getClass().getConstructor(String.class).newInstance(stripColorCodes(throwable.getMessage()));
+		}
+		// If there was an issue with creating the exception using Reflection, then simply throw the original throwable, not caring about sending through colour codes.
+		catch (Exception e) {
+			throwable.printStackTrace();
+			return;
+		}
+		// Sets the stack trace to the original throwable
+		strippedThrowable.setStackTrace(throwable.getStackTrace());
+		
+		// Prints
+		strippedThrowable.printStackTrace();
+	}
+	
 	public static enum Msg {
 		BROADCAST(), WARNING(), SEVERE(), INFO();
 	}

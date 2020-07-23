@@ -286,7 +286,7 @@ public abstract class CommandHandler implements CommandExecutor{
 			}
 		} catch (Exception e) {
 			Messenger.severe("Failed to register "+cmdInfo.name()+" command.");
-			e.printStackTrace();
+			Messenger.printStackTrace(e);
 		}
 	}
 	public static class CommandPackage{
