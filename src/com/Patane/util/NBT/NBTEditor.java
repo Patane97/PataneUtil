@@ -23,16 +23,14 @@ import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.Patane.util.general.Messenger;
-
 /**
  * Sets/Gets NBT tags from ItemStacks 
- * Supports 1.8-1.15
+ * Supports 1.8-1.16
  * 
  * Github: https://github.com/BananaPuncher714/NBTEditor
  * Spigot: https://www.spigotmc.org/threads/269621/
  * 
- * @version 7.15
+ * @version 7.16
  * @author BananaPuncher714
  */
 public final class NBTEditor {
@@ -70,7 +68,8 @@ public final class NBTEditor {
 			classCache.put( "BlockPosition", Class.forName( "net.minecraft.server." + VERSION + "." + "BlockPosition" ) );
 			classCache.put( "TileEntity", Class.forName( "net.minecraft.server." + VERSION + "." + "TileEntity" ) );
 			classCache.put( "World", Class.forName( "net.minecraft.server." + VERSION + "." + "World" ) );
-
+			classCache.put( "IBlockData", Class.forName( "net.minecraft.server." + VERSION + "." + "IBlockData" ) );
+			
 			classCache.put( "TileEntitySkull", Class.forName( "net.minecraft.server." + VERSION + "." + "TileEntitySkull" ) );
 
 			classCache.put( "GameProfile", Class.forName( "com.mojang.authlib.GameProfile" ) );
@@ -130,8 +129,13 @@ public final class NBTEditor {
 			methodCache.put( "asBukkitCopy", getNMSClass( "CraftItemStack" ).getMethod( "asBukkitCopy", getNMSClass( "ItemStack" ) ) );
 
 			methodCache.put( "getEntityHandle", getNMSClass( "CraftEntity" ).getMethod( "getHandle" ) );
-			methodCache.put( "getEntityTag", getNMSClass( "Entity" ).getMethod( "c", getNMSClass( "NBTTagCompound" ) ) );
-			methodCache.put( "setEntityTag", getNMSClass( "Entity" ).getMethod( "f", getNMSClass( "NBTTagCompound" ) ) );
+			if ( LOCAL_VERSION.greaterThanOrEqualTo( MinecraftVersion.v1_16 ) ) {
+				methodCache.put( "getEntityTag", getNMSClass( "Entity" ).getMethod( "save", getNMSClass( "NBTTagCompound" ) ) );
+				methodCache.put( "setEntityTag", getNMSClass( "Entity" ).getMethod( "load", getNMSClass( "NBTTagCompound" ) ) );
+			} else {
+				methodCache.put( "getEntityTag", getNMSClass( "Entity" ).getMethod( "c", getNMSClass( "NBTTagCompound" ) ) );
+				methodCache.put( "setEntityTag", getNMSClass( "Entity" ).getMethod( "f", getNMSClass( "NBTTagCompound" ) ) );
+			}
 
 			methodCache.put( "save", getNMSClass( "ItemStack" ).getMethod( "save", getNMSClass( "NBTTagCompound" ) ) );
 
@@ -141,7 +145,10 @@ public final class NBTEditor {
 				methodCache.put( "createStack", getNMSClass( "ItemStack" ).getMethod( "a", getNMSClass( "NBTTagCompound" ) ) );
 			}
 
-			if ( LOCAL_VERSION.greaterThanOrEqualTo( MinecraftVersion.v1_12 )) {
+			if ( LOCAL_VERSION.greaterThanOrEqualTo( MinecraftVersion.v1_16 ) ) {
+				methodCache.put( "setTileTag", getNMSClass( "TileEntity" ).getMethod( "load", getNMSClass( "IBlockData" ), getNMSClass( "NBTTagCompound" ) ) );
+				methodCache.put( "getType", getNMSClass( "World" ).getMethod( "getType", getNMSClass( "BlockPosition" ) ) );
+			} else if ( LOCAL_VERSION.greaterThanOrEqualTo( MinecraftVersion.v1_12 ) ) {
 				methodCache.put( "setTileTag", getNMSClass( "TileEntity" ).getMethod( "load", getNMSClass( "NBTTagCompound" ) ) );
 			} else {
 				methodCache.put( "setTileTag", getNMSClass( "TileEntity" ).getMethod( "a", getNMSClass( "NBTTagCompound" ) ) );
@@ -298,6 +305,10 @@ public final class NBTEditor {
 	 */
 	public static String getVersion() {
 		return VERSION;
+	}
+	
+	public static MinecraftVersion getMinecraftVersion() {
+		return LOCAL_VERSION;
 	}
 
 	/**
@@ -640,8 +651,6 @@ public final class NBTEditor {
 	}
 
 	/**
-	 * @deprecated
-	 * 
 	 * Gets an NBT tag in a given block with the specified keys. Use {@link #getNBTCompound(Object, Object...)} instead.
 	 * 
 	 * @param block
@@ -652,7 +661,7 @@ public final class NBTEditor {
 	 * @return
 	 * The item represented by the keys, and an integer if it is showing how long a list is.
 	 */
-	public static Object getBlockTag( Block block, Object... keys ) {
+	private static Object getBlockTag( Block block, Object... keys ) {
 		try {
 			return getTag( getCompound( block ), keys );
 		} catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
@@ -696,7 +705,7 @@ public final class NBTEditor {
 	 * @return
 	 * An NBTCompound
 	 */
-	public static NBTCompound getBlockNBTTag( Block block, Object... keys ) {
+	private static NBTCompound getBlockNBTTag( Block block, Object... keys ) {
 		try {
 			if ( block == null || !getNMSClass( "CraftBlockState" ).isInstance( block.getState() ) ) {
 				return null;
@@ -721,8 +730,6 @@ public final class NBTEditor {
 	}
 
 	/**
-	 * @deprecated
-	 * 
 	 * Sets an NBT tag in an block with the provided keys and value
 	 * Should use the {@link #set(Object, Object, Object...)} method instead
 	 * 
@@ -733,7 +740,7 @@ public final class NBTEditor {
 	 * @param keys
 	 * The keys to set, String for NBTCompound, int or null for an NBTTagList
 	 */
-	public static void setBlockTag( Block block, Object value, Object... keys ) {
+	private static void setBlockTag( Block block, Object value, Object... keys ) {
 		try {
 			if ( block == null || !getNMSClass( "CraftBlockState" ).isInstance( block.getState() ) ) {
 				return;
@@ -756,7 +763,11 @@ public final class NBTEditor {
 				setTag( tag, value, keys );
 			}
 
-			getMethod( "setTileTag" ).invoke( tileEntity, tag );
+			if ( LOCAL_VERSION.greaterThanOrEqualTo( MinecraftVersion.v1_16 ) ) {
+				getMethod( "setTileTag" ).invoke( tileEntity, getMethod( "getType" ).invoke( nmsWorld, blockPosition ), tag );
+			} else {
+				getMethod( "setTileTag" ).invoke( tileEntity, tag );
+			}
 		} catch( Exception exception ) {
 			exception.printStackTrace();
 			return;
@@ -831,6 +842,13 @@ public final class NBTEditor {
 		} else if ( object instanceof NBTCompound ) {
 			try {
 				return getNBTTag( ( ( NBTCompound ) object ).tag, keys );
+			} catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
+				e.printStackTrace();
+				return null;
+			}
+		} else if ( getNMSClass( "NBTTagCompound" ).isInstance( object ) ) {
+			try {
+				return getNBTTag( object, keys );
 			} catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
 				e.printStackTrace();
 				return null;
@@ -953,10 +971,10 @@ public final class NBTEditor {
 	 * @param keys
 	 * Keys in descending order
 	 * @return
-	 * a boolean or false if none is stored at the provided location
+	 * A boolean or false if none is stored at the provided location
 	 */
 	public static boolean getBoolean( Object object, Object... keys ) {
-		return NBTEditor.getByte(object, keys) == new Integer(1).byteValue();
+		return getByte( object, keys ) == 1;
 	}
 
 	/**
@@ -1155,13 +1173,10 @@ public final class NBTEditor {
 			} else if ( getNMSClass( "NBTTagList" ).isInstance( value ) || getNMSClass( "NBTTagCompound" ).isInstance( value ) ) {
 				notCompound = value;
 			} else {
-				final Object finalvalue;
-				if (value instanceof Boolean) {
-					finalvalue = (Boolean) value == true ? 1 : 0;
-				} else {
-					finalvalue = value;
+				if ( value instanceof Boolean ) {
+					value = ( byte ) ( ( Boolean ) value == true ? 1 : 0 );
 				}
-				notCompound = getConstructor( getNBTTag( finalvalue.getClass() ) ).newInstance( finalvalue );
+				notCompound = getConstructor( getNBTTag( value.getClass() ) ).newInstance( value );
 			}
 		} else {
 			notCompound = null;
@@ -1361,7 +1376,12 @@ public final class NBTEditor {
 		}
 	}
 
-	private enum MinecraftVersion {
+	/**
+	 * Minecraft variables as enums
+	 * 
+	 * @author BananaPuncher714
+	 */
+	public enum MinecraftVersion {
 		v1_8( "1_8", 0 ),
 		v1_9( "1_9", 1 ),
 		v1_10( "1_10", 2 ),
@@ -1369,7 +1389,11 @@ public final class NBTEditor {
 		v1_12( "1_12", 4 ),
 		v1_13( "1_13", 5 ),
 		v1_14( "1_14", 6 ),
-		v1_15( "1_15", 7 );
+		v1_15( "1_15", 7 ),
+		v1_16( "1_16", 8 ),
+		v1_17( "1_17", 9 ),
+		v1_18( "1_18", 10 ),
+		v1_19( "1_19", 11 );
 
 		private int order;
 		private String key;

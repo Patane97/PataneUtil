@@ -22,14 +22,14 @@ public class ItemEncoder {
 	public static ItemStack addTag(ItemStack item, String name, String value) {
 		name = generatePrefix() + name;
 		item = NBTEditor.set(item, value, name);
-		Messenger.debug(String.format("Adding tag %s with value %s to item with name %s.", name, value, item.getItemMeta().getDisplayName()));
+		Messenger.debug(String.format("Adding tag %s with value %s to %s.", name, value, item.getType().toString()));
 		return item;
 	}
 	
 	public static ItemStack delTag(ItemStack item, String name) {
 		name = generatePrefix() + name;
 		item = NBTEditor.set(item, null, name);
-		Messenger.debug(String.format("Removing tag %s from item with name %s.", name, item.getItemMeta().getDisplayName()));
+		Messenger.debug(String.format("Removing tag %s from %s.", name, item.getType().toString()));
 		return item;
 	}
 	public static boolean hasTag(ItemStack item, String name) {

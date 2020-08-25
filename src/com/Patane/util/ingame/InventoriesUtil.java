@@ -7,10 +7,30 @@ import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 import com.Patane.util.general.Check;
 
 public class InventoriesUtil {
+	
+	/**
+	 * Grabs the itemstack within the mainhand or offhand
+	 * @param inventory PlayerInventory to check.
+	 * @param allowOffHand If the main hand is empty, offhand will be checked if this is true.
+	 * @return The ItemStack in the PlayerInventories mainhand or offhand. Otherwise, null.
+	 */
+	public static ItemStack getHand(PlayerInventory inventory, boolean allowOffHand) {
+		ItemStack itemStack = inventory.getItemInMainHand();
+		if(itemStack == null || itemStack.getType().isAir()) {
+			if(!allowOffHand)
+				return null;
+			itemStack = inventory.getItemInOffHand();
+			if(itemStack == null || itemStack.getType().isAir())
+				return null;
+		}
+		return itemStack;
+	}
+	
 	/**
 	 * Finds the first item which has the given String as its name, and returns its slot number.
 	 * @param itemName
